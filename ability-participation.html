@@ -1,0 +1,554 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>ABILITY — Participer à l'étude · IPCRA</title>
+<link href="https://fonts.googleapis.com/css2?family=DM+Serif+Display:ital@0;1&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet">
+<style>
+:root{--navy:#1a2742;--teal:#2a9d8f;--teal-l:#3dbdad;--gold:#e9c46a;--white:#fff;--off:#f8f7f4;--text:#2c2c2c;--muted:#5a5a5a;--border:#e0ddd6;--r:6px;}
+*{box-sizing:border-box;margin:0;padding:0;}
+body{font-family:'DM Sans',sans-serif;font-size:16px;color:var(--text);background:var(--off);line-height:1.6;}
+
+nav{background:var(--navy);padding:0 2rem;display:flex;align-items:center;justify-content:space-between;height:64px;position:sticky;top:0;z-index:100;}
+.nb{text-decoration:none;display:flex;flex-direction:column;}
+.nb strong{font-family:'DM Serif Display',serif;font-size:1.05rem;color:var(--white);}
+.nb span{font-size:.62rem;color:var(--gold);letter-spacing:.08em;text-transform:uppercase;font-weight:300;}
+.nl{display:flex;gap:1.8rem;list-style:none;}
+.nl a{color:rgba(255,255,255,.7);text-decoration:none;font-size:.83rem;transition:color .2s;}
+.nl a:hover{color:var(--gold);}
+
+.hero{background:var(--navy);padding:3.5rem 2rem 2.5rem;text-align:center;border-bottom:3px solid var(--gold);}
+.badge{display:inline-block;background:rgba(233,196,106,.15);border:1px solid var(--gold);color:var(--gold);font-size:.7rem;letter-spacing:.1em;text-transform:uppercase;padding:.28rem .9rem;border-radius:2rem;margin-bottom:1rem;}
+.hero h1{font-family:'DM Serif Display',serif;font-size:clamp(1.8rem,4vw,2.6rem);color:var(--white);line-height:1.2;margin-bottom:.5rem;}
+.hero h1 em{color:var(--gold);font-style:italic;}
+.hero-sub{color:rgba(255,255,255,.62);font-size:.9rem;font-weight:300;max-width:520px;margin:0 auto 1.3rem;}
+.hm{display:flex;justify-content:center;gap:1.8rem;flex-wrap:wrap;}
+.hm-i{font-size:.76rem;color:rgba(255,255,255,.48);display:flex;align-items:center;gap:.35rem;}
+.hm-i::before{content:'';width:5px;height:5px;background:var(--teal);border-radius:50%;}
+
+.ps{background:var(--white);border-bottom:1px solid var(--border);padding:1.1rem 0;}
+.ct{max-width:900px;margin:0 auto;padding:0 1.5rem;}
+.pg{display:grid;grid-template-columns:repeat(auto-fit,minmax(140px,1fr));gap:.4rem;}
+.pi{text-align:center;padding:.5rem;}
+.pl{font-size:.65rem;text-transform:uppercase;letter-spacing:.1em;color:var(--muted);font-weight:500;margin-bottom:.15rem;}
+.pv{font-size:.83rem;font-weight:500;color:var(--navy);}
+
+.main{padding:2.5rem 0 5rem;display:grid;grid-template-columns:1fr 290px;gap:1.8rem;align-items:start;}
+
+.fc{background:var(--white);border:1px solid var(--border);border-radius:var(--r);overflow:hidden;box-shadow:0 2px 12px rgba(26,39,66,.07);}
+.fc-h{background:var(--navy);padding:.9rem 1.4rem;}
+.fc-h h2{font-family:'DM Serif Display',serif;font-size:1.05rem;color:var(--white);font-weight:400;}
+
+.sb{display:flex;align-items:center;padding:.8rem 1.4rem;border-bottom:1px solid var(--border);background:var(--off);gap:.25rem;overflow-x:auto;}
+.sd{display:flex;align-items:center;gap:.3rem;font-size:.68rem;color:var(--muted);white-space:nowrap;}
+.sd.active{color:var(--teal);font-weight:500;}
+.sd.done{color:var(--navy);}
+.sn{width:19px;height:19px;border-radius:50%;background:var(--border);display:flex;align-items:center;justify-content:center;font-size:.6rem;font-weight:600;color:var(--muted);flex-shrink:0;}
+.sd.active .sn{background:var(--teal);color:var(--white);}
+.sd.done .sn{background:var(--navy);color:var(--white);}
+.sl{flex:1;height:1px;background:var(--border);min-width:8px;}
+
+.fs{display:none;padding:1.4rem;}
+.fs.active{display:block;}
+.st{font-size:.66rem;text-transform:uppercase;letter-spacing:.1em;color:var(--teal);font-weight:600;margin-bottom:1.1rem;padding-bottom:.45rem;border-bottom:1px solid var(--border);}
+
+.f{margin-bottom:1rem;}
+.f label{display:block;font-size:.8rem;font-weight:500;color:var(--navy);margin-bottom:.28rem;}
+.req{color:var(--teal);margin-left:2px;}
+
+/* TEXT INPUTS ONLY — explicit class, no cascade */
+input.ti,select.si,textarea.tai{
+  width:100%;border:1px solid var(--border);border-radius:var(--r);
+  padding:.52rem .78rem;font-family:'DM Sans',sans-serif;font-size:.85rem;
+  color:var(--text);background:var(--off);transition:border-color .2s,box-shadow .2s;
+}
+select.si{appearance:none;background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='10' height='10' viewBox='0 0 10 10'%3E%3Cpath fill='%235a5a5a' d='M5 7L0 2h10z'/%3E%3C/svg%3E");background-repeat:no-repeat;background-position:right .75rem center;padding-right:1.8rem;}
+input.ti:focus,select.si:focus,textarea.tai:focus{outline:none;border-color:var(--teal);box-shadow:0 0 0 3px rgba(42,157,143,.1);background:var(--white);}
+textarea.tai{resize:vertical;min-height:70px;}
+.fh{font-size:.71rem;color:var(--muted);margin-top:.22rem;font-style:italic;}
+.fr{display:grid;grid-template-columns:1fr 1fr;gap:.9rem;}
+
+/* RADIOS */
+.rg{display:flex;flex-direction:column;gap:.4rem;}
+.ri{display:flex;align-items:flex-start;gap:.55rem;padding:.5rem .7rem;border:1px solid var(--border);border-radius:var(--r);cursor:pointer;font-size:.82rem;transition:border-color .15s,background .15s;}
+.ri:hover{border-color:var(--teal);background:rgba(42,157,143,.04);}
+.ri input[type=radio]{margin-top:3px;flex-shrink:0;accent-color:var(--teal);cursor:pointer;}
+
+/* LIKERT */
+.lb{margin-bottom:1.3rem;border:1px solid var(--border);border-radius:var(--r);overflow:hidden;}
+.lb-h{background:rgba(42,157,143,.08);padding:.55rem .85rem;font-size:.78rem;font-weight:500;color:var(--navy);border-bottom:1px solid var(--border);}
+.li{display:flex;align-items:center;justify-content:space-between;padding:.48rem .85rem;border-bottom:1px solid var(--border);gap:1rem;}
+.li:last-child{border-bottom:none;}
+.li:nth-child(odd){background:rgba(248,247,244,.5);}
+.ll{font-size:.8rem;color:var(--text);flex:1;}
+.lo{display:flex;gap:.35rem;align-items:center;flex-shrink:0;}
+.lopt{display:flex;flex-direction:column;align-items:center;gap:.15rem;}
+.lopt span{font-size:.58rem;color:var(--muted);text-align:center;max-width:44px;line-height:1.2;}
+.lopt input[type=radio]{accent-color:var(--teal);cursor:pointer;width:15px;height:15px;}
+
+/* SCALE LEGEND */
+.scale-leg{display:flex;gap:.4rem;flex-wrap:wrap;margin-bottom:1.1rem;}
+.sc-pill{background:var(--off);border:1px solid var(--border);padding:.18rem .55rem;border-radius:2rem;font-size:.72rem;color:var(--muted);}
+
+/* RGPD */
+.rgpd{background:rgba(42,157,143,.06);border:1px solid rgba(42,157,143,.2);border-radius:var(--r);padding:.9rem 1.1rem;margin-bottom:1.1rem;}
+.rgpd h4{font-size:.68rem;text-transform:uppercase;letter-spacing:.08em;color:var(--teal);font-weight:600;margin-bottom:.55rem;}
+.rgpd p{font-size:.76rem;color:var(--muted);line-height:1.6;margin-bottom:.4rem;}
+.rgpd p:last-child{margin-bottom:0;}
+.rgpd strong{color:var(--navy);}
+
+/* CHECKBOXES — completely isolated */
+.ck-list{display:flex;flex-direction:column;gap:.45rem;margin-bottom:1rem;}
+.ck{display:flex;align-items:flex-start;gap:.65rem;padding:.55rem .75rem;border:1px solid var(--border);border-radius:var(--r);font-size:.8rem;line-height:1.5;cursor:pointer;transition:border-color .15s;}
+.ck:hover{border-color:var(--teal);}
+.ck input[type=checkbox]{flex-shrink:0;margin-top:3px;width:15px;height:15px;accent-color:var(--teal);cursor:pointer;}
+.ck.err{border-color:#c0392b;background:rgba(192,57,43,.03);}
+.errmsg{font-size:.73rem;color:#c0392b;margin-bottom:.7rem;display:none;}
+
+.fn{display:flex;justify-content:space-between;align-items:center;padding:.9rem 1.4rem;border-top:1px solid var(--border);background:var(--off);}
+.btn{display:inline-flex;align-items:center;gap:.35rem;padding:.5rem 1.2rem;border-radius:var(--r);font-family:'DM Sans',sans-serif;font-size:.83rem;font-weight:500;cursor:pointer;transition:all .2s;border:none;}
+.btn-p{background:var(--teal);color:var(--white);}
+.btn-p:hover{background:var(--teal-l);}
+.btn-s{background:transparent;color:var(--muted);border:1px solid var(--border);}
+.btn-s:hover{border-color:var(--navy);color:var(--navy);}
+.btn-sub{background:var(--navy);color:var(--white);padding:.6rem 1.8rem;}
+.sc{font-size:.73rem;color:var(--muted);}
+
+.ok{display:none;padding:2.8rem 1.4rem;text-align:center;}
+.ok-i{width:52px;height:52px;background:rgba(42,157,143,.1);border:2px solid var(--teal);border-radius:50%;display:flex;align-items:center;justify-content:center;margin:0 auto 1.1rem;font-size:1.3rem;color:var(--teal);}
+.ok h3{font-family:'DM Serif Display',serif;font-size:1.25rem;color:var(--navy);margin-bottom:.45rem;}
+.ok p{color:var(--muted);font-size:.84rem;max-width:300px;margin:0 auto;}
+
+.sidebar{display:flex;flex-direction:column;gap:.9rem;}
+.ic{background:var(--white);border:1px solid var(--border);border-radius:var(--r);overflow:hidden;}
+.ih{background:var(--navy);padding:.65rem 1rem;font-size:.66rem;text-transform:uppercase;letter-spacing:.1em;color:var(--gold);font-weight:600;}
+.ib{padding:.75rem 1rem;}
+.ir{padding:.4rem 0;border-bottom:1px solid var(--border);font-size:.78rem;}
+.ir:last-child{border-bottom:none;}
+.irl{font-size:.64rem;text-transform:uppercase;letter-spacing:.08em;color:var(--muted);font-weight:500;margin-bottom:.08rem;}
+.irv{color:var(--navy);font-weight:500;}
+.tli{display:flex;gap:.65rem;padding:.4rem 0;font-size:.78rem;}
+.tld{width:6px;height:6px;background:var(--teal);border-radius:50%;margin-top:6px;flex-shrink:0;}
+.tlt strong{display:block;color:var(--navy);font-weight:500;}
+.tlt span{color:var(--muted);font-size:.72rem;}
+.cc{background:var(--navy);border-radius:var(--r);padding:.9rem 1rem;}
+.cc p{color:rgba(255,255,255,.62);font-size:.76rem;margin-bottom:.35rem;}
+.cc a{color:var(--gold);text-decoration:none;font-size:.8rem;font-weight:500;}
+
+/* SLIDER SDI */
+.sdi-row{display:flex;gap:.7rem;padding:.6rem .85rem;border-bottom:1px solid var(--border);align-items:flex-start;}
+.sdi-row:last-child{border-bottom:none;}
+.sdi-row:nth-child(odd){background:rgba(248,247,244,.5);}
+.sdi-num{font-size:.7rem;font-weight:600;color:var(--muted);min-width:16px;margin-top:3px;}
+.sdi-content{flex:1;}
+.sdi-text{font-size:.82rem;color:var(--text);margin-bottom:.5rem;line-height:1.45;}
+.sdi-scale{display:flex;align-items:center;gap:.6rem;}
+.sdi-anchor{font-size:.68rem;color:var(--muted);white-space:nowrap;min-width:72px;}
+.sdi-anchor:last-child{text-align:right;}
+.sdi-track{flex:1;position:relative;}
+.sdi-slider{width:100%;height:6px;-webkit-appearance:none;appearance:none;border-radius:3px;background:linear-gradient(to right,var(--border) 0%,var(--border) 100%);outline:none;cursor:pointer;transition:background .2s;}
+.sdi-slider::-webkit-slider-thumb{-webkit-appearance:none;width:18px;height:18px;border-radius:50%;background:var(--navy);cursor:pointer;border:2px solid var(--white);box-shadow:0 1px 4px rgba(0,0,0,.2);transition:background .2s;}
+.sdi-slider::-moz-range-thumb{width:18px;height:18px;border-radius:50%;background:var(--navy);cursor:pointer;border:2px solid var(--white);}
+.sdi-scale.touched .sdi-slider{background:linear-gradient(to right,var(--teal) 0%,var(--teal) calc((var(--val,50) - 1) / 14 * 100%),var(--border) calc((var(--val,50) - 1) / 14 * 100%),var(--border) 100%);}
+.sdi-scale.touched .sdi-slider::-webkit-slider-thumb{background:var(--teal);}
+.sdi-warn{font-size:.68rem;color:#c0392b;margin-top:.25rem;display:none;}
+.sdi-row.err .sdi-warn{display:block;}
+
+footer{background:var(--navy);color:rgba(255,255,255,.48);font-size:.74rem;padding:1.3rem 2rem;display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:.7rem;}
+footer a{color:var(--gold);text-decoration:none;}
+
+@media(max-width:700px){.main{grid-template-columns:1fr;}.fr{grid-template-columns:1fr;}.nl{display:none;}.li{flex-direction:column;align-items:flex-start;}}
+</style>
+</head>
+<body>
+
+<nav>
+  <a href="https://institutipcra.github.io/IPCRA-site/" class="nb">
+    <strong>IPCRA</strong>
+    <span>Institut de Pratiques Cliniques et de Recherche Appliquée</span>
+  </a>
+  <ul class="nl">
+    <li><a href="https://institutipcra.github.io/IPCRA-site/#missions">Institut</a></li>
+    <li><a href="https://institutipcra.github.io/IPCRA-site/#projets">Projets</a></li>
+    <li><a href="https://institutipcra.github.io/IPCRA-site/#equipe">Équipe</a></li>
+    <li><a href="https://institutipcra.github.io/IPCRA-site/#contact">Contact</a></li>
+  </ul>
+</nav>
+
+<div class="hero">
+  <div class="badge">Protocole de recherche · 2026</div>
+  <h1>Participer à l'étude <em>ABILITY</em></h1>
+  <p class="hero-sub">L'autodétermination par le jeu — évaluation d'un dispositif de médiation thérapeutique dans le médico-social</p>
+  <div class="hm">
+    <span class="hm-i">Étude contrôlée randomisée</span>
+    <span class="hm-i">8 séances · 6 mois</span>
+    <span class="hm-i">SAVS · SAMSAH</span>
+    <span class="hm-i">Encadré règlement Jardé</span>
+  </div>
+</div>
+
+<div class="ps">
+  <div class="ct">
+    <div class="pg">
+      <div class="pi"><div class="pl">Population</div><div class="pv">Adultes DI légère</div></div>
+      <div class="pi"><div class="pl">Outils</div><div class="pv">SDI · PANAS · AAQ-II</div></div>
+      <div class="pi"><div class="pl">Mesures</div><div class="pv">T0 · T1 · T2</div></div>
+      <div class="pi"><div class="pl">Équipe</div><div class="pv">Brandibas · Sudres · Ladevèze</div></div>
+    </div>
+  </div>
+</div>
+
+<div class="ct">
+<div class="main">
+
+<div class="fc">
+  <div class="fc-h"><h2>Formulaire d'inclusion et de passation</h2></div>
+
+  <div class="sb" id="step-bar">
+    <div class="sd active" id="sd1"><div class="sn">1</div>Établissement</div>
+    <div class="sl"></div>
+    <div class="sd" id="sd2"><div class="sn">2</div>Participant</div>
+    <div class="sl"></div>
+    <div class="sd" id="sd3"><div class="sn">3</div>SDI</div>
+    <div class="sl"></div>
+    <div class="sd" id="sd4"><div class="sn">4</div>PANAS</div>
+    <div class="sl"></div>
+    <div class="sd" id="sd5"><div class="sn">5</div>AAQ-II</div>
+    <div class="sl"></div>
+    <div class="sd" id="sd6"><div class="sn">6</div>Consentement</div>
+  </div>
+
+  <form id="form" novalidate>
+
+    <!-- 1 ETABLISSEMENT -->
+    <div class="fs active" id="s1">
+      <div class="st">Établissement et référent</div>
+      <div class="f"><label>Nom de l'établissement <span class="req">*</span></label><input class="ti" type="text" name="etab" placeholder="Ex. SAVS de Cahors" required></div>
+      <div class="fr">
+        <div class="f"><label>Département <span class="req">*</span></label><input class="ti" type="text" name="dept" placeholder="Ex. 46" required></div>
+        <div class="f"><label>Type de structure <span class="req">*</span></label>
+          <select class="si" name="type" required><option value="">Sélectionner…</option><option>SAVS</option><option>SAMSAH</option><option>Autre ESSMS</option></select></div>
+      </div>
+      <div class="f"><label>Nom du référent <span class="req">*</span></label><input class="ti" type="text" name="ref_nom" placeholder="Prénom Nom" required></div>
+      <div class="f"><label>Fonction <span class="req">*</span></label>
+        <select class="si" name="ref_fonc" required><option value="">Sélectionner…</option><option>Éducateur spécialisé</option><option>Psychologue</option><option>Assistant de service social</option><option>AES / AMP</option><option>Autre</option></select></div>
+      <div class="f"><label>E-mail du référent <span class="req">*</span></label><input class="ti" type="email" name="ref_email" placeholder="prenom.nom@etab.fr" required><div class="fh">Utilisée uniquement pour les échanges liés au protocole</div></div>
+      <div class="f"><label>Téléphone (optionnel)</label><input class="ti" type="tel" name="ref_tel" placeholder="06 …"></div>
+      <div class="f"><label>Temps de passation <span class="req">*</span></label>
+        <select class="si" name="temps" required><option value="">Sélectionner…</option><option>T0 — Baseline (séance 1)</option><option>T1 — Intermédiaire (séance 5)</option><option>T2 — Final (séance 8)</option></select></div>
+    </div>
+
+    <!-- 2 PARTICIPANT -->
+    <div class="fs" id="s2">
+      <div class="st">Informations sur le participant</div>
+      <div class="f"><label>Identifiant anonyme <span class="req">*</span></label><input class="ti" type="text" name="pid" placeholder="Ex. SAVS46-001" required><div class="fh">Code attribué par le référent — ne pas inscrire le nom</div></div>
+      <div class="fr">
+        <div class="f"><label>Âge <span class="req">*</span></label><input class="ti" type="number" name="age" min="18" max="75" placeholder="Ex. 32" required></div>
+        <div class="f"><label>Genre <span class="req">*</span></label>
+          <select class="si" name="genre" required><option value="">Sélectionner…</option><option>Femme</option><option>Homme</option><option>Non précisé</option></select></div>
+      </div>
+      <div class="f"><label>Groupe d'affectation <span class="req">*</span></label>
+        <div class="rg">
+          <label class="ri"><input type="radio" name="groupe" value="exp" required><span><strong>Groupe expérimental</strong> — participation immédiate aux ateliers ABILITY</span></label>
+          <label class="ri"><input type="radio" name="groupe" value="ctrl"><span><strong>Groupe contrôle</strong> — liste d'attente, passation aux mêmes temps</span></label>
+        </div>
+      </div>
+      <div class="f"><label>Diagnostic principal (optionnel)</label><input class="ti" type="text" name="diag" placeholder="Ex. DI légère, TDA…"></div>
+      <div class="f"><label>Suivi concomitant (optionnel)</label><input class="ti" type="text" name="suivi" placeholder="Ex. suivi psychiatrique, traitement médicamenteux…"></div>
+      <div class="f"><label>Commentaire clinique (optionnel)</label><textarea class="tai" name="comment" placeholder="Observations utiles au protocole…"></textarea></div>
+    </div>
+
+    <!-- 3 SDI -->
+    <div class="fs" id="s3">
+      <div class="st">SDI-SR — Inventaire d'Autodétermination</div>
+      <p style="font-size:.8rem;color:var(--muted);margin-bottom:.8rem;line-height:1.6;">Pour chaque phrase, déplacez le curseur pour indiquer dans quelle mesure vous êtes <strong>en désaccord</strong> ou <strong>en accord</strong>. Choisissez la réponse qui vous représente le mieux.</p>
+      <div style="background:rgba(233,196,106,.1);border:1px solid rgba(233,196,106,.4);border-radius:var(--r);padding:.7rem 1rem;margin-bottom:1rem;font-size:.74rem;color:var(--muted);line-height:1.5;">
+        <strong style="color:var(--navy);">Note méthodologique :</strong> Dans l'attente d'une version adulte francophone validée du SDI:AR, nous utilisons provisoirement le SDI-SR (version élève, Shogren, Wehmeyer et al., 2017 ; traduction française Lachapelle et al., 2020). Une demande de traduction/adaptation du SDI:AR a été adressée au KU Center on Developmental Disabilities (University of Kansas). Les résultats seront interprétés avec cette limite explicite.
+      </div>
+      <div class="lb" id="sdi-block"><div class="lb-h">Lisez chaque phrase et indiquez votre niveau d'accord</div></div>
+    </div>
+
+    <!-- 4 PANAS -->
+    <div class="fs" id="s4">
+      <div class="st">PANAS — Affects positifs et négatifs (version adaptée)</div>
+      <p style="font-size:.8rem;color:var(--muted);margin-bottom:.8rem;line-height:1.6;">Dans quelle mesure ressentez-vous <strong>en ce moment</strong> chacun des sentiments suivants ?</p>
+      <div class="scale-leg">
+        <span class="sc-pill">1 = Pas du tout</span><span class="sc-pill">2 = Un peu</span><span class="sc-pill">3 = Modérément</span><span class="sc-pill">4 = Beaucoup</span><span class="sc-pill">5 = Énormément</span>
+      </div>
+      <div class="lb" id="pa-block"><div class="lb-h">Affects positifs</div></div>
+      <div class="lb" id="na-block"><div class="lb-h">Affects négatifs</div></div>
+    </div>
+
+    <!-- 5 AAQ-II -->
+    <div class="fs" id="s5">
+      <div class="st">AAQ-II — Flexibilité psychologique</div>
+      <p style="font-size:.8rem;color:var(--muted);margin-bottom:.8rem;line-height:1.6;">Dans quelle mesure chaque affirmation est-elle <strong>vraie pour vous</strong> ?</p>
+      <div class="scale-leg">
+        <span class="sc-pill">1 = Jamais vrai</span><span class="sc-pill">2 = Très rarement</span><span class="sc-pill">3 = Rarement</span><span class="sc-pill">4 = Parfois</span><span class="sc-pill">5 = Souvent</span><span class="sc-pill">6 = Presque toujours</span><span class="sc-pill">7 = Toujours vrai</span>
+      </div>
+      <div class="lb" id="aaq-block"></div>
+    </div>
+
+    <!-- 6 CONSENTEMENT -->
+    <div class="fs" id="s6">
+      <div class="st">Consentement et protection des données</div>
+      <div class="rgpd">
+        <h4>Information RGPD — Règlement (UE) 2016/679</h4>
+        <p><strong>Responsable :</strong> IPCRA · 19, rue Léo Lagrange, 31390 Carbonne · institut.ipcra@gmail.com</p>
+        <p><strong>Finalité :</strong> Recueil et analyse de données dans le cadre du protocole ABILITY (autodétermination par le jeu, adultes en situation de DI légère, SAVS/SAMSAH).</p>
+        <p><strong>Base légale :</strong> Consentement (Art. 6.1.a) et intérêt public de la recherche (Art. 9.2.j RGPD).</p>
+        <p><strong>Données collectées :</strong> Identifiant anonyme, âge, genre, groupe, scores SDI/PANAS/AAQ-II. <strong>Aucune donnée nominative.</strong></p>
+        <p><strong>Conservation :</strong> 10 ans. <strong>Destinataires :</strong> équipe IPCRA uniquement. <strong>Droits :</strong> accès, rectification, effacement — institut.ipcra@gmail.com · Réclamation : cnil.fr</p>
+      </div>
+      <p style="font-size:.8rem;font-weight:500;color:var(--navy);margin-bottom:.6rem;">Le professionnel référent atteste :</p>
+      <div class="ck-list" id="ck-list">
+        <label class="ck"><input type="checkbox" name="c1"><span>Avoir informé le participant de la nature, des objectifs et du déroulement de l'étude, ainsi que de son droit de retrait à tout moment sans conséquence sur son accompagnement</span></label>
+        <label class="ck"><input type="checkbox" name="c2"><span>Avoir recueilli le consentement libre, éclairé et écrit du participant (ou de son représentant légal si applicable)</span></label>
+        <label class="ck"><input type="checkbox" name="c3"><span>Avoir informé le participant du traitement de ses données à caractère personnel conformément à la notice RGPD ci-dessus</span></label>
+        <label class="ck"><input type="checkbox" name="c4"><span>S'engager à respecter le protocole ABILITY tel que défini par l'IPCRA et à signaler tout événement indésirable à l'équipe de recherche</span></label>
+      </div>
+      <div class="errmsg" id="ck-err">Veuillez cocher toutes les cases d'attestation pour continuer.</div>
+      <div class="f"><label>Date d'inclusion <span class="req">*</span></label><input class="ti" type="date" name="date_incl" required></div>
+      <div class="f"><label>Signature électronique du référent <span class="req">*</span></label><input class="ti" type="text" name="signature" placeholder="Prénom Nom (équivaut à signature)" required><div class="fh">La saisie de votre nom constitue votre signature électronique (règlement eIDAS)</div></div>
+    </div>
+
+    <!-- SUCCESS -->
+    <div class="ok" id="ok">
+      <div class="ok-i">✓</div>
+      <h3>Inclusion enregistrée</h3>
+      <p>Les données ont bien été transmises à l'équipe IPCRA. Un accusé de réception vous sera adressé par e-mail dans les 48 heures.</p>
+    </div>
+
+    <div class="fn" id="fn">
+      <button type="button" class="btn btn-s" id="btn-prev" onclick="prev()" style="visibility:hidden">← Retour</button>
+      <span class="sc" id="sc">Étape 1 sur 6</span>
+      <button type="button" class="btn btn-p" id="btn-next" onclick="next()">Continuer →</button>
+    </div>
+  </form>
+</div>
+
+<!-- SIDEBAR -->
+<div class="sidebar">
+  <div class="ic"><div class="ih">Protocole</div><div class="ib">
+    <div class="ir"><div class="irl">Design</div><div class="irv">Étude contrôlée randomisée</div></div>
+    <div class="ir"><div class="irl">Durée</div><div class="irv">6 mois · 8 séances</div></div>
+    <div class="ir"><div class="irl">Séances</div><div class="irv">1h–1h30 · toutes 2–3 sem.</div></div>
+    <div class="ir"><div class="irl">Mesures</div><div class="irv">T0 · T1 (séance 5) · T2 (séance 8)</div></div>
+    <div class="ir"><div class="irl">Cadre</div><div class="irv">Loi Jardé · CNIL</div></div>
+    <div class="ir"><div class="irl">Jeu déposé</div><div class="irv">INPI — J. Ladevèze</div></div>
+  </div></div>
+  <div class="ic"><div class="ih">Déroulement</div><div class="ib">
+    <div class="tli"><div class="tld"></div><div class="tlt"><strong>Phase 0</strong><span>Entretien · alliance aidante</span></div></div>
+    <div class="tli"><div class="tld"></div><div class="tlt"><strong>Séance 1 (T0)</strong><span>Baseline · 1re utilisation</span></div></div>
+    <div class="tli"><div class="tld"></div><div class="tlt"><strong>Séances 2–4</strong><span>Ateliers · carnet de bord</span></div></div>
+    <div class="tli"><div class="tld"></div><div class="tlt"><strong>Séance 5 (T1)</strong><span>Bilan intermédiaire</span></div></div>
+    <div class="tli"><div class="tld"></div><div class="tlt"><strong>Séances 6–7</strong><span>Approfondissement</span></div></div>
+    <div class="tli"><div class="tld"></div><div class="tlt"><strong>Séance 8 (T2)</strong><span>Bilan final · 6 mois</span></div></div>
+  </div></div>
+  <div class="cc"><p>Questions sur le protocole ?</p><a href="mailto:institut.ipcra@gmail.com">institut.ipcra@gmail.com</a></div>
+</div>
+
+</div>
+</div>
+
+<footer>
+  <div><strong style="color:#fff">IPCRA</strong> — Institut de Pratiques Cliniques et de Recherche Appliquée<br>19, rue Léo Lagrange · 31390 Carbonne · institut.ipcra@gmail.com</div>
+  <div><a href="https://institutipcra.github.io/IPCRA-site/">← Retour au site IPCRA</a></div>
+</footer>
+
+<script>
+// ── DONNÉES ──────────────────────────────────────────────
+const SDI = [
+  {id:'sdi1',  t:"J'ai les compétences pour atteindre mes objectifs."},
+  {id:'sdi2',  t:"J'identifie plusieurs solutions pour résoudre un problème."},
+  {id:'sdi3',  t:"J'envisage plusieurs possibilités quand je fais des plans pour mon avenir."},
+  {id:'sdi4',  t:"Je connais ce que je fais le mieux."},
+  {id:'sdi5',  t:"Le week-end, je planifie des activités que j'aime réaliser."},
+  {id:'sdi6',  t:"Je persévère pour obtenir ce que je veux même après avoir fait une erreur."},
+  {id:'sdi7',  t:"Je fixe moi-même mes objectifs."},
+  {id:'sdi8',  t:"Je pense que faire des efforts m'aide à obtenir ce que je veux."},
+  {id:'sdi9',  t:"Je choisis les activités que je veux réaliser."},
+  {id:'sdi10', t:"Je travaille fort pour atteindre mes objectifs."},
+  {id:'sdi11', t:"Je trouve des moyens de surmonter les obstacles."},
+  {id:'sdi12', t:"J'ai confiance en mes capacités."},
+  {id:'sdi13', t:"Mes expériences passées m'aident à planifier ce que je vais faire par la suite."},
+  {id:'sdi14', t:"Je réfléchis à chacun de mes objectifs."},
+  {id:'sdi15', t:"Je fais des choix qui sont importants pour moi."},
+  {id:'sdi16', t:"Je cherche de nouvelles expériences qui pourraient me plaire."},
+  {id:'sdi17', t:"Je suis capable de me concentrer pour atteindre mes objectifs."},
+  {id:'sdi18', t:"Je choisis à quoi ressemble mon chez-moi."},
+  {id:'sdi19', t:"J'agis quand de nouvelles occasions se présentent."},
+  {id:'sdi20', t:"Je connais mes forces."},
+  {id:'sdi21', t:"Je trouve des moyens d'atteindre mes objectifs."},
+];
+const PA = [
+  {id:'pa1',t:"Intéressé(e)"},{id:'pa2',t:"Enthousiaste"},{id:'pa3',t:"Fort(e)"},
+  {id:'pa4',t:"Excité(e)"},{id:'pa5',t:"Fier(ière)"},{id:'pa6',t:"Alerte"},
+  {id:'pa7',t:"Inspiré(e)"},{id:'pa8',t:"Déterminé(e)"},{id:'pa9',t:"Attentif(ve)"},
+  {id:'pa10',t:"Actif(ve)"},
+];
+const NA = [
+  {id:'na1',t:"Bouleversé(e)"},{id:'na2',t:"Contrarié(e)"},{id:'na3',t:"Coupable"},
+  {id:'na4',t:"Effrayé(e)"},{id:'na5',t:"Hostile"},{id:'na6',t:"Irritable"},
+  {id:'na7',t:"Honteux(se)"},{id:'na8',t:"Nerveux(se)"},{id:'na9',t:"Agité(e)"},
+  {id:'na10',t:"Anxieux(se)"},
+];
+const AAQ = [
+  {id:'aaq1',t:"Mes expériences et souvenirs douloureux me rendent difficile de vivre la vie que je voudrais"},
+  {id:'aaq2',t:"J'ai peur de mes sentiments"},
+  {id:'aaq3',t:"Je me préoccupe de ne pas être en mesure de contrôler mes inquiétudes et mes sentiments"},
+  {id:'aaq4',t:"Mes souvenirs douloureux m'empêchent de vivre une vie épanouissante"},
+  {id:'aaq5',t:"Les émotions causent des problèmes dans ma vie"},
+  {id:'aaq6',t:"Il me semble que la plupart des gens gèrent mieux leur vie que moi"},
+  {id:'aaq7',t:"Les inquiétudes m'empêchent de réussir"},
+];
+
+// ── CONSTRUCTION LIKERT ──────────────────────────────────
+function buildLikert(items, containerId, max, labels) {
+  const c = document.getElementById(containerId);
+  items.forEach(item => {
+    const d = document.createElement('div');
+    d.className = 'li';
+    const opts = Array.from({length:max},(_,i)=>`
+      <label class="lopt">
+        <input type="radio" name="${item.id}" value="${i+1}" required>
+        <span>${labels && labels[i] ? labels[i] : i+1}</span>
+      </label>`).join('');
+    d.innerHTML = `<span class="ll">${item.t}</span><div class="lo">${opts}</div>`;
+    c.appendChild(d);
+  });
+}
+
+// ── CONSTRUCTION SLIDER (SDI) ─────────────────────────────
+function buildSlider(items, containerId) {
+  const c = document.getElementById(containerId);
+  items.forEach((item, idx) => {
+    const d = document.createElement('div');
+    d.className = 'sdi-row';
+    d.innerHTML = `
+      <div class="sdi-num">${idx+1}</div>
+      <div class="sdi-content">
+        <div class="sdi-text">${item.t}</div>
+        <div class="sdi-scale">
+          <span class="sdi-anchor">En désaccord</span>
+          <div class="sdi-track">
+            <input type="range" name="${item.id}" min="1" max="15" value="8"
+              class="sdi-slider" data-touched="false"
+              oninput="this.dataset.touched='true';this.closest('.sdi-scale').classList.add('touched')">
+          </div>
+          <span class="sdi-anchor">En accord</span>
+        </div>
+        <div class="sdi-warn">Veuillez déplacer le curseur pour répondre.</div>
+      </div>`;
+    c.appendChild(d);
+  });
+}
+
+buildSlider(SDI, 'sdi-block');
+buildLikert(PA,  'pa-block',  5, null);
+buildLikert(NA,  'na-block',  5, null);
+buildLikert(AAQ, 'aaq-block', 7, null);
+
+// ── NAVIGATION ───────────────────────────────────────────
+let cur = 1;
+const TOT = 6;
+
+function updateUI() {
+  document.querySelectorAll('.fs').forEach((s,i) => s.classList.toggle('active', i+1===cur));
+  for(let i=1;i<=TOT;i++){
+    const el=document.getElementById('sd'+i);
+    el.classList.remove('active','done');
+    if(i===cur) el.classList.add('active');
+    if(i<cur)   el.classList.add('done');
+  }
+  document.getElementById('sc').textContent = `Étape ${cur} sur ${TOT}`;
+  document.getElementById('btn-prev').style.visibility = cur>1 ? 'visible':'hidden';
+  const bn = document.getElementById('btn-next');
+  if(cur===TOT){ bn.textContent='Soumettre'; bn.className='btn btn-sub'; bn.onclick=submit; }
+  else         { bn.textContent='Continuer →'; bn.className='btn btn-p'; bn.onclick=next; }
+  window.scrollTo({top:0,behavior:'smooth'});
+}
+
+function validate(step) {
+  const sec = document.getElementById('s'+step);
+  let ok = true;
+
+  // Champs texte/select
+  sec.querySelectorAll('input.ti[required],select.si[required]').forEach(el => {
+    const v = el.value.trim();
+    el.style.borderColor = v ? '' : '#c0392b';
+    if(!v) ok = false;
+  });
+
+  // Groupes radio (hors likert)
+  if(step<=2){
+    const names=[...new Set([...sec.querySelectorAll('.rg input[type=radio]')].map(r=>r.name))];
+    names.forEach(n=>{
+      if(!sec.querySelector(`input[name="${n}"]:checked`)){
+        sec.querySelectorAll(`input[name="${n}"]`)[0].closest('.rg').style.outline='2px solid #c0392b';
+        ok=false;
+      }
+    });
+  }
+
+  // Sliders SDI
+  if(step===3){
+    const rows=document.querySelectorAll('#s3 .sdi-row');
+    rows.forEach(row=>{
+      const sl=row.querySelector('.sdi-slider');
+      if(sl.dataset.touched!=='true'){row.classList.add('err');ok=false;}
+      else row.classList.remove('err');
+    });
+  }
+
+  // Items Likert PANAS et AAQ (étapes 4 et 5)
+  if(step===4 || step===5){
+    const names=[...new Set([...sec.querySelectorAll('input[type=radio]')].map(r=>r.name))];
+    names.forEach(n=>{
+      if(!sec.querySelector(`input[name="${n}"]:checked`)){
+        const row=sec.querySelectorAll(`input[name="${n}"]`)[0].closest('.li');
+        if(row) row.style.outline='2px solid #c0392b';
+        ok=false;
+      }
+    });
+  }
+
+  // Checkboxes consentement
+  if(step===6){
+    const boxes=[...document.getElementById('ck-list').querySelectorAll('input[type=checkbox]')];
+    const allOk=boxes.every(b=>b.checked);
+    document.getElementById('ck-err').style.display=allOk?'none':'block';
+    boxes.forEach(b=>b.closest('.ck').classList.toggle('err',!b.checked));
+    if(!allOk) ok=false;
+  }
+  return ok;
+}
+
+function next(){
+  if(!validate(cur)) return;
+  document.querySelectorAll('.li,.rg').forEach(el=>el.style.outline='');
+  if(cur<TOT){cur++;updateUI();}
+}
+function prev(){if(cur>1){cur--;updateUI();}}
+function submit(){
+  if(!validate(cur)) return;
+  // → Connexion LimeSurvey ici
+  document.querySelectorAll('.fs').forEach(s=>s.style.display='none');
+  document.getElementById('ok').style.display='block';
+  document.getElementById('fn').style.display='none';
+}
+
+document.addEventListener('input',e=>{
+  if(e.target.classList.contains('ti')||e.target.classList.contains('si'))
+    e.target.style.borderColor='';
+  if(e.target.classList.contains('sdi-slider')){
+    const v=((e.target.value-1)/14*100).toFixed(1);
+    e.target.style.background=`linear-gradient(to right,var(--teal) 0%,var(--teal) ${v}%,var(--border) ${v}%,var(--border) 100%)`;
+    e.target.closest('.sdi-row').classList.remove('err');
+  }
+  if(e.target.type==='checkbox') e.target.closest('.ck')?.classList.remove('err');
+});
+</script>
+</body>
+</html>
