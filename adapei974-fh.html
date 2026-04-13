@@ -1,0 +1,404 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>GD — Foyer d'Hébergement · ADAPEI 974 · IPCRA</title>
+<link href="https://fonts.googleapis.com/css2?family=DM+Serif+Display:ital@0;1&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet">
+<style>
+:root{--navy:#1a2742;--teal:#2a9d8f;--teal-l:#3dbdad;--gold:#e9c46a;--white:#fff;--off:#f8f7f4;--text:#2c2c2c;--muted:#5a5a5a;--border:#e0ddd6;--r:6px;}
+*{box-sizing:border-box;margin:0;padding:0;}
+body{font-family:'DM Sans',sans-serif;font-size:15px;color:var(--text);background:var(--off);line-height:1.6;}
+
+nav{background:var(--navy);padding:0 2rem;display:flex;align-items:center;justify-content:space-between;height:60px;position:sticky;top:0;z-index:100;}
+.nb{text-decoration:none;display:flex;flex-direction:column;}
+.nb strong{font-family:'DM Serif Display',serif;font-size:1rem;color:var(--white);}
+.nb span{font-size:.6rem;color:var(--gold);letter-spacing:.08em;text-transform:uppercase;}
+
+.hero{background:var(--navy);padding:2.5rem 2rem 2rem;text-align:center;border-bottom:3px solid var(--gold);}
+.badge{display:inline-block;background:rgba(233,196,106,.15);border:1px solid var(--gold);color:var(--gold);font-size:.68rem;letter-spacing:.1em;text-transform:uppercase;padding:.25rem .8rem;border-radius:2rem;margin-bottom:.8rem;}
+.hero h1{font-family:'DM Serif Display',serif;font-size:clamp(1.5rem,3vw,2.2rem);color:var(--white);margin-bottom:.3rem;}
+.hero h1 em{color:var(--gold);font-style:italic;}
+.hero-sub{color:rgba(255,255,255,.6);font-size:.85rem;font-weight:300;}
+
+.ct{max-width:1000px;margin:0 auto;padding:0 1.5rem;}
+.main{padding:2rem 0 4rem;display:grid;grid-template-columns:1fr 340px;gap:2rem;align-items:start;}
+
+/* FORM CARD */
+.fc{background:var(--white);border:1px solid var(--border);border-radius:var(--r);overflow:hidden;box-shadow:0 2px 10px rgba(26,39,66,.06);}
+.fc-h{background:var(--navy);padding:.85rem 1.3rem;}
+.fc-h h2{font-family:'DM Serif Display',serif;font-size:1rem;color:var(--white);font-weight:400;}
+
+.form-body{padding:1.3rem;}
+.section-title{font-size:.65rem;text-transform:uppercase;letter-spacing:.1em;color:var(--teal);font-weight:600;margin:1.2rem 0 .8rem;padding-bottom:.4rem;border-bottom:1px solid var(--border);}
+.section-title:first-child{margin-top:0;}
+
+.f{margin-bottom:.9rem;}
+.f label{display:block;font-size:.78rem;font-weight:500;color:var(--navy);margin-bottom:.25rem;}
+.req{color:var(--teal);margin-left:2px;}
+input.ti,select.si{width:100%;border:1px solid var(--border);border-radius:var(--r);padding:.48rem .75rem;font-family:'DM Sans',sans-serif;font-size:.84rem;color:var(--text);background:var(--off);transition:border-color .2s;}
+select.si{appearance:none;background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='10' height='10' viewBox='0 0 10 10'%3E%3Cpath fill='%235a5a5a' d='M5 7L0 2h10z'/%3E%3C/svg%3E");background-repeat:no-repeat;background-position:right .7rem center;padding-right:1.7rem;}
+input.ti:focus,select.si:focus{outline:none;border-color:var(--teal);box-shadow:0 0 0 3px rgba(42,157,143,.1);}
+.fr{display:grid;grid-template-columns:1fr 1fr;gap:.8rem;}
+
+/* ITEMS GD */
+.gd-item{display:grid;grid-template-columns:24px 1fr auto;align-items:center;gap:.7rem;padding:.5rem .6rem;border-bottom:1px solid var(--border);border-radius:var(--r);margin-bottom:.3rem;transition:background .15s;}
+.gd-item:hover{background:rgba(42,157,143,.04);}
+.gd-item:last-child{border-bottom:none;}
+.gd-num{font-size:.68rem;font-weight:600;color:var(--muted);text-align:center;}
+.gd-label{font-size:.82rem;color:var(--text);}
+.gd-score{display:flex;gap:.25rem;align-items:center;}
+.gd-btn{width:26px;height:26px;border-radius:50%;border:1.5px solid var(--border);background:var(--white);font-size:.72rem;font-weight:600;color:var(--muted);cursor:pointer;display:flex;align-items:center;justify-content:center;transition:all .15s;flex-shrink:0;}
+.gd-btn:hover{border-color:var(--teal);color:var(--teal);}
+.gd-btn.active{background:var(--teal);border-color:var(--teal);color:var(--white);}
+.gd-val{font-size:.78rem;font-weight:600;color:var(--navy);min-width:16px;text-align:center;}
+
+.domain-block{margin-bottom:1rem;}
+.domain-head{display:flex;align-items:center;gap:.5rem;margin-bottom:.5rem;}
+.domain-tag{font-size:.62rem;text-transform:uppercase;letter-spacing:.08em;font-weight:600;padding:.2rem .5rem;border-radius:2rem;background:rgba(42,157,143,.1);color:var(--teal);border:1px solid rgba(42,157,143,.2);}
+
+.btn-submit{width:100%;padding:.65rem;background:var(--navy);color:var(--white);border:none;border-radius:var(--r);font-family:'DM Sans',sans-serif;font-size:.88rem;font-weight:500;cursor:pointer;margin-top:1.2rem;transition:background .2s;}
+.btn-submit:hover{background:#243352;}
+
+/* SUCCESS */
+.ok{display:none;padding:2.5rem 1.3rem;text-align:center;}
+.ok-i{width:50px;height:50px;background:rgba(42,157,143,.1);border:2px solid var(--teal);border-radius:50%;display:flex;align-items:center;justify-content:center;margin:0 auto 1rem;font-size:1.3rem;color:var(--teal);}
+.ok h3{font-family:'DM Serif Display',serif;font-size:1.2rem;color:var(--navy);margin-bottom:.4rem;}
+.ok p{color:var(--muted);font-size:.82rem;}
+
+/* RADAR CARD */
+.radar-card{background:var(--white);border:1px solid var(--border);border-radius:var(--r);overflow:hidden;box-shadow:0 2px 10px rgba(26,39,66,.06);position:sticky;top:80px;}
+.radar-head{background:var(--navy);padding:.85rem 1.3rem;}
+.radar-head h3{font-family:'DM Serif Display',serif;font-size:1rem;color:var(--white);font-weight:400;}
+.radar-body{padding:1rem;}
+#radar-svg{width:100%;height:auto;}
+
+.score-summary{margin-top:.8rem;border-top:1px solid var(--border);padding-top:.8rem;}
+.score-row{display:flex;justify-content:space-between;align-items:center;padding:.25rem 0;font-size:.76rem;}
+.score-row-label{color:var(--muted);}
+.score-row-val{font-weight:600;color:var(--navy);}
+.score-global{display:flex;justify-content:space-between;align-items:center;padding:.4rem 0;font-size:.85rem;border-top:1px solid var(--border);margin-top:.4rem;}
+.score-global-label{font-weight:500;color:var(--navy);}
+.score-global-val{font-weight:600;color:var(--teal);font-size:1rem;}
+
+footer{background:var(--navy);color:rgba(255,255,255,.45);font-size:.72rem;padding:1.2rem 2rem;display:flex;justify-content:space-between;flex-wrap:wrap;gap:.5rem;}
+footer a{color:var(--gold);text-decoration:none;}
+
+@media(max-width:700px){.main{grid-template-columns:1fr;}.fr{grid-template-columns:1fr;}.radar-card{position:static;}}
+</style>
+</head>
+<body>
+
+<nav>
+  <a href="https://institutipcra.github.io/IPCRA-site/" class="nb">
+    <strong>IPCRA</strong>
+    <span>Institut de Pratiques Cliniques et de Recherche Appliquée</span>
+  </a>
+  <span style="color:rgba(255,255,255,.5);font-size:.78rem;">ADAPEI 974 · Supervision clinique</span>
+</nav>
+
+<div class="hero">
+  <div class="badge">Recueil de données · Supervision clinique</div>
+  <h1>Graphe Dimensionnel — <em>Foyer d'Hébergement</em></h1>
+  <p class="hero-sub">ADAPEI 974 · Cotation 0 à 5 · 18 dimensions · 6 domaines</p>
+</div>
+
+<div class="ct">
+<div class="main">
+
+  <div class="fc">
+    <div class="fc-h"><h2>Fiche de cotation — GD Foyer d'Hébergement</h2></div>
+    <div class="form-body" id="form-body">
+
+      <div class="section-title">Identification</div>
+      <div class="fr">
+        <div class="f"><label>Identifiant résident <span class="req">*</span></label><input class="ti" type="text" id="resident" placeholder="Code anonyme ex. FH-001" required></div>
+        <div class="f"><label>Date <span class="req">*</span></label><input class="ti" type="date" id="date_saisie" required></div>
+      </div>
+      <div class="fr">
+        <div class="f"><label>Intervenant <span class="req">*</span></label><input class="ti" type="text" id="intervenant" placeholder="Initiales ou code" required></div>
+        <div class="f"><label>Période observée</label><input class="ti" type="text" id="periode" placeholder="Ex. Mars 2026"></div>
+      </div>
+
+      <!-- DOMAINES ET ITEMS -->
+      <div id="items-container"></div>
+
+      <button class="btn-submit" onclick="submitForm()">Enregistrer la cotation</button>
+    </div>
+
+    <div class="ok" id="ok-state">
+      <div class="ok-i">✓</div>
+      <h3>Cotation enregistrée</h3>
+      <p>Les données ont été transmises à l'équipe IPCRA pour la supervision clinique.</p>
+    </div>
+  </div>
+
+  <!-- RADAR -->
+  <div class="radar-card">
+    <div class="radar-head"><h3>Profil dimensionnel</h3></div>
+    <div class="radar-body">
+      <svg id="radar-svg" viewBox="0 0 300 300" xmlns="http://www.w3.org/2000/svg">
+        <!-- Généré par JS -->
+      </svg>
+      <div class="score-summary" id="score-summary"></div>
+    </div>
+  </div>
+
+</div>
+</div>
+
+<footer>
+  <div><strong style="color:#fff">IPCRA</strong> — Supervision clinique ADAPEI 974 · institut.ipcra@gmail.com</div>
+  <div><a href="https://institutipcra.github.io/IPCRA-site/">← Site IPCRA</a></div>
+</footer>
+
+<script>
+const DOMAINS = [
+  {
+    name: 'Socialisation',
+    color: '#2a9d8f',
+    items: [
+      {num:1, label:'Capacités relationnelles'},
+      {num:2, label:'Relation avec la famille'},
+      {num:3, label:'Acceptation et utilisation des règles'},
+    ]
+  },
+  {
+    name: 'Comportements et manifestations psycho-affectives',
+    color: '#e9c46a',
+    items: [
+      {num:4, label:'Attitudes corporelles'},
+      {num:5, label:'Expression du visage'},
+      {num:6, label:'Apparences vestimentaires'},
+      {num:7, label:'Relation amoureuse'},
+      {num:8, label:'Attitudes alimentaires'},
+    ]
+  },
+  {
+    name: 'Expression de la personnalité',
+    color: '#e76f51',
+    items: [
+      {num:9,  label:'Projet, désirs'},
+      {num:10, label:'Verbalisations'},
+      {num:11, label:'Qualité des relations'},
+    ]
+  },
+  {
+    name: 'Santé',
+    color: '#264653',
+    items: [
+      {num:12, label:'État de santé'},
+    ]
+  },
+  {
+    name: 'Expression de pathologies alarmantes',
+    color: '#c0392b',
+    items: [
+      {num:13, label:'Angoisse'},
+      {num:14, label:'Manifestations dépressives'},
+      {num:15, label:'Agressivité'},
+      {num:16, label:'Isolement'},
+    ]
+  },
+  {
+    name: 'Autonomie',
+    color: '#457b9d',
+    items: [
+      {num:17, label:'Autonomie corporelle'},
+      {num:18, label:'Autonomie de la vie quotidienne'},
+    ]
+  },
+];
+
+const scores = {};
+DOMAINS.forEach(d => d.items.forEach(item => scores[item.num] = 0));
+
+// ── BUILD FORM ──────────────────────────────────────────
+const container = document.getElementById('items-container');
+DOMAINS.forEach(domain => {
+  const block = document.createElement('div');
+  block.className = 'domain-block';
+  block.innerHTML = `<div class="domain-head"><span class="domain-tag" style="color:${domain.color};border-color:${domain.color}20;background:${domain.color}12">${domain.name}</span></div>`;
+  domain.items.forEach(item => {
+    const row = document.createElement('div');
+    row.className = 'gd-item';
+    row.innerHTML = `
+      <div class="gd-num">${item.num}</div>
+      <div class="gd-label">${item.label}</div>
+      <div class="gd-score" id="score-row-${item.num}">
+        ${[0,1,2,3,4,5].map(v=>`<button type="button" class="gd-btn${v===0?' active':''}" onclick="setScore(${item.num},${v})">${v}</button>`).join('')}
+        <div class="gd-val" id="val-${item.num}">0</div>
+      </div>`;
+    block.appendChild(row);
+  });
+  container.appendChild(block);
+});
+
+function setScore(num, val) {
+  scores[num] = val;
+  const row = document.getElementById(`score-row-${num}`);
+  row.querySelectorAll('.gd-btn').forEach((btn, i) => {
+    btn.classList.toggle('active', i === val);
+  });
+  document.getElementById(`val-${num}`).textContent = val;
+  updateRadar();
+}
+
+// ── RADAR ────────────────────────────────────────────────
+const ALL_ITEMS = DOMAINS.flatMap(d => d.items.map(i => ({...i, color: d.color})));
+const N = ALL_ITEMS.length; // 18
+const CX = 150, CY = 150, R = 110, MAXVAL = 5;
+
+function polarToXY(angle, radius) {
+  const a = (angle - 90) * Math.PI / 180;
+  return {x: CX + radius * Math.cos(a), y: CY + radius * Math.sin(a)};
+}
+
+function updateRadar() {
+  const svg = document.getElementById('radar-svg');
+  svg.innerHTML = '';
+
+  const angleStep = 360 / N;
+
+  // Grid circles
+  for (let lvl = 1; lvl <= 5; lvl++) {
+    const r = (lvl / MAXVAL) * R;
+    const points = ALL_ITEMS.map((_, i) => {
+      const p = polarToXY(i * angleStep, r);
+      return `${p.x},${p.y}`;
+    }).join(' ');
+    const poly = document.createElementNS('http://www.w3.org/2000/svg', 'polygon');
+    poly.setAttribute('points', points);
+    poly.setAttribute('fill', 'none');
+    poly.setAttribute('stroke', '#e0ddd6');
+    poly.setAttribute('stroke-width', lvl === 5 ? '1' : '0.5');
+    svg.appendChild(poly);
+  }
+
+  // Axes
+  ALL_ITEMS.forEach((item, i) => {
+    const outer = polarToXY(i * angleStep, R);
+    const line = document.createElementNS('http://www.w3.org/2000/svg', 'line');
+    line.setAttribute('x1', CX); line.setAttribute('y1', CY);
+    line.setAttribute('x2', outer.x); line.setAttribute('y2', outer.y);
+    line.setAttribute('stroke', '#d0cdc6'); line.setAttribute('stroke-width', '0.5');
+    svg.appendChild(line);
+  });
+
+  // Data polygon
+  const dataPoints = ALL_ITEMS.map((item, i) => {
+    const v = scores[item.num];
+    const r = (v / MAXVAL) * R;
+    const p = polarToXY(i * angleStep, r);
+    return `${p.x},${p.y}`;
+  }).join(' ');
+
+  const dataPoly = document.createElementNS('http://www.w3.org/2000/svg', 'polygon');
+  dataPoly.setAttribute('points', dataPoints);
+  dataPoly.setAttribute('fill', 'rgba(42,157,143,0.15)');
+  dataPoly.setAttribute('stroke', '#2a9d8f');
+  dataPoly.setAttribute('stroke-width', '1.5');
+  svg.appendChild(dataPoly);
+
+  // Dots + labels
+  ALL_ITEMS.forEach((item, i) => {
+    const v = scores[item.num];
+    const r = (v / MAXVAL) * R;
+    const p = polarToXY(i * angleStep, r);
+    const labelP = polarToXY(i * angleStep, R + 18);
+
+    // Dot
+    const circle = document.createElementNS('http://www.w3.org/2000/svg', 'circle');
+    circle.setAttribute('cx', p.x); circle.setAttribute('cy', p.y);
+    circle.setAttribute('r', '3');
+    circle.setAttribute('fill', item.color);
+    svg.appendChild(circle);
+
+    // Label
+    const text = document.createElementNS('http://www.w3.org/2000/svg', 'text');
+    text.setAttribute('x', labelP.x); text.setAttribute('y', labelP.y);
+    text.setAttribute('text-anchor', 'middle');
+    text.setAttribute('dominant-baseline', 'central');
+    text.setAttribute('font-size', '7');
+    text.setAttribute('fill', '#5a5a5a');
+    text.setAttribute('font-family', 'DM Sans, sans-serif');
+    text.textContent = item.num;
+    svg.appendChild(text);
+  });
+
+  // Center dot
+  const center = document.createElementNS('http://www.w3.org/2000/svg', 'circle');
+  center.setAttribute('cx', CX); center.setAttribute('cy', CY);
+  center.setAttribute('r', '2'); center.setAttribute('fill', '#1a2742');
+  svg.appendChild(center);
+
+  updateScoreSummary();
+}
+
+function updateScoreSummary() {
+  const summary = document.getElementById('score-summary');
+  let html = '';
+  DOMAINS.forEach(domain => {
+    const vals = domain.items.map(i => scores[i.num]);
+    const avg = vals.length ? (vals.reduce((a,b)=>a+b,0)/vals.length).toFixed(1) : '—';
+    html += `<div class="score-row">
+      <span class="score-row-label" style="color:${domain.color}">${domain.name.split(' ')[0]}</span>
+      <span class="score-row-val">${avg}/5</span>
+    </div>`;
+  });
+  const allVals = Object.values(scores);
+  const globalAvg = (allVals.reduce((a,b)=>a+b,0)/allVals.length).toFixed(1);
+  html += `<div class="score-global">
+    <span class="score-global-label">Score global</span>
+    <span class="score-global-val">${globalAvg}/5</span>
+  </div>`;
+  summary.innerHTML = html;
+}
+
+// ⚠️ Remplacer cette URL par l'URL de déploiement du script Apps Script
+const SCRIPT_URL = 'COLLER_ICI_URL_APPS_SCRIPT';
+
+function submitForm() {
+  const resident = document.getElementById('resident').value.trim();
+  const date_saisie = document.getElementById('date_saisie').value;
+  const intervenant = document.getElementById('intervenant').value.trim();
+  if (!resident || !date_saisie || !intervenant) {
+    alert('Veuillez remplir les champs obligatoires : résident, date et intervenant.');
+    return;
+  }
+  
+  const btn = document.querySelector('.btn-submit');
+  btn.textContent = 'Enregistrement...';
+  btn.disabled = true;
+
+  const payload = {
+    formulaire: 'GD_FH',
+    resident,
+    date: date_saisie,
+    intervenant,
+    periode: document.getElementById('periode').value,
+    scores
+  };
+
+  fetch(SCRIPT_URL, {
+    method: 'POST',
+    mode: 'no-cors',
+    headers: {'Content-Type': 'application/json'},
+    body: JSON.stringify(payload)
+  })
+  .then(() => {
+    document.getElementById('form-body').style.display = 'none';
+    document.getElementById('ok-state').style.display = 'block';
+  })
+  .catch(err => {
+    btn.textContent = 'Enregistrer la cotation';
+    btn.disabled = false;
+    alert('Erreur de connexion. Vérifiez votre connexion internet et réessayez.');
+  });
+}
+
+// Init
+updateRadar();
+</script>
+</body>
+</html>
