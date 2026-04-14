@@ -1,0 +1,391 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>RECAP V2.0 — ADAPEI 974 · IPCRA</title>
+<link href="https://fonts.googleapis.com/css2?family=DM+Serif+Display:ital@0;1&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet">
+<style>
+:root{--navy:#1a2742;--teal:#2a9d8f;--gold:#e9c46a;--terra:#b85042;--white:#fff;--off:#f8f7f4;--text:#2c2c2c;--muted:#5a5a5a;--border:#e0ddd6;--r:6px;}
+*{box-sizing:border-box;margin:0;padding:0;}
+body{font-family:'DM Sans',sans-serif;font-size:15px;color:var(--text);background:var(--off);line-height:1.6;}
+
+nav{background:var(--navy);padding:0 2rem;display:flex;align-items:center;justify-content:space-between;height:60px;position:sticky;top:0;z-index:100;}
+.nb{text-decoration:none;display:flex;flex-direction:column;}
+.nb strong{font-family:'DM Serif Display',serif;font-size:1rem;color:var(--white);}
+.nb span{font-size:.6rem;color:var(--gold);letter-spacing:.08em;text-transform:uppercase;}
+
+.hero{background:var(--navy);padding:2.5rem 2rem 2rem;text-align:center;border-bottom:3px solid var(--gold);}
+.badge{display:inline-block;background:rgba(233,196,106,.15);border:1px solid var(--gold);color:var(--gold);font-size:.68rem;letter-spacing:.1em;text-transform:uppercase;padding:.25rem .8rem;border-radius:2rem;margin-bottom:.8rem;}
+.hero h1{font-family:'DM Serif Display',serif;font-size:clamp(1.5rem,3vw,2rem);color:var(--white);margin-bottom:.3rem;}
+.hero h1 em{color:var(--gold);font-style:italic;}
+.hero-sub{color:rgba(255,255,255,.6);font-size:.82rem;font-weight:300;}
+
+.ct{max-width:780px;margin:0 auto;padding:0 1.5rem;}
+.main{padding:2rem 0 4rem;}
+
+.fc{background:var(--white);border:1px solid var(--border);border-radius:var(--r);overflow:hidden;box-shadow:0 2px 10px rgba(26,39,66,.06);margin-bottom:1.5rem;}
+.fc-h{background:var(--navy);padding:.85rem 1.3rem;}
+.fc-h h2{font-family:'DM Serif Display',serif;font-size:1rem;color:var(--white);font-weight:400;}
+.fc-h.teal{background:var(--teal);}
+.fc-h.terra{background:var(--terra);}
+
+.form-body{padding:1.3rem;}
+.section-title{font-size:.65rem;text-transform:uppercase;letter-spacing:.1em;color:var(--teal);font-weight:600;margin:1.2rem 0 .8rem;padding-bottom:.4rem;border-bottom:1px solid var(--border);}
+.section-title:first-child{margin-top:0;}
+
+.f{margin-bottom:.9rem;}
+.f label{display:block;font-size:.78rem;font-weight:500;color:var(--navy);margin-bottom:.25rem;}
+.req{color:var(--teal);margin-left:2px;}
+input.ti,select.si,textarea.ta{width:100%;border:1px solid var(--border);border-radius:var(--r);padding:.48rem .75rem;font-family:'DM Sans',sans-serif;font-size:.84rem;color:var(--text);background:var(--off);transition:border-color .2s;}
+textarea.ta{min-height:80px;resize:vertical;}
+input.ti:focus,select.si:focus,textarea.ta:focus{outline:none;border-color:var(--teal);box-shadow:0 0 0 3px rgba(42,157,143,.1);}
+.fr{display:grid;grid-template-columns:1fr 1fr;gap:.8rem;}
+.fr3{display:grid;grid-template-columns:1fr 1fr 1fr;gap:.8rem;}
+
+/* Temps T */
+.temps-btns{display:flex;gap:.5rem;margin-bottom:1rem;}
+.t-btn{padding:.35rem .9rem;border-radius:2rem;border:1.5px solid var(--border);background:var(--white);font-size:.8rem;font-weight:500;color:var(--muted);cursor:pointer;transition:all .15s;}
+.t-btn.active{background:var(--navy);border-color:var(--navy);color:var(--white);}
+
+/* Consigne */
+.consigne{background:rgba(42,157,143,.08);border:1px solid rgba(42,157,143,.3);border-radius:var(--r);padding:.8rem 1rem;margin-bottom:1.2rem;font-size:.82rem;color:var(--text);line-height:1.7;}
+.consigne strong{color:var(--navy);}
+
+/* ITEMS RECAP */
+.dim-header{display:grid;grid-template-columns:1fr 60px 60px 60px 60px;gap:.3rem;padding:.4rem .6rem;background:var(--navy);border-radius:var(--r) var(--r) 0 0;margin-top:1rem;}
+.dim-header span{font-size:.68rem;font-weight:600;color:var(--white);text-align:center;}
+.dim-header .dim-title{color:var(--gold);text-align:left;font-size:.8rem;}
+
+.recap-item{display:grid;grid-template-columns:1fr 60px 60px 60px 60px;gap:.3rem;align-items:center;padding:.45rem .6rem;border-bottom:1px solid var(--border);transition:background .15s;}
+.recap-item:hover{background:rgba(42,157,143,.03);}
+.recap-item:last-child{border-bottom:none;}
+.recap-item:nth-child(even){background:rgba(248,247,244,.6);}
+.recap-item:nth-child(even):hover{background:rgba(42,157,143,.03);}
+
+.item-num{font-size:.68rem;font-weight:600;color:var(--teal);display:inline-block;min-width:18px;}
+.item-text{font-size:.82rem;color:var(--text);line-height:1.4;}
+.radio-cell{display:flex;justify-content:center;}
+.radio-cell input[type=radio]{width:18px;height:18px;accent-color:var(--teal);cursor:pointer;}
+
+.dim-block{border:1px solid var(--border);border-radius:var(--r);overflow:hidden;margin-bottom:1rem;}
+
+/* Questions ouvertes */
+.q-open{margin-bottom:1rem;}
+.q-open label{font-size:.82rem;font-weight:500;color:var(--navy);display:block;margin-bottom:.4rem;}
+.q-open .q-num{display:inline-block;background:var(--teal);color:var(--white);border-radius:50%;width:20px;height:20px;font-size:.72rem;font-weight:600;text-align:center;line-height:20px;margin-right:.4rem;}
+
+/* Bouton */
+.btn-submit{width:100%;padding:.7rem;background:var(--navy);color:var(--white);border:none;border-radius:var(--r);font-family:'DM Sans',sans-serif;font-size:.9rem;font-weight:500;cursor:pointer;margin-top:1.2rem;transition:background .2s;}
+.btn-submit:hover{background:#243352;}
+.btn-submit:disabled{opacity:.6;cursor:not-allowed;}
+
+/* Succès */
+.ok{display:none;padding:2.5rem 1.3rem;text-align:center;}
+.ok-i{width:50px;height:50px;background:rgba(42,157,143,.1);border:2px solid var(--teal);border-radius:50%;display:flex;align-items:center;justify-content:center;margin:0 auto 1rem;font-size:1.3rem;color:var(--teal);}
+.ok h3{font-family:'DM Serif Display',serif;font-size:1.2rem;color:var(--navy);margin-bottom:.4rem;}
+.ok p{color:var(--muted);font-size:.82rem;}
+
+/* Note métho */
+.metho{background:rgba(26,39,66,.04);border-left:3px solid var(--navy);padding:.7rem 1rem;font-size:.74rem;color:var(--muted);line-height:1.6;margin-top:1rem;}
+.metho strong{color:var(--navy);}
+
+footer{background:var(--navy);color:rgba(255,255,255,.45);font-size:.72rem;padding:1.2rem 2rem;display:flex;justify-content:space-between;flex-wrap:wrap;gap:.5rem;}
+footer a{color:var(--gold);text-decoration:none;}
+
+@media(max-width:600px){.fr{grid-template-columns:1fr;}.fr3{grid-template-columns:1fr 1fr;}.dim-header,.recap-item{grid-template-columns:1fr 48px 48px 48px 48px;}}
+</style>
+</head>
+<body>
+
+<nav>
+  <a href="https://institutipcra.github.io/IPCRA-site/" class="nb">
+    <strong>IPCRA</strong>
+    <span>Institut de Pratiques Cliniques et de Recherche Appliquée</span>
+  </a>
+  <span style="color:rgba(255,255,255,.5);font-size:.78rem;">ADAPEI 974 · Supervision clinique</span>
+</nav>
+
+<div class="hero">
+  <div class="badge">Outil de supervision · Auto-évaluation professionnelle</div>
+  <h1><em>RECAP</em> V2.0</h1>
+  <p class="hero-sub">Résonance Émotionnelle et Contre-Attitudes Professionnelles · © G. Brandibas — IPCRA / ACTIF Formation</p>
+</div>
+
+<div class="ct">
+<div class="main">
+
+  <!-- IDENTIFICATION -->
+  <div class="fc">
+    <div class="fc-h"><h2>Identification</h2></div>
+    <div class="form-body">
+      <div class="fr">
+        <div class="f"><label>Professionnel <span class="req">*</span></label><input class="ti" type="text" id="professionnel" placeholder="Nom ou code anonyme" required></div>
+        <div class="f"><label>Personne accompagnée <span class="req">*</span></label><input class="ti" type="text" id="resident" placeholder="Code anonyme" required></div>
+      </div>
+      <div class="fr">
+        <div class="f"><label>Établissement</label><input class="ti" type="text" id="etablissement" placeholder="ADAPEI 974 — FH / FV"></div>
+        <div class="f"><label>Date <span class="req">*</span></label><input class="ti" type="date" id="date_saisie" required></div>
+      </div>
+      <div class="fr">
+        <div class="f"><label>Ancienneté dans le poste</label><input class="ti" type="text" id="anciennete" placeholder="Ex. 3 ans"></div>
+        <div class="f"><label>Durée de suivi de la personne</label><input class="ti" type="text" id="duree_suivi" placeholder="Ex. 18 mois"></div>
+      </div>
+
+      <div style="margin-top:.8rem;">
+        <label style="font-size:.78rem;font-weight:500;color:var(--navy);display:block;margin-bottom:.4rem;">Temps de mesure <span class="req">*</span></label>
+        <div class="temps-btns">
+          <button type="button" class="t-btn active" onclick="setTemps('T1',this)">T1</button>
+          <button type="button" class="t-btn" onclick="setTemps('T2',this)">T2</button>
+          <button type="button" class="t-btn" onclick="setTemps('T3',this)">T3</button>
+        </div>
+        <input type="hidden" id="temps" value="T1">
+      </div>
+    </div>
+  </div>
+
+  <!-- CONSIGNE -->
+  <div class="fc">
+    <div class="fc-h teal"><h2>Consignes de passation</h2></div>
+    <div class="form-body">
+      <div class="consigne">
+        Pour chaque énoncé, indiquez la fréquence à laquelle vous avez ressenti cela dans votre relation avec cette personne accompagnée au cours des dernières semaines. <strong>Il n'y a pas de bonne ou mauvaise réponse.</strong> Cette échelle est un outil de réflexion clinique, non un outil d'évaluation de vos compétences professionnelles.
+        <div style="display:flex;gap:1.5rem;margin-top:.6rem;flex-wrap:wrap;">
+          <span><strong>0</strong> = Jamais</span>
+          <span><strong>1</strong> = Rarement</span>
+          <span><strong>2</strong> = Souvent</span>
+          <span><strong>3</strong> = Toujours</span>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ITEMS -->
+  <div class="fc" id="items-card">
+    <div class="fc-h"><h2>Échelle RECAP — 28 items</h2></div>
+    <div class="form-body" id="items-container"></div>
+  </div>
+
+  <!-- QUESTIONS OUVERTES -->
+  <div class="fc">
+    <div class="fc-h teal"><h2>Questions ouvertes</h2></div>
+    <div class="form-body">
+      <p style="font-size:.78rem;color:var(--muted);margin-bottom:1rem;font-style:italic;">Répondez librement. Ces questions complètent les données quantitatives et permettent de nuancer vos réponses.</p>
+
+      <div class="q-open">
+        <label><span class="q-num">1</span>Quelle émotion ou réaction domine actuellement dans votre relation avec cette personne accompagnée ?</label>
+        <textarea class="ta" id="q1" placeholder="Réponse libre..."></textarea>
+      </div>
+      <div class="q-open">
+        <label><span class="q-num">2</span>Y a-t-il quelque chose dans la situation de cette personne qui vous rappelle une expérience personnelle ou professionnelle antérieure ?</label>
+        <textarea class="ta" id="q2" placeholder="Réponse libre..."></textarea>
+      </div>
+      <div class="q-open">
+        <label><span class="q-num">3</span>Qu'est-ce que vous aimeriez pouvoir faire différemment dans votre accompagnement ?</label>
+        <textarea class="ta" id="q3" placeholder="Réponse libre..."></textarea>
+      </div>
+      <div class="q-open">
+        <label><span class="q-num">4</span>Après la séance de supervision, qu'est-ce qui a changé dans votre façon de percevoir ou de vivre cette relation ? <em style="color:var(--muted);font-size:.75rem;">(à compléter après la séance)</em></label>
+        <textarea class="ta" id="q4" placeholder="Réponse libre..."></textarea>
+      </div>
+    </div>
+  </div>
+
+  <!-- SOUMETTRE -->
+  <div class="fc">
+    <div class="form-body" id="submit-body">
+      <div class="metho">
+        <strong>Note méthodologique :</strong> Le RECAP est un outil en cours de développement. Cette version V2.0 (mars 2026) n'a pas encore fait l'objet d'une validation psychométrique formelle. Elle est destinée à l'épreuve clinique dans le cadre des dispositifs de supervision du secteur médico-social. © G. Brandibas — IPCRA / ACTIF Formation.
+      </div>
+      <button class="btn-submit" onclick="submitForm()">Enregistrer mes réponses</button>
+    </div>
+    <div class="ok" id="ok-state">
+      <div class="ok-i">✓</div>
+      <h3>Réponses enregistrées</h3>
+      <p>Vos données ont été transmises à l'équipe IPCRA pour la supervision clinique. Merci.</p>
+    </div>
+  </div>
+
+</div>
+</div>
+
+<footer>
+  <div><strong style="color:#fff">IPCRA</strong> — Supervision clinique ADAPEI 974 · institut.ipcra@gmail.com</div>
+  <div><a href="https://institutipcra.github.io/IPCRA-site/">← Site IPCRA</a></div>
+</footer>
+
+<script>
+const SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbzQtvtf9gC5bTRUB16gjWY-bvtRS6kMEszKEbuZtAKTX57a4FKYvrKWKtnCFLbwVoXd/exec';
+
+const DIMS = [
+  {
+    id: 'D1', label: 'Dimension 1 — Résonance affective', col: '#2a9d8f',
+    items: [
+      {n:1,  t:"Je me sens à l'aise en présence de cette personne accompagnée"},
+      {n:2,  t:"Cette personne me touche émotionnellement"},
+      {n:3,  t:"Je ressens de la tendresse ou de la bienveillance envers cette personne"},
+      {n:4,  t:"Je ressens de l'anxiété ou un malaise quand je suis avec cette personne"},
+      {n:5,  t:"Je me sens impuissant(e) face à la situation de cette personne"},
+      {n:6,  t:"Je ressens de l'irritation ou de la frustration avec cette personne"},
+      {n:7,  t:"Je me sens envahi(e) ou débordé(e) par les demandes de cette personne"},
+      {n:8,  t:"La situation de cette personne m'affecte encore en dehors du travail"},
+      {n:9,  t:"Je ressens de l'indifférence ou un détachement émotionnel envers cette personne"},
+      {n:10, t:"Je ressens de la tristesse ou de la pitié pour cette personne"},
+    ]
+  },
+  {
+    id: 'D2', label: 'Dimension 2 — Position relationnelle perçue', col: '#1a6b9a',
+    items: [
+      {n:11, t:"Je me sens utile et efficace dans mon accompagnement de cette personne"},
+      {n:12, t:"Je me sens exclu(e) ou tenu(e) à distance par cette personne"},
+      {n:13, t:"J'ai l'impression que cette personne me manipule ou me teste"},
+      {n:14, t:"Je me sens en miroir avec quelque chose de personnel dans cette relation"},
+      {n:15, t:"Je me sens surinvesti(e) dans la relation avec cette personne"},
+      {n:16, t:"Je me sens en retrait ou en position d'évitement dans cette relation"},
+      {n:17, t:"J'ai du mal à maintenir une distance professionnelle avec cette personne"},
+      {n:18, t:"Je me sens respecté(e) et reconnu(e) par cette personne"},
+      {n:19, t:"Cette relation réactive en moi des expériences ou des émotions personnelles"},
+      {n:20, t:"Je me sens capable de comprendre ce que vit cette personne"},
+    ]
+  },
+  {
+    id: 'D3', label: 'Dimension 3 — Impact sur les pratiques', col: '#b85042',
+    items: [
+      {n:21, t:"Je modifie mon comportement professionnel en fonction de mes ressentis avec cette personne"},
+      {n:22, t:"J'évite certaines interactions ou situations avec cette personne"},
+      {n:23, t:"Je sur-adapte mon accompagnement pour éviter les conflits avec cette personne"},
+      {n:24, t:"Mes réactions émotionnelles nuisent à la qualité de mon accompagnement"},
+      {n:25, t:"Je parviens à utiliser mes ressentis comme un outil de compréhension"},
+      {n:26, t:"Je me sens bloqué(e) dans mes initiatives avec cette personne"},
+      {n:27, t:"La supervision m'aide à mieux comprendre mes réactions avec cette personne"},
+      {n:28, t:"Je pense pouvoir faire évoluer positivement ma relation avec cette personne"},
+    ]
+  }
+];
+
+const scores = {};
+DIMS.forEach(d => d.items.forEach(i => scores[i.n] = null));
+
+// Construire les items
+const container = document.getElementById('items-container');
+DIMS.forEach(dim => {
+  const block = document.createElement('div');
+  block.className = 'dim-block';
+
+  // En-tête de dimension
+  const header = document.createElement('div');
+  header.className = 'dim-header';
+  header.style.background = dim.col;
+  header.innerHTML = `
+    <span class="dim-title">${dim.label}</span>
+    <span>0<br><small>Jamais</small></span>
+    <span>1<br><small>Rarement</small></span>
+    <span>2<br><small>Souvent</small></span>
+    <span>3<br><small>Toujours</small></span>`;
+  block.appendChild(header);
+
+  dim.items.forEach(item => {
+    const row = document.createElement('div');
+    row.className = 'recap-item';
+    row.id = `row-${item.n}`;
+    row.innerHTML = `
+      <div class="item-text"><span class="item-num">${item.n}.</span> ${item.t}</div>
+      ${[0,1,2,3].map(v=>`
+      <div class="radio-cell">
+        <input type="radio" name="item_${item.n}" value="${v}" onchange="setScore(${item.n},${v})">
+      </div>`).join('')}`;
+    block.appendChild(row);
+  });
+
+  container.appendChild(block);
+});
+
+function setScore(num, val) {
+  scores[num] = val;
+  const row = document.getElementById(`row-${num}`);
+  if (row) row.style.outline = '';
+}
+
+function setTemps(t, btn) {
+  document.getElementById('temps').value = t;
+  document.querySelectorAll('.t-btn').forEach(b => b.classList.remove('active'));
+  btn.classList.add('active');
+}
+
+function submitForm() {
+  const professionnel = document.getElementById('professionnel').value.trim();
+  const resident = document.getElementById('resident').value.trim();
+  const date_saisie = document.getElementById('date_saisie').value;
+
+  if (!professionnel || !resident || !date_saisie) {
+    alert('Veuillez remplir les champs obligatoires : professionnel, personne accompagnée et date.');
+    return;
+  }
+
+  // Vérifier que tous les items sont remplis
+  let missing = false;
+  Object.keys(scores).forEach(n => {
+    const row = document.getElementById(`row-${n}`);
+    if (scores[n] === null) {
+      if (row) row.style.outline = '2px solid #c0392b';
+      missing = true;
+    }
+  });
+
+  if (missing) {
+    alert('Veuillez répondre à tous les items avant de soumettre.');
+    document.querySelector('.dim-block').scrollIntoView({behavior:'smooth'});
+    return;
+  }
+
+  const btn = document.querySelector('.btn-submit');
+  btn.textContent = 'Enregistrement...';
+  btn.disabled = true;
+
+  // Calcul des scores par dimension
+  const d1 = [1,2,3,4,5,6,7,8,9,10].reduce((a,n)=>a+(scores[n]||0),0);
+  const d2 = [11,12,13,14,15,16,17,18,19,20].reduce((a,n)=>a+(scores[n]||0),0);
+  const d3 = [21,22,23,24,25,26,27,28].reduce((a,n)=>a+(scores[n]||0),0);
+  const total = d1 + d2 + d3;
+
+  const payload = {
+    formulaire: 'RECAP_ADAPEI',
+    professionnel,
+    resident,
+    date: date_saisie,
+    etablissement: document.getElementById('etablissement').value,
+    anciennete: document.getElementById('anciennete').value,
+    duree_suivi: document.getElementById('duree_suivi').value,
+    temps: document.getElementById('temps').value,
+    scores,
+    score_d1: d1,
+    score_d2: d2,
+    score_d3: d3,
+    score_total: total,
+    q1: document.getElementById('q1').value,
+    q2: document.getElementById('q2').value,
+    q3: document.getElementById('q3').value,
+    q4: document.getElementById('q4').value,
+  };
+
+  fetch(SCRIPT_URL, {
+    method: 'POST',
+    mode: 'no-cors',
+    headers: {'Content-Type': 'application/json'},
+    body: JSON.stringify(payload)
+  })
+  .then(() => {
+    document.getElementById('submit-body').style.display = 'none';
+    document.getElementById('ok-state').style.display = 'block';
+    document.getElementById('items-card').style.pointerEvents = 'none';
+    document.getElementById('items-card').style.opacity = '.6';
+  })
+  .catch(() => {
+    btn.textContent = 'Enregistrer mes réponses';
+    btn.disabled = false;
+    alert('Erreur de connexion. Vérifiez votre connexion internet et réessayez.');
+  });
+}
+</script>
+</body>
+</html>
