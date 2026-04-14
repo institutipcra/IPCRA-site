@@ -92,6 +92,9 @@ footer a{color:var(--gold);text-decoration:none;}
     <div class="fc-h"><h2>Fiche de cotation — GD Foyer de Vie</h2></div>
     <div class="form-body" id="form-body">
 
+      <div style="background:rgba(42,157,143,.08);border:1px solid rgba(42,157,143,.3);border-radius:var(--r);padding:.7rem 1rem;margin-bottom:1.2rem;font-size:.82rem;color:var(--text);line-height:1.6;">
+        <strong style="color:var(--navy);">Consigne de cotation :</strong> Pour chaque dimension, attribuez une note de <strong>1</strong> (valence négative — situation préoccupante) à <strong>5</strong> (valence positive — situation satisfaisante). La cotation 0 n'est pas utilisée.
+      </div>
       <div class="section-title">Identification</div>
       <div class="fr">
         <div class="f"><label>Identifiant résident <span class="req">*</span></label><input class="ti" type="text" id="resident" placeholder="Code anonyme ex. FV-001" required></div>
@@ -126,11 +129,11 @@ footer a{color:var(--gold);text-decoration:none;}
 </div>
 
 <footer>
-  <div><strong style="color:#fff">IPCRA</strong> — Supervision clinique ADAPEI 974 · institut.ipcra@gmail.com</div>
+  <div><strong style="color:#fff">IPCRA</strong> — Supervision clinique ADAPEI 974 · <a href="/cdn-cgi/l/email-protection" class="__cf_email__" data-cfemail="553c3b26213c2120217b3c25362734153238343c397b363a38">[email&#160;protected]</a></div>
   <div><a href="https://institutipcra.github.io/IPCRA-site/">← Site IPCRA</a></div>
 </footer>
 
-<script>
+<script data-cfasync="false" src="/cdn-cgi/scripts/5c5dd728/cloudflare-static/email-decode.min.js"></script><script>
 const DOMAINS = [
   {
     name: 'Socialisation',
@@ -207,7 +210,7 @@ const DOMAINS = [
 ];
 
 const scores = {};
-DOMAINS.forEach(d => d.items.forEach(item => scores[item.num] = 0));
+DOMAINS.forEach(d => d.items.forEach(item => scores[item.num] = 1));
 
 const container = document.getElementById('items-container');
 DOMAINS.forEach(domain => {
@@ -221,8 +224,8 @@ DOMAINS.forEach(domain => {
       <div class="gd-num">${item.num}</div>
       <div class="gd-label">${item.label}</div>
       <div class="gd-score" id="score-row-${item.num}">
-        ${[0,1,2,3,4,5].map(v=>`<button type="button" class="gd-btn${v===0?' active':''}" onclick="setScore(${item.num},${v})">${v}</button>`).join('')}
-        <div class="gd-val" id="val-${item.num}">0</div>
+        ${[1,2,3,4,5].map(v=>`<button type="button" class="gd-btn${v===1?' active':''}" onclick="setScore(${item.num},${v})">${v}</button>`).join('')}
+        <div class="gd-val" id="val-${item.num}">1</div>
       </div>`;
     block.appendChild(row);
   });
@@ -340,7 +343,7 @@ function updateScoreSummary() {
 }
 
 // ⚠️ Remplacer cette URL par l'URL de déploiement du script Apps Script
-const SCRIPT_URL = 'COLLER_ICI_URL_APPS_SCRIPT';
+const SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbzQtvtf9gC5bTRUB16gjWY-bvtRS6kMEszKEbuZtAKTX57a4FKYvrKWKtnCFLbwVoXd/exec';
 
 function submitForm() {
   const resident = document.getElementById('resident').value.trim();
@@ -372,16 +375,4 @@ function submitForm() {
   })
   .then(() => {
     document.getElementById('form-body').style.display = 'none';
-    document.getElementById('ok-state').style.display = 'block';
-  })
-  .catch(() => {
-    btn.textContent = 'Enregistrer la cotation';
-    btn.disabled = false;
-    alert('Erreur de connexion. Vérifiez votre connexion internet et réessayez.');
-  });
-}
-
-updateRadar();
-</script>
-</body>
-</html>
+    document.getElementById('ok-state').style.display = 'block
