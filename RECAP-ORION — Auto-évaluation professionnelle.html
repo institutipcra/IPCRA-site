@@ -1,0 +1,587 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>RECAP-ORION — Auto-évaluation professionnelle</title>
+<style>
+  :root {
+    --bleu: #2F5496;
+    --bleu2: #4472C4;
+    --bleu-clair: #D6E4F0;
+    --bleu-tres-clair: #EBF3FB;
+    --orange: #F4B942;
+    --vert: #70AD47;
+    --gris: #F5F5F5;
+    --blanc: #FFFFFF;
+    --texte: #1A1A2E;
+  }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body { font-family: Calibri, Arial, sans-serif; background: #f0f4f8; color: var(--texte); }
+
+  header {
+    background: linear-gradient(135deg, var(--bleu), var(--bleu2));
+    color: white; padding: 20px 30px;
+    display: flex; align-items: center; gap: 16px;
+  }
+  header .logo { font-size: 2rem; }
+  header h1 { font-size: 1.4rem; margin: 0; }
+  header p { font-size: 0.85rem; opacity: 0.85; margin-top: 3px; }
+
+  .container { max-width: 900px; margin: 0 auto; padding: 24px 16px; }
+
+  .card {
+    background: white; border-radius: 10px;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+    margin-bottom: 20px; overflow: hidden;
+  }
+  .card-header {
+    background: var(--bleu); color: white;
+    padding: 12px 20px; font-weight: bold; font-size: 1rem;
+  }
+  .card-header.sub { background: var(--bleu2); font-size: 0.95rem; }
+  .card-body { padding: 16px 20px; }
+
+  .form-row { display: flex; gap: 12px; flex-wrap: wrap; margin-bottom: 12px; }
+  .form-group { display: flex; flex-direction: column; flex: 1; min-width: 180px; }
+  label { font-size: 0.82rem; color: #555; margin-bottom: 4px; font-weight: 600; }
+  input, select, textarea {
+    border: 1px solid #ccc; border-radius: 6px;
+    padding: 8px 10px; font-size: 0.9rem; font-family: inherit;
+    outline: none; transition: border 0.2s;
+  }
+  input:focus, select:focus, textarea:focus { border-color: var(--bleu2); }
+
+  .dimension-title {
+    background: var(--bleu-clair); color: var(--bleu);
+    font-weight: bold; padding: 10px 16px;
+    margin: 0 -20px; margin-bottom: 12px;
+    font-size: 0.95rem; border-left: 4px solid var(--bleu);
+  }
+
+  .item-row {
+    display: flex; align-items: flex-start; gap: 12px;
+    padding: 10px 0; border-bottom: 1px solid #f0f0f0;
+  }
+  .item-row:last-child { border-bottom: none; }
+  .item-num {
+    background: var(--bleu); color: white;
+    border-radius: 50%; width: 26px; height: 26px;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 0.78rem; font-weight: bold; flex-shrink: 0; margin-top: 2px;
+  }
+  .item-text { flex: 1; font-size: 0.88rem; line-height: 1.4; }
+  .item-text em { display: block; font-style: italic; color: #777; font-size: 0.8rem; margin-top: 2px; }
+  .rating-group { display: flex; gap: 6px; flex-shrink: 0; }
+  .rating-group label {
+    display: flex; flex-direction: column; align-items: center;
+    font-size: 0.75rem; color: #666; cursor: pointer; gap: 3px;
+    margin: 0;
+  }
+  .rating-group input[type=radio] { width: 18px; height: 18px; cursor: pointer; accent-color: var(--bleu); }
+
+  .scores-bar {
+    display: flex; gap: 10px; flex-wrap: wrap;
+    background: var(--bleu-tres-clair); border-radius: 8px;
+    padding: 14px; margin-bottom: 16px;
+  }
+  .score-box {
+    flex: 1; min-width: 120px; text-align: center;
+    background: white; border-radius: 8px;
+    padding: 10px; box-shadow: 0 1px 4px rgba(0,0,0,0.08);
+  }
+  .score-box .score-val {
+    font-size: 1.8rem; font-weight: bold; color: var(--bleu);
+  }
+  .score-box .score-label { font-size: 0.75rem; color: #666; margin-top: 2px; }
+  .score-box.total .score-val { color: var(--bleu); font-size: 2.2rem; }
+
+  .profil-box {
+    border-radius: 10px; padding: 18px;
+    text-align: center; margin-bottom: 16px;
+  }
+  .profil-box h3 { font-size: 1.1rem; margin-bottom: 6px; }
+  .profil-box p { font-size: 0.88rem; }
+
+  .profil-A { background: #FFD7D7; color: #8B0000; }
+  .profil-B { background: #FFE8CC; color: #7B4500; }
+  .profil-C { background: #D7F0D7; color: #1A5C1A; }
+  .profil-D { background: #C8E6C9; color: #1B5E20; }
+  .profil-? { background: #eee; color: #555; }
+
+  .sessions-list { max-height: 300px; overflow-y: auto; }
+  .session-item {
+    display: flex; justify-content: space-between; align-items: center;
+    padding: 10px 12px; border-bottom: 1px solid #eee;
+    cursor: pointer; transition: background 0.15s;
+  }
+  .session-item:hover { background: var(--bleu-tres-clair); }
+  .session-item .session-date { font-size: 0.8rem; color: #888; }
+  .session-item .session-score {
+    background: var(--bleu); color: white;
+    border-radius: 12px; padding: 2px 10px;
+    font-size: 0.82rem; font-weight: bold;
+  }
+
+  .btn {
+    display: inline-flex; align-items: center; gap: 7px;
+    padding: 10px 22px; border-radius: 8px;
+    border: none; cursor: pointer; font-size: 0.92rem;
+    font-family: inherit; font-weight: bold; transition: all 0.2s;
+  }
+  .btn-primary { background: var(--bleu); color: white; }
+  .btn-primary:hover { background: var(--bleu2); }
+  .btn-success { background: var(--vert); color: white; }
+  .btn-success:hover { background: #5a9439; }
+  .btn-outline {
+    background: white; color: var(--bleu);
+    border: 2px solid var(--bleu);
+  }
+  .btn-outline:hover { background: var(--bleu-tres-clair); }
+  .btn-danger { background: #e74c3c; color: white; }
+  .btn-danger:hover { background: #c0392b; }
+
+  .btn-row { display: flex; gap: 10px; flex-wrap: wrap; margin-top: 16px; }
+
+  .alert { border-radius: 8px; padding: 12px 16px; margin-bottom: 12px; font-size: 0.88rem; }
+  .alert-info { background: var(--bleu-tres-clair); color: var(--bleu); border-left: 4px solid var(--bleu); }
+  .alert-success { background: #d4edda; color: #155724; border-left: 4px solid var(--vert); }
+
+  .tab-nav { display: flex; gap: 0; border-bottom: 2px solid var(--bleu-clair); margin-bottom: 20px; }
+  .tab-btn {
+    padding: 10px 20px; border: none; background: none;
+    font-family: inherit; font-size: 0.9rem; cursor: pointer;
+    border-bottom: 3px solid transparent; margin-bottom: -2px;
+    color: #666; transition: all 0.2s;
+  }
+  .tab-btn.active { color: var(--bleu); border-bottom-color: var(--bleu); font-weight: bold; }
+  .tab-btn:hover:not(.active) { background: var(--bleu-tres-clair); }
+
+  .tab-content { display: none; }
+  .tab-content.active { display: block; }
+
+  @media print {
+    header, .tab-nav, .btn-row, .sessions-list { display: none !important; }
+    .tab-content { display: block !important; }
+    body { background: white; }
+    .card { box-shadow: none; border: 1px solid #ccc; }
+  }
+</style>
+</head>
+<body>
+
+<header>
+  <div class="logo">📋</div>
+  <div>
+    <h1>RECAP-ORION — Auto-évaluation professionnelle</h1>
+    <p>IPCRA / ACTIF Formation — Outil d'accompagnement réflexif du référent</p>
+  </div>
+</header>
+
+<div class="container">
+
+  <div class="tab-nav">
+    <button class="tab-btn active" onclick="switchTab('saisie')">📝 Saisie</button>
+    <button class="tab-btn" onclick="switchTab('resultats')">📊 Résultats</button>
+    <button class="tab-btn" onclick="switchTab('historique')">🗂 Historique</button>
+  </div>
+
+  <!-- TAB SAISIE -->
+  <div id="tab-saisie" class="tab-content active">
+
+    <div class="card">
+      <div class="card-header">Identification</div>
+      <div class="card-body">
+        <div class="form-row">
+          <div class="form-group">
+            <label>Jeune (initiales)</label>
+            <input type="text" id="jeune" placeholder="ex. M.T." maxlength="10">
+          </div>
+          <div class="form-group">
+            <label>Référent (initiales)</label>
+            <input type="text" id="referent" placeholder="ex. J.D." maxlength="10">
+          </div>
+          <div class="form-group">
+            <label>Structure</label>
+            <input type="text" id="structure" placeholder="ESAT / Foyer / SAVS...">
+          </div>
+          <div class="form-group">
+            <label>Date</label>
+            <input type="date" id="date-passation">
+          </div>
+        </div>
+        <div class="form-row">
+          <div class="form-group">
+            <label>Phase ORION</label>
+            <select id="phase">
+              <option value="">— Sélectionner —</option>
+              <option>Phase 1 – Découverte</option>
+              <option>Phase 2 – Engagement</option>
+              <option>Phase 3 – Autonomisation</option>
+            </select>
+          </div>
+          <div class="form-group">
+            <label>Numéro de passation</label>
+            <input type="number" id="num-passation" min="1" value="1">
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div id="dimensions-container"></div>
+
+    <div class="card">
+      <div class="card-body">
+        <div class="btn-row">
+          <button class="btn btn-primary" onclick="calculer()">📊 Calculer les scores</button>
+          <button class="btn btn-outline" onclick="resetForm()">🔄 Réinitialiser</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- TAB RESULTATS -->
+  <div id="tab-resultats" class="tab-content">
+    <div class="card">
+      <div class="card-header">Résultats de la passation</div>
+      <div class="card-body">
+        <div id="result-identification" class="alert alert-info" style="display:none"></div>
+        <div class="scores-bar" id="scores-display">
+          <div class="score-box"><div class="score-val" id="s-d1">—</div><div class="score-label">Dimension 1<br>Reconnaissance du jeune</div></div>
+          <div class="score-box"><div class="score-val" id="s-d2">—</div><div class="score-label">Dimension 2<br>Ressources professionnelles</div></div>
+          <div class="score-box"><div class="score-val" id="s-d3">—</div><div class="score-label">Dimension 3<br>Posture clinique</div></div>
+          <div class="score-box total"><div class="score-val" id="s-total">—</div><div class="score-label">Score global<br>/ 84</div></div>
+        </div>
+        <div id="profil-display" class="profil-box profil-?">
+          <h3>Compléter la saisie pour afficher le profil</h3>
+          <p>Répondre à tous les items et cliquer sur "Calculer les scores"</p>
+        </div>
+        <div id="interp-display"></div>
+        <div class="btn-row">
+          <button class="btn btn-success" onclick="sauvegarder()">💾 Sauvegarder cette passation</button>
+          <button class="btn btn-primary" onclick="submitForm()">📤 Enregistrer (Google Sheets)</button>
+          <button class="btn btn-outline" onclick="window.print()">🖨️ Imprimer</button>
+          <button class="btn btn-outline" onclick="exporterCSV()">📤 Exporter (CSV)</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- TAB HISTORIQUE -->
+  <div id="tab-historique" class="tab-content">
+    <div class="card">
+      <div class="card-header">Historique des passations</div>
+      <div class="card-body">
+        <div id="historique-vide" class="alert alert-info">Aucune passation enregistrée pour le moment.</div>
+        <div class="sessions-list" id="sessions-list"></div>
+        <div class="btn-row">
+          <button class="btn btn-danger" onclick="clearHistorique()">🗑️ Effacer l'historique</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+</div>
+
+<script>
+// ─── DONNÉES ───────────────────────────────────────────────────────────────
+const DIMENSIONS = [
+  {
+    id: "D1",
+    titre: "D1 — Reconnaissance du jeune (items 1–14)",
+    sousDim: [
+      {
+        titre: "D1a — Valorisation des capacités",
+        items: [
+          { n: 1, texte: "J'identifie et nomme les compétences du jeune dans mes échanges avec lui.", detail: "Capacité à repérer et verbaliser les points forts" },
+          { n: 2, texte: "Je m'appuie sur ce que le jeune fait bien pour construire de nouvelles situations d'apprentissage.", detail: "" },
+          { n: 3, texte: "Je différencie ce que le jeune peut faire seul, avec aide partielle, ou avec aide totale.", detail: "Zone proximale de développement" },
+          { n: 4, texte: "Je reformule positivement les difficultés du jeune sans minimiser leur réalité.", detail: "" },
+          { n: 5, texte: "Je crée des situations où le jeune peut vivre une expérience de réussite.", detail: "" },
+          { n: 6, texte: "Je reconnais les progrès même minimes et les signifie au jeune.", detail: "" },
+          { n: 7, texte: "J'adapte mes attentes en fonction des capacités réelles et de l'état du jeune au moment présent.", detail: "" },
+        ]
+      },
+      {
+        titre: "D1b — Prise en compte de la subjectivité",
+        items: [
+          { n: 8, texte: "Je cherche à comprendre comment le jeune perçoit et vit sa situation.", detail: "" },
+          { n: 9, texte: "Je prends en compte les préférences et intérêts du jeune dans l'organisation des activités.", detail: "" },
+          { n: 10, texte: "Je laisse au jeune des espaces de choix dans le cadre de l'accompagnement.", detail: "" },
+          { n: 11, texte: "Je distingue ce que le jeune exprime de ce que j'interprète de sa situation.", detail: "" },
+          { n: 12, texte: "Je suis attentif(ve) aux signes non verbaux du jeune (posture, regard, tension…).", detail: "" },
+          { n: 13, texte: "Je respecte le rythme du jeune même quand il diffère de mes attentes institutionnelles.", detail: "" },
+          { n: 14, texte: "Je reviens avec le jeune sur des situations passées pour construire du sens ensemble.", detail: "" },
+        ]
+      }
+    ]
+  },
+  {
+    id: "D2",
+    titre: "D2 — Ressources professionnelles (items 15–28)",
+    sousDim: [
+      {
+        titre: "D2a — Ressources mobilisées",
+        items: [
+          { n: 15, texte: "Je m'appuie sur des outils d'évaluation pour objectiver les besoins du jeune.", detail: "" },
+          { n: 16, texte: "Je consulte et mobilise les autres membres de l'équipe quand ma pratique atteint ses limites.", detail: "" },
+          { n: 17, texte: "J'utilise les réunions de synthèse pour faire évoluer ma compréhension du jeune.", detail: "" },
+          { n: 18, texte: "Je m'inscris dans des formations ou supervisions pour enrichir mes pratiques.", detail: "" },
+          { n: 19, texte: "Je sais identifier les ressources du réseau partenarial utiles pour ce jeune.", detail: "" },
+          { n: 20, texte: "Je m'appuie sur le projet personnalisé comme outil vivant d'accompagnement.", detail: "" },
+          { n: 21, texte: "Je documente mes observations de façon régulière et exploitable par l'équipe.", detail: "" },
+        ]
+      },
+      {
+        titre: "D2b — Gestion des limites",
+        items: [
+          { n: 22, texte: "J'identifie quand une situation dépasse mon champ de compétence et je le signale.", detail: "" },
+          { n: 23, texte: "Je reconnais mes zones d'inconfort professionnel liées à ce jeune.", detail: "" },
+          { n: 24, texte: "Je maintiens une distance thérapeutique même dans les situations de proximité affective.", detail: "" },
+          { n: 25, texte: "Je suis capable de remettre en question mes hypothèses initiales sur ce jeune.", detail: "" },
+          { n: 26, texte: "Je prends du recul après des situations difficiles (incidents, crises, impasses).", detail: "" },
+          { n: 27, texte: "Je ne m'approprie pas les progrès ou les échecs du jeune comme s'ils me revenaient.", detail: "" },
+          { n: 28, texte: "Je veille à ne pas reproduire avec ce jeune des patterns relationnels habituels qui freinent.", detail: "" },
+        ]
+      }
+    ]
+  },
+  {
+    id: "D3",
+    titre: "D3 — Posture clinique (items 29–42)",
+    sousDim: [
+      {
+        titre: "D3a — Clinique du sujet",
+        items: [
+          { n: 29, texte: "Je considère ce jeune comme sujet acteur et non comme objet de soins ou d'accompagnement.", detail: "" },
+          { n: 30, texte: "Je cherche à comprendre le sens de ses comportements avant d'y répondre.", detail: "" },
+          { n: 31, texte: "Je m'intéresse à l'histoire du jeune pour éclairer le présent.", detail: "" },
+          { n: 32, texte: "J'intègre dans ma lecture clinique les dimensions affectives, relationnelles et institutionnelles.", detail: "" },
+          { n: 33, texte: "Je distingue ce qui appartient à la pathologie, à la personnalité, et à la situation.", detail: "" },
+          { n: 34, texte: "Je peux formuler une hypothèse clinique et la partager avec l'équipe.", detail: "" },
+          { n: 35, texte: "Je reconnais les effets de l'institution (règles, cadre, transitions) sur le comportement du jeune.", detail: "" },
+        ]
+      },
+      {
+        titre: "D3b — Posture institutionnelle",
+        items: [
+          { n: 36, texte: "Je fais circuler les informations pertinentes sur ce jeune au bon moment et aux bonnes personnes.", detail: "" },
+          { n: 37, texte: "Je contribue à la cohérence des pratiques d'accompagnement autour de ce jeune.", detail: "" },
+          { n: 38, texte: "J'implique les familles ou les proches quand cela est pertinent et possible.", detail: "" },
+          { n: 39, texte: "Je respecte les engagements du projet personnalisé dans mes pratiques quotidiennes.", detail: "" },
+          { n: 40, texte: "Je sais distinguer mes opinions personnelles des positions institutionnelles dans mes discours.", detail: "" },
+          { n: 41, texte: "Je participe activement aux moments de réflexion collective sur les pratiques.", detail: "" },
+          { n: 42, texte: "Je contribue à l'amélioration des pratiques de l'équipe par mes retours d'expérience.", detail: "" },
+        ]
+      }
+    ]
+  }
+];
+
+const INTERPRETATIONS = {
+  D: {
+    titre: "Profil D — Autonome",
+    classe: "profil-D",
+    desc: "Posture clinique solide, reconnaissance fine du jeune, ressources professionnelles bien mobilisées. L'accompagnement est cohérent et favorable au développement du jeune. Objectif : maintien et transmission des pratiques.",
+    recommandation: "→ Maintien des pratiques. Rôle de pair-référent ou de tuteur possible. Supervision de soutien."
+  },
+  C: {
+    titre: "Profil C — Consolidé",
+    classe: "profil-C",
+    desc: "Bonne maîtrise globale avec quelques zones à renforcer. La posture est adaptée et l'accompagnement reste de qualité. Des progrès sont en cours dans les dimensions les plus récentes.",
+    recommandation: "→ Supervision d'approfondissement. Travailler les dimensions les moins solides."
+  },
+  B: {
+    titre: "Profil B — En développement",
+    classe: "profil-B",
+    desc: "Des ressources existent mais la régularité et la cohérence clinique restent à consolider. Des angles morts ou des zones d'évitement peuvent limiter la qualité de l'accompagnement.",
+    recommandation: "→ Supervision régulière recommandée. Formation ciblée sur les dimensions les plus faibles."
+  },
+  A: {
+    titre: "Profil A — Émergent",
+    classe: "profil-A",
+    desc: "Des difficultés significatives dans la reconnaissance du jeune, la gestion des limites ou la posture clinique. L'accompagnement peut être fragilisé par des mécanismes d'évitement ou de projection.",
+    recommandation: "→ Supervision intensive recommandée. Soutien institutionnel renforcé."
+  }
+};
+
+// ─── INITIALISATION ─────────────────────────────────────────────────────────
+document.addEventListener("DOMContentLoaded", () => {
+  document.getElementById("date-passation").valueAsDate = new Date();
+  buildForm();
+  renderHistorique();
+});
+
+function buildForm() {
+  const container = document.getElementById("dimensions-container");
+  DIMENSIONS.forEach(dim => {
+    let html = `<div class="card"><div class="card-header">${dim.titre}</div><div class="card-body">`;
+    dim.sousDim.forEach(sd => {
+      html += `<div class="dimension-title">${sd.titre}</div>`;
+      sd.items.forEach(item => {
+        html += `<div class="item-row">
+          <div class="item-num">${item.n}</div>
+          <div class="item-text">${item.texte}${item.detail ? `<em>${item.detail}</em>` : ''}</div>
+          <div class="rating-group">
+            ${[1,2,3,4].map(v => `<label><span>${v}</span><input type="radio" name="item${item.n}" value="${v}"></label>`).join('')}
+          </div>
+        </div>`;
+      });
+    });
+    html += `</div></div>`;
+    container.insertAdjacentHTML("beforeend", html);
+  });
+}
+
+function getScores() {
+  let d1 = 0, d2 = 0, d3 = 0, total = 0, incomplete = false;
+  for (let i = 1; i <= 42; i++) {
+    const sel = document.querySelector(`input[name="item${i}"]:checked`);
+    if (!sel) { incomplete = true; continue; }
+    const v = parseInt(sel.value);
+    total += v;
+    if (i <= 14) d1 += v;
+    else if (i <= 28) d2 += v;
+    else d3 += v;
+  }
+  return { d1, d2, d3, total, incomplete };
+}
+
+function profil(total) {
+  if (total >= 64) return "D";
+  if (total >= 48) return "C";
+  if (total >= 32) return "B";
+  return "A";
+}
+
+function calculer() {
+  const { d1, d2, d3, total, incomplete } = getScores();
+  if (incomplete) {
+    alert("Veuillez répondre à tous les items avant de calculer les scores.");
+    return;
+  }
+  const p = profil(total);
+  const interp = INTERPRETATIONS[p];
+
+  document.getElementById("s-d1").textContent = d1;
+  document.getElementById("s-d2").textContent = d2;
+  document.getElementById("s-d3").textContent = d3;
+  document.getElementById("s-total").textContent = total;
+
+  const pd = document.getElementById("profil-display");
+  pd.className = `profil-box ${interp.classe}`;
+  pd.innerHTML = `<h3>${interp.titre}</h3><p>${interp.desc}</p><p style="margin-top:8px;font-style:italic;font-size:0.85rem;">${interp.recommandation}</p>`;
+
+  const ident = document.getElementById("result-identification");
+  const j = document.getElementById("jeune").value;
+  const r = document.getElementById("referent").value;
+  const ph = document.getElementById("phase").value;
+  const dt = document.getElementById("date-passation").value;
+  ident.textContent = `Jeune : ${j || "—"} | Référent : ${r || "—"} | Phase : ${ph || "—"} | Date : ${dt || "—"}`;
+  ident.style.display = "block";
+
+  switchTab("resultats");
+  window._currentResult = { jeune: j, referent: r, structure: document.getElementById("structure").value, phase: ph, date: dt, passation: document.getElementById("num-passation").value, d1, d2, d3, total, profil: p, timestamp: new Date().toISOString() };
+}
+
+function sauvegarder() {
+  if (!window._currentResult) { alert("Calculer les scores d'abord."); return; }
+  const sessions = JSON.parse(localStorage.getItem("recap_orion_sessions") || "[]");
+  sessions.push(window._currentResult);
+  localStorage.setItem("recap_orion_sessions", JSON.stringify(sessions));
+  renderHistorique();
+  alert("Passation sauvegardée ✓");
+}
+
+function renderHistorique() {
+  const sessions = JSON.parse(localStorage.getItem("recap_orion_sessions") || "[]");
+  const vide = document.getElementById("historique-vide");
+  const list = document.getElementById("sessions-list");
+  if (!sessions.length) { vide.style.display = "block"; list.innerHTML = ""; return; }
+  vide.style.display = "none";
+  list.innerHTML = sessions.slice().reverse().map((s, i) => `
+    <div class="session-item">
+      <div>
+        <strong>${s.jeune || "—"}</strong> — ${s.referent || "—"}
+        <div class="session-date">${s.date || ""} | ${s.phase || ""} | Passation n°${s.passation || "?"}</div>
+      </div>
+      <div style="display:flex;gap:8px;align-items:center;">
+        <span class="session-score">${s.total}/84 — Profil ${s.profil}</span>
+      </div>
+    </div>
+  `).join("");
+}
+
+function clearHistorique() {
+  if (confirm("Effacer tout l'historique ? Cette action est irréversible.")) {
+    localStorage.removeItem("recap_orion_sessions");
+    renderHistorique();
+  }
+}
+
+function exporterCSV() {
+  const sessions = JSON.parse(localStorage.getItem("recap_orion_sessions") || "[]");
+  if (!sessions.length) { alert("Aucune donnée à exporter."); return; }
+  const headers = ["Jeune","Référent","Structure","Phase","Date","N° Passation","D1","D2","D3","Total","Profil"];
+  const rows = sessions.map(s => [s.jeune,s.referent,s.structure,s.phase,s.date,s.passation,s.d1,s.d2,s.d3,s.total,s.profil]);
+  const csv = [headers, ...rows].map(r => r.join(";")).join("\n");
+  const blob = new Blob(["\uFEFF" + csv], { type: "text/csv;charset=utf-8;" });
+  const a = document.createElement("a");
+  a.href = URL.createObjectURL(blob);
+  a.download = `RECAP_ORION_Export_${new Date().toISOString().slice(0,10)}.csv`;
+  a.click();
+}
+
+function resetForm() {
+  if (!confirm("Réinitialiser le formulaire ?")) return;
+  document.querySelectorAll("input[type=radio]").forEach(r => r.checked = false);
+  document.getElementById("jeune").value = "";
+  document.getElementById("referent").value = "";
+  document.getElementById("structure").value = "";
+  document.getElementById("phase").value = "";
+  document.getElementById("num-passation").value = "1";
+  document.getElementById("date-passation").valueAsDate = new Date();
+  switchTab("saisie");
+}
+
+const SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbzkkUkNB7VnijLAiUukHp_t_QCjD4-J_HXAGTWZVUNE65mjjUNSh_8Gl9JxyBamyemJPw/exec';
+
+function submitForm() {
+  if (!window._currentResult) { alert("Veuillez d'abord calculer les scores."); return; }
+  const btn = document.querySelector('.btn-primary[onclick="submitForm()"]');
+  btn.textContent = 'Enregistrement...'; btn.disabled = true;
+  const scoresItems = {};
+  for (let i = 1; i <= 42; i++) {
+    const sel = document.querySelector(`input[name="item${i}"]:checked`);
+    scoresItems[i] = sel ? parseInt(sel.value) : null;
+  }
+  const payload = {
+    formulaire: 'RECAP_ORION',
+    jeune: window._currentResult.jeune,
+    date: window._currentResult.date,
+    referent: window._currentResult.referent,
+    structure: window._currentResult.structure,
+    phase: window._currentResult.phase,
+    num_passation: window._currentResult.passation,
+    scores: scoresItems,
+    d1_total: window._currentResult.d1,
+    d2_total: window._currentResult.d2,
+    d3_total: window._currentResult.d3,
+    score_global: window._currentResult.total,
+    score_max: 168,
+    profil: window._currentResult.profil
+  };
+  fetch(SCRIPT_URL, {method:'POST',mode:'no-cors',headers:{'Content-Type':'application/json'},body:JSON.stringify(payload)})
+    .then(() => { btn.textContent = '✓ Enregistré'; btn.style.background='#70AD47'; setTimeout(() => { btn.textContent='📤 Enregistrer (Google Sheets)'; btn.style.background=''; btn.disabled=false; }, 3000); })
+    .catch(() => { btn.textContent='📤 Enregistrer (Google Sheets)'; btn.disabled=false; alert('Erreur de connexion.'); });
+}
+
+function switchTab(tab) {
+  document.querySelectorAll(".tab-content").forEach(t => t.classList.remove("active"));
+  document.querySelectorAll(".tab-btn").forEach(b => b.classList.remove("active"));
+  document.getElementById("tab-" + tab).classList.add("active");
+  document.querySelector(`.tab-btn[onclick*="${tab}"]`).classList.add("active");
+}
+</script>
+</body>
+</html>

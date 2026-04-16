@@ -1,0 +1,495 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>GD-ORION · Graphe simple · IPCRA</title>
+<link href="https://fonts.googleapis.com/css2?family=DM+Serif+Display:ital@0;1&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet">
+<style>
+:root{--navy:#1a2742;--teal:#2F5496;--teal-l:#4472C4;--gold:#e9c46a;--white:#fff;--off:#f8f7f4;--text:#2c2c2c;--muted:#5a5a5a;--border:#e0ddd6;--r:6px;
+  --ev1:#2F5496;--ev2:#B48214;--ev3:#4F8C32;--ev4:#A02820;}
+*{box-sizing:border-box;margin:0;padding:0;}
+body{font-family:'DM Sans',sans-serif;font-size:15px;color:var(--text);background:var(--off);line-height:1.6;}
+
+nav{background:var(--navy);padding:0 2rem;display:flex;align-items:center;justify-content:space-between;height:60px;position:sticky;top:0;z-index:100;}
+.nb{text-decoration:none;display:flex;flex-direction:column;}
+.nb strong{font-family:'DM Serif Display',serif;font-size:1rem;color:var(--white);}
+.nb span{font-size:.6rem;color:var(--gold);letter-spacing:.08em;text-transform:uppercase;}
+
+.hero{background:var(--navy);padding:2rem 2rem 1.8rem;text-align:center;border-bottom:3px solid var(--gold);}
+.badge{display:inline-block;background:rgba(233,196,106,.15);border:1px solid var(--gold);color:var(--gold);font-size:.68rem;letter-spacing:.1em;text-transform:uppercase;padding:.25rem .8rem;border-radius:2rem;margin-bottom:.7rem;}
+.hero h1{font-family:'DM Serif Display',serif;font-size:clamp(1.4rem,3vw,2rem);color:var(--white);margin-bottom:.3rem;}
+.hero h1 em{color:var(--gold);font-style:italic;}
+.hero-sub{color:rgba(255,255,255,.6);font-size:.82rem;font-weight:300;}
+
+.ct{max-width:1000px;margin:0 auto;padding:0 1.5rem;}
+.main{padding:1.5rem 0 3rem;display:grid;grid-template-columns:1fr 340px;gap:1.8rem;align-items:start;}
+
+.fc{background:var(--white);border:1px solid var(--border);border-radius:var(--r);overflow:hidden;box-shadow:0 2px 10px rgba(26,39,66,.06);}
+.fc-h{background:var(--navy);padding:.85rem 1.3rem;}
+.fc-h h2{font-family:'DM Serif Display',serif;font-size:1rem;color:var(--white);font-weight:400;}
+.form-body{padding:1.2rem;}
+.section-title{font-size:.63rem;text-transform:uppercase;letter-spacing:.1em;color:var(--teal-l);font-weight:600;margin:1.1rem 0 .7rem;padding-bottom:.35rem;border-bottom:1px solid var(--border);}
+.section-title:first-child{margin-top:0;}
+.f{margin-bottom:.8rem;}
+.f label{display:block;font-size:.76rem;font-weight:500;color:var(--navy);margin-bottom:.22rem;}
+.req{color:var(--teal-l);margin-left:2px;}
+input.ti,select.si{width:100%;border:1px solid var(--border);border-radius:var(--r);padding:.45rem .7rem;font-family:'DM Sans',sans-serif;font-size:.82rem;color:var(--text);background:var(--off);transition:border-color .2s;}
+select.si{appearance:none;background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='10' height='10' viewBox='0 0 10 10'%3E%3Cpath fill='%235a5a5a' d='M5 7L0 2h10z'/%3E%3C/svg%3E");background-repeat:no-repeat;background-position:right .7rem center;padding-right:1.7rem;}
+input.ti:focus,select.si:focus{outline:none;border-color:var(--teal-l);box-shadow:0 0 0 3px rgba(68,114,196,.1);}
+.fr{display:grid;grid-template-columns:1fr 1fr;gap:.8rem;}
+
+/* Sélecteur rôle */
+.eval-selector{display:flex;gap:.5rem;flex-wrap:wrap;margin-bottom:1rem;}
+.eval-pick{padding:.38rem .9rem;border-radius:2rem;border:2px solid var(--border);background:var(--off);font-family:'DM Sans',sans-serif;font-size:.78rem;font-weight:500;cursor:pointer;color:var(--muted);transition:all .15s;}
+.eval-pick:hover{border-color:var(--teal);}
+.eval-pick.sel-ev1{background:var(--ev1);border-color:var(--ev1);color:white;}
+.eval-pick.sel-ev2{background:var(--ev2);border-color:var(--ev2);color:white;}
+.eval-pick.sel-ev3{background:var(--ev3);border-color:var(--ev3);color:white;}
+.eval-pick.sel-ev4{background:var(--ev4);border-color:var(--ev4);color:white;}
+
+/* Items */
+.domain-block{margin-bottom:.9rem;}
+.domain-head{margin-bottom:.4rem;}
+.domain-tag{display:inline-block;font-size:.6rem;text-transform:uppercase;letter-spacing:.08em;font-weight:600;padding:.18rem .5rem;border-radius:2rem;}
+.gd-item{display:grid;grid-template-columns:22px 1fr auto;align-items:center;gap:.6rem;padding:.42rem .5rem;border-bottom:1px solid var(--border);border-radius:4px;margin-bottom:.2rem;transition:background .12s;}
+.gd-item:hover{background:rgba(47,84,150,.04);}
+.gd-item:last-child{border-bottom:none;}
+.gd-num{font-size:.66rem;font-weight:600;color:var(--muted);text-align:center;}
+.gd-label{font-size:.8rem;color:var(--text);}
+.gd-score{display:flex;gap:.2rem;align-items:center;}
+
+/* Boutons de cotation — JAMAIS de style inline, tout géré par classes */
+.gd-btn{
+  width:24px;height:24px;border-radius:50%;
+  border:1.5px solid var(--border);
+  background:var(--white);
+  font-size:.7rem;font-weight:600;color:var(--muted);
+  cursor:pointer;display:flex;align-items:center;justify-content:center;
+  transition:all .12s;flex-shrink:0;
+}
+.gd-btn:hover{border-color:var(--teal);color:var(--teal);}
+.gd-btn.active-ev1{background:var(--ev1)!important;border-color:var(--ev1)!important;color:white!important;}
+.gd-btn.active-ev2{background:var(--ev2)!important;border-color:var(--ev2)!important;color:white!important;}
+.gd-btn.active-ev3{background:var(--ev3)!important;border-color:var(--ev3)!important;color:white!important;}
+.gd-btn.active-ev4{background:var(--ev4)!important;border-color:var(--ev4)!important;color:white!important;}
+.gd-val{font-size:.76rem;font-weight:600;color:var(--navy);min-width:14px;text-align:center;}
+
+.consigne{background:rgba(47,84,150,.07);border:1px solid rgba(47,84,150,.2);border-radius:var(--r);padding:.65rem 1rem;margin-bottom:1rem;font-size:.8rem;color:var(--text);line-height:1.6;}
+
+.btn-submit{width:100%;padding:.62rem;background:var(--navy);color:var(--white);border:none;border-radius:var(--r);font-family:'DM Sans',sans-serif;font-size:.86rem;font-weight:500;cursor:pointer;margin-top:1rem;transition:background .2s;}
+.btn-submit:hover{background:#243352;}
+.btn-export{width:100%;padding:.62rem;background:var(--teal);color:var(--white);border:none;border-radius:var(--r);font-family:'DM Sans',sans-serif;font-size:.86rem;font-weight:500;cursor:pointer;margin-top:.5rem;transition:background .2s;}
+.btn-export:hover{background:var(--teal-l);}
+
+/* Radar */
+.radar-card{background:var(--white);border:1px solid var(--border);border-radius:var(--r);overflow:hidden;box-shadow:0 2px 10px rgba(26,39,66,.06);position:sticky;top:74px;}
+.radar-head{background:var(--navy);padding:.85rem 1.3rem;}
+.radar-head h3{font-family:'DM Serif Display',serif;font-size:1rem;color:var(--white);font-weight:400;}
+.radar-body{padding:1rem;}
+#radar-svg{width:100%;height:auto;}
+.eval-indicator{text-align:center;font-size:.75rem;font-weight:600;padding:.25rem .5rem;border-radius:4px;margin-bottom:.6rem;transition:all .2s;}
+
+.score-summary{margin-top:.8rem;border-top:1px solid var(--border);padding-top:.8rem;}
+.score-row{display:flex;justify-content:space-between;align-items:center;padding:.22rem 0;font-size:.74rem;}
+.score-row-label{color:var(--muted);}
+.score-row-val{font-weight:600;color:var(--navy);}
+.prog-bar{height:4px;border-radius:2px;background:#eee;margin-top:.3rem;overflow:hidden;}
+.prog-fill{height:100%;border-radius:2px;transition:width .3s;}
+.score-global{display:flex;justify-content:space-between;align-items:center;padding:.38rem 0;font-size:.83rem;border-top:1px solid var(--border);margin-top:.4rem;}
+.score-global-label{font-weight:500;color:var(--navy);}
+.score-global-val{font-weight:600;font-size:.95rem;}
+
+.ok{display:none;padding:2rem 1.3rem;text-align:center;}
+.ok-i{width:46px;height:46px;background:rgba(47,84,150,.1);border:2px solid var(--teal);border-radius:50%;display:flex;align-items:center;justify-content:center;margin:0 auto .9rem;font-size:1.2rem;color:var(--teal);}
+.ok h3{font-family:'DM Serif Display',serif;font-size:1.1rem;color:var(--navy);margin-bottom:.4rem;}
+.ok p{color:var(--muted);font-size:.8rem;}
+
+footer{background:var(--navy);color:rgba(255,255,255,.45);font-size:.72rem;padding:1rem 2rem;display:flex;justify-content:space-between;flex-wrap:wrap;gap:.5rem;}
+footer a{color:var(--gold);text-decoration:none;}
+
+@media(max-width:750px){.main{grid-template-columns:1fr;}.fr{grid-template-columns:1fr;}.radar-card{position:static;}}
+</style>
+</head>
+<body>
+
+<nav>
+  <a href="https://institutipcra.github.io/IPCRA-site/" class="nb">
+    <strong>IPCRA</strong>
+    <span>Institut de Pratiques Cliniques et de Recherche Appliquée</span>
+  </a>
+  <span style="color:rgba(255,255,255,.5);font-size:.76rem;">ORION · Graphe simple</span>
+</nav>
+
+<div class="hero">
+  <div class="badge">Évaluation individuelle · Projet ORION</div>
+  <h1>Graphe Dimensionnel — <em>Profil individuel</em></h1>
+  <p class="hero-sub">IPCRA / ACTIF Formation · Cotation 1 à 5 · 30 items · 6 dimensions · Export Google Sheets</p>
+</div>
+
+<div class="ct">
+<div class="main">
+
+  <div class="fc">
+    <div class="fc-h"><h2>Fiche de cotation — GD ORION</h2></div>
+    <div class="form-body" id="form-body">
+
+      <div class="section-title">Identification</div>
+      <div class="fr">
+        <div class="f"><label>Jeune (initiales) <span class="req">*</span></label><input class="ti" type="text" id="jeune" placeholder="ex. M.T." required></div>
+        <div class="f"><label>Date <span class="req">*</span></label><input class="ti" type="date" id="date_saisie" required></div>
+      </div>
+      <div class="fr">
+        <div class="f"><label>Structure</label><input class="ti" type="text" id="structure" placeholder="DITEP / SESSAD..."></div>
+        <div class="f"><label>Phase ORION</label>
+          <select class="si" id="phase">
+            <option value="">— Sélectionner —</option>
+            <option>Phase 1 – Découverte</option>
+            <option>Phase 2 – Engagement</option>
+            <option>Phase 3 – Autonomisation</option>
+          </select>
+        </div>
+      </div>
+      <div class="fr">
+        <div class="f"><label>Évaluateur (initiales) <span class="req">*</span></label><input class="ti" type="text" id="evaluateur" placeholder="ex. J.D." required></div>
+        <div class="f"><label>N° évaluation</label><input class="ti" type="text" id="num_eval" placeholder="ex. 1"></div>
+      </div>
+
+      <div class="section-title">Rôle de l'évaluateur</div>
+      <div class="eval-selector" id="role-selector">
+        <button class="eval-pick sel-ev1" onclick="selectRole('ev1',this)">Éduc. référent</button>
+        <button class="eval-pick" onclick="selectRole('ev2',this)">Péda</button>
+        <button class="eval-pick" onclick="selectRole('ev3',this)">Orion</button>
+        <button class="eval-pick" onclick="selectRole('ev4',this)">Famille</button>
+      </div>
+
+      <div class="consigne">
+        <strong style="color:var(--navy)">Consigne :</strong> Cotez de <strong>1</strong> (situation très préoccupante) à <strong>5</strong> (situation satisfaisante). La cotation 0 n'est pas utilisée. Le radar se met à jour en temps réel.
+      </div>
+
+      <div id="items-container"></div>
+
+      <button class="btn-submit" onclick="submitForm()">💾 Enregistrer (Google Sheets)</button>
+      <button class="btn-export" onclick="exportCSV()">📤 Exporter CSV</button>
+    </div>
+
+    <div class="ok" id="ok-state">
+      <div class="ok-i">✓</div>
+      <h3>Cotation enregistrée</h3>
+      <p>Les données ont été transmises à l'équipe IPCRA.</p>
+      <button class="btn-export" onclick="resetForm()" style="margin-top:1rem">← Nouvelle saisie</button>
+    </div>
+  </div>
+
+  <!-- RADAR -->
+  <div class="radar-card">
+    <div class="radar-head"><h3>Profil dimensionnel</h3></div>
+    <div class="radar-body">
+      <div class="eval-indicator" id="eval-indicator">Éducateur référent</div>
+      <svg id="radar-svg" viewBox="0 0 300 300" xmlns="http://www.w3.org/2000/svg"></svg>
+      <div class="score-summary" id="score-summary"></div>
+    </div>
+  </div>
+
+</div>
+</div>
+
+<footer>
+  <div><strong style="color:#fff">IPCRA</strong> — Institut de Pratiques Cliniques et Recherche Appliquée · institut.ipcra@gmail.com</div>
+  <div><a href="https://institutipcra.github.io/IPCRA-site/">← Site IPCRA</a></div>
+</footer>
+
+<script>
+// ── DONNÉES ──────────────────────────────────────────────────────────────────
+const DIMS = [
+  { id:"D1", label:"Relation à l'adulte",        color:"#2F5496", items:[1,2,3] },
+  { id:"D2", label:"Relation avec ses pairs",     color:"#4472C4", items:[4,5,6,7] },
+  { id:"D3", label:"État de la personne",         color:"#70AD47", items:[8,9,10,11] },
+  { id:"D4", label:"Apprentissages scolaires",    color:"#B48214", items:[12,13,14,15,16] },
+  { id:"D5", label:"Attitude accompagnement",     color:"#7B2D8B", items:[17,18,19,20] },
+  { id:"D6", label:"Autonomie & Capacités",       color:"#A02820", items:[21,22,23,24,25,26,27,28,29,30] }
+];
+
+const ITEM_LABELS = {
+  1:"Agressivité", 2:"Provocation", 3:"Communication",
+  4:"Comportement perturbateur", 5:"Intégration", 6:"Agressivité groupe", 7:"Communication groupe",
+  8:"Humeur", 9:"État psychosomatique", 10:"Fatigabilité", 11:"Apparence physique",
+  12:"Écart âge / niveau", 13:"Qualité de travail", 14:"Respect des consignes",
+  15:"Assiduité, ponctualité", 16:"Niveau de compréhension",
+  17:"Implication", 18:"Motivation", 19:"Prise d'initiatives", 20:"Satisfaction",
+  21:"Hygiène", 22:"Sécurité", 23:"Autonomie déplacement", 24:"Vie quotidienne",
+  25:"Autonomie travail", 26:"Capacités adaptation", 27:"Capacités relationnelles",
+  28:"Connaissances élémentaires", 29:"Repères spatio-temporels", 30:"Respect cadre et règles"
+};
+
+const EVS_META = {
+  ev1: { label:"Éducateur référent", color:"#2F5496" },
+  ev2: { label:"Péda",               color:"#B48214" },
+  ev3: { label:"Orion",              color:"#4F8C32" },
+  ev4: { label:"Famille",            color:"#A02820" },
+};
+
+const ALL_ITEMS_FLAT = DIMS.flatMap(d => d.items.map(n => ({
+  n, label: ITEM_LABELS[n],
+  dimColor: d.color, dimLabel: d.label, dimId: d.id
+})));
+
+// ── ÉTAT : scores séparés par rôle, initialisés à 1 ─────────────────────────
+const allScores = {
+  ev1: {}, ev2: {}, ev3: {}, ev4: {}
+};
+ALL_ITEMS_FLAT.forEach(it => {
+  ['ev1','ev2','ev3','ev4'].forEach(ev => { allScores[ev][it.n] = 1; });
+});
+
+let currentRole = 'ev1';
+
+// ── BUILD FORM ───────────────────────────────────────────────────────────────
+const container = document.getElementById('items-container');
+DIMS.forEach(dim => {
+  const block = document.createElement('div');
+  block.className = 'domain-block';
+  block.innerHTML = `<div class="domain-head"><span class="domain-tag" style="color:${dim.color};border:1px solid ${dim.color}30;background:${dim.color}12">${dim.label}</span></div>`;
+
+  dim.items.forEach(n => {
+    const row = document.createElement('div');
+    row.className = 'gd-item';
+    row.innerHTML = `
+      <div class="gd-num">${n}</div>
+      <div class="gd-label">${ITEM_LABELS[n]}</div>
+      <div class="gd-score" id="score-row-${n}">
+        ${[1,2,3,4,5].map(v =>
+          `<button type="button" class="gd-btn${v===1 ? ' active-ev1' : ''}"
+            data-item="${n}" data-val="${v}"
+            onclick="setScore(${n},${v})">${v}</button>`
+        ).join('')}
+        <div class="gd-val" id="val-${n}">1</div>
+      </div>`;
+    block.appendChild(row);
+  });
+  container.appendChild(block);
+});
+
+// ── SÉLECTION DU RÔLE ────────────────────────────────────────────────────────
+function selectRole(roleId, btn) {
+  currentRole = roleId;
+  const meta = EVS_META[roleId];
+
+  // Mettre à jour les boutons de sélection de rôle
+  document.querySelectorAll('.eval-pick').forEach(b => {
+    b.className = 'eval-pick';
+  });
+  btn.classList.add(`sel-${roleId}`);
+
+  // Indicateur radar
+  const ind = document.getElementById('eval-indicator');
+  ind.textContent = meta.label;
+  ind.style.background = meta.color + '20';
+  ind.style.color = meta.color;
+
+  // Recharger l'affichage des boutons pour ce rôle
+  refreshButtons();
+  updateRadar();
+}
+
+// ── COTATION ─────────────────────────────────────────────────────────────────
+function setScore(n, val) {
+  // Enregistrer dans le bon rôle
+  allScores[currentRole][n] = val;
+
+  // Mettre à jour les boutons de cet item
+  const row = document.getElementById(`score-row-${n}`);
+  row.querySelectorAll('.gd-btn').forEach(btn => {
+    // Retirer toutes les classes active-*
+    btn.classList.remove('active-ev1','active-ev2','active-ev3','active-ev4');
+    // Appliquer la bonne classe active si c'est la valeur sélectionnée
+    if (parseInt(btn.dataset.val) === val) {
+      btn.classList.add(`active-${currentRole}`);
+    }
+  });
+
+  document.getElementById(`val-${n}`).textContent = val;
+  updateRadar();
+}
+
+// Recharger tous les boutons selon le rôle courant
+function refreshButtons() {
+  ALL_ITEMS_FLAT.forEach(it => {
+    const row = document.getElementById(`score-row-${it.n}`);
+    if (!row) return;
+    const currentVal = allScores[currentRole][it.n];
+    row.querySelectorAll('.gd-btn').forEach(btn => {
+      btn.classList.remove('active-ev1','active-ev2','active-ev3','active-ev4');
+      if (parseInt(btn.dataset.val) === currentVal) {
+        btn.classList.add(`active-${currentRole}`);
+      }
+    });
+    document.getElementById(`val-${it.n}`).textContent = currentVal;
+  });
+}
+
+// ── RADAR SVG ────────────────────────────────────────────────────────────────
+const CX=150, CY=150, R=108, MAXVAL=5;
+const N = ALL_ITEMS_FLAT.length;
+
+function polarToXY(angle, radius) {
+  const a = (angle - 90) * Math.PI / 180;
+  return { x: CX + radius * Math.cos(a), y: CY + radius * Math.sin(a) };
+}
+
+function svgEl(tag, attrs, text) {
+  const el = document.createElementNS('http://www.w3.org/2000/svg', tag);
+  Object.entries(attrs).forEach(([k,v]) => el.setAttribute(k,v));
+  if (text !== undefined) el.textContent = text;
+  return el;
+}
+
+function updateRadar() {
+  const svg = document.getElementById('radar-svg');
+  svg.innerHTML = '';
+  const angleStep = 360 / N;
+  const color = EVS_META[currentRole].color;
+  const sc = allScores[currentRole];
+
+  // Grilles
+  [1,2,3,4,5].forEach(lvl => {
+    const pts = ALL_ITEMS_FLAT.map((_,i) => {
+      const p = polarToXY(i * angleStep, (lvl/MAXVAL)*R);
+      return `${p.x},${p.y}`;
+    }).join(' ');
+    svg.appendChild(svgEl('polygon',{points:pts,fill:'none',stroke:'#e0ddd6','stroke-width':lvl===5?'1':'0.5'}));
+  });
+
+  // Labels de niveaux
+  [1,3,5].forEach(lvl => {
+    const p = polarToXY(0, (lvl/MAXVAL)*R);
+    svg.appendChild(svgEl('text',{x:CX+3,y:p.y-2,'font-size':'5.5',fill:'#bbb','text-anchor':'start'},String(lvl)));
+  });
+
+  // Axes
+  ALL_ITEMS_FLAT.forEach((_,i) => {
+    const outer = polarToXY(i * angleStep, R);
+    svg.appendChild(svgEl('line',{x1:CX,y1:CY,x2:outer.x,y2:outer.y,stroke:'#d8d4cc','stroke-width':'0.5'}));
+  });
+
+  // Polygone données
+  const pts = ALL_ITEMS_FLAT.map((item,i) => {
+    const v = sc[item.n];
+    const p = polarToXY(i * angleStep, (v/MAXVAL)*R);
+    return `${p.x},${p.y}`;
+  }).join(' ');
+  svg.appendChild(svgEl('polygon',{points:pts,fill:color+'22',stroke:color,'stroke-width':'2','stroke-linejoin':'round'}));
+
+  // Points + numéros
+  ALL_ITEMS_FLAT.forEach((item,i) => {
+    const v = sc[item.n];
+    const rp = polarToXY(i * angleStep, (v/MAXVAL)*R);
+    const lp = polarToXY(i * angleStep, R+17);
+    svg.appendChild(svgEl('circle',{cx:rp.x,cy:rp.y,r:'3.5',fill:color}));
+    svg.appendChild(svgEl('text',{x:lp.x,y:lp.y,'text-anchor':'middle','dominant-baseline':'central','font-size':'6.5',fill:item.dimColor,'font-family':'DM Sans, sans-serif','font-weight':'600'},String(item.n)));
+  });
+
+  // Centre
+  svg.appendChild(svgEl('circle',{cx:CX,cy:CY,r:'2.5',fill:'#1a2742'}));
+
+  updateSummary(sc, color);
+}
+
+function updateSummary(sc, color) {
+  let html = '';
+  DIMS.forEach(dim => {
+    const vals = dim.items.map(n => sc[n]);
+    const avg = (vals.reduce((a,b)=>a+b,0)/vals.length).toFixed(1);
+    const pct = ((parseFloat(avg)-1)/4*100).toFixed(0);
+    html += `<div class="score-row">
+      <span class="score-row-label" style="color:${dim.color}">${dim.label.length>24?dim.label.slice(0,24)+'…':dim.label}</span>
+      <span class="score-row-val">${avg}/5</span>
+    </div>
+    <div class="prog-bar"><div class="prog-fill" style="width:${pct}%;background:${dim.color}"></div></div>`;
+  });
+  const allVals = ALL_ITEMS_FLAT.map(it => sc[it.n]);
+  const globalAvg = (allVals.reduce((a,b)=>a+b,0)/allVals.length).toFixed(1);
+  html += `<div class="score-global">
+    <span class="score-global-label">Score global</span>
+    <span class="score-global-val" style="color:${color}">${globalAvg}/5</span>
+  </div>`;
+  document.getElementById('score-summary').innerHTML = html;
+}
+
+// ── EXPORT & SUBMIT ──────────────────────────────────────────────────────────
+const SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbzkkUkNB7VnijLAiUukHp_t_QCjD4-J_HXAGTWZVUNE65mjjUNSh_8Gl9JxyBamyemJPw/exec';
+
+function submitForm() {
+  const jeune = document.getElementById('jeune').value.trim();
+  const date = document.getElementById('date_saisie').value;
+  const evaluateur = document.getElementById('evaluateur').value.trim();
+  if (!jeune || !date || !evaluateur) {
+    alert('Veuillez remplir : initiales du jeune, date et évaluateur.');
+    return;
+  }
+  if (SCRIPT_URL === 'https://script.google.com/macros/s/AKfycbzkkUkNB7VnijLAiUukHp_t_QCjD4-J_HXAGTWZVUNE65mjjUNSh_8Gl9JxyBamyemJPw/exec') {
+    alert('⚠️ URL Google Apps Script non configurée.\nUtilisez le bouton "Exporter CSV" pour récupérer les données.');
+    return;
+  }
+  const btn = document.querySelector('.btn-submit');
+  btn.textContent = 'Enregistrement...'; btn.disabled = true;
+  const payload = {
+    formulaire:'GD_ORION_v2', jeune, date,
+    structure: document.getElementById('structure').value,
+    phase: document.getElementById('phase').value,
+    evaluateur, role: EVS_META[currentRole].label,
+    num_eval: document.getElementById('num_eval').value,
+    scores: allScores[currentRole]
+  };
+  fetch(SCRIPT_URL,{method:'POST',mode:'no-cors',headers:{'Content-Type':'application/json'},body:JSON.stringify(payload)})
+    .then(()=>{ document.getElementById('form-body').style.display='none'; document.getElementById('ok-state').style.display='block'; })
+    .catch(()=>{ btn.textContent='💾 Enregistrer (Google Sheets)'; btn.disabled=false; alert('Erreur de connexion.'); });
+}
+
+function exportCSV() {
+  const jeune = document.getElementById('jeune').value||'';
+  const date = document.getElementById('date_saisie').value||'';
+  const sc = allScores[currentRole];
+  let csv = 'Jeune;Date;Structure;Phase;Évaluateur;Rôle;Item;Label;Dimension;Score\n';
+  ALL_ITEMS_FLAT.forEach(item => {
+    csv += `${jeune};${date};${document.getElementById('structure').value||''};${document.getElementById('phase').value||''};${document.getElementById('evaluateur').value||''};${EVS_META[currentRole].label};${item.n};${item.label};${item.dimLabel};${sc[item.n]}\n`;
+  });
+  const a = document.createElement('a');
+  a.href = URL.createObjectURL(new Blob(['\uFEFF'+csv],{type:'text/csv;charset=utf-8;'}));
+  a.download = `GD_ORION_${jeune||'export'}_${EVS_META[currentRole].label.replace(/\s/g,'_')}_${date||new Date().toISOString().slice(0,10)}.csv`;
+  a.click();
+}
+
+function resetForm() {
+  // Réinitialiser tous les scores à 1
+  ALL_ITEMS_FLAT.forEach(it => {
+    ['ev1','ev2','ev3','ev4'].forEach(ev => { allScores[ev][it.n] = 1; });
+  });
+  // Remettre à jour l'affichage
+  refreshButtons();
+  // Vider les champs
+  ['jeune','structure','evaluateur','num_eval'].forEach(id => document.getElementById(id).value='');
+  document.getElementById('phase').value='';
+  document.getElementById('date_saisie').valueAsDate = new Date();
+  // Réinitialiser le rôle à ev1
+  currentRole = 'ev1';
+  document.querySelectorAll('.eval-pick').forEach(b => b.className='eval-pick');
+  document.querySelector('.eval-pick').classList.add('sel-ev1');
+  const ind = document.getElementById('eval-indicator');
+  ind.textContent = 'Éducateur référent';
+  ind.style.background = '#2F549620';
+  ind.style.color = '#2F5496';
+  document.getElementById('form-body').style.display='block';
+  document.getElementById('ok-state').style.display='none';
+  updateRadar();
+}
+
+// ── INIT ──────────────────────────────────────────────────────────────────────
+document.getElementById('date_saisie').valueAsDate = new Date();
+const ind = document.getElementById('eval-indicator');
+ind.style.background = '#2F549620';
+ind.style.color = '#2F5496';
+updateRadar();
+</script>
+</body>
+</html>
