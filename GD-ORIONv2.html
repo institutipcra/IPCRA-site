@@ -1,0 +1,648 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>GD-ORION v2 · Superposition évaluateurs · IPCRA</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@300;400;500;600&family=DM+Serif+Display:ital@0;1&display=swap" rel="stylesheet">
+<style>
+:root{--navy:#1a2742;--bleu:#2F5496;--bleu2:#4472C4;--gold:#e9c46a;--white:#fff;--off:#f8f7f4;--text:#2c2c2c;--muted:#5a5a5a;--border:#e0ddd6;--r:6px;
+  --ev1:#2F5496;--ev2:#B48214;--ev3:#4F8C32;--ev4:#A02820;--moy:#7B2D8B;}
+*{box-sizing:border-box;margin:0;padding:0;}
+body{font-family:'DM Sans',sans-serif;font-size:15px;color:var(--text);background:var(--off);line-height:1.6;}
+
+nav{background:var(--navy);padding:0 2rem;display:flex;align-items:center;justify-content:space-between;height:60px;position:sticky;top:0;z-index:100;}
+.nb{text-decoration:none;display:flex;flex-direction:column;}
+.nb strong{font-family:'DM Serif Display',serif;font-size:1rem;color:var(--white);}
+.nb span{font-size:.6rem;color:var(--gold);letter-spacing:.08em;text-transform:uppercase;}
+
+.hero{background:var(--navy);padding:2rem 2rem 1.8rem;text-align:center;border-bottom:3px solid var(--gold);}
+.badge{display:inline-block;background:rgba(233,196,106,.15);border:1px solid var(--gold);color:var(--gold);font-size:.68rem;letter-spacing:.1em;text-transform:uppercase;padding:.25rem .8rem;border-radius:2rem;margin-bottom:.7rem;}
+.hero h1{font-family:'DM Serif Display',serif;font-size:clamp(1.4rem,3vw,2rem);color:var(--white);margin-bottom:.3rem;}
+.hero h1 em{color:var(--gold);font-style:italic;}
+.hero-sub{color:rgba(255,255,255,.6);font-size:.82rem;font-weight:300;}
+
+.ct{max-width:1100px;margin:0 auto;padding:0 1.5rem;}
+.main{padding:1.5rem 0 3rem;display:grid;grid-template-columns:1fr 360px;gap:1.8rem;align-items:start;}
+
+.fc{background:var(--white);border:1px solid var(--border);border-radius:var(--r);overflow:hidden;box-shadow:0 2px 10px rgba(26,39,66,.06);}
+.fc-h{background:var(--navy);padding:.85rem 1.3rem;}
+.fc-h h2{font-family:'DM Serif Display',serif;font-size:1rem;color:var(--white);font-weight:400;}
+.form-body{padding:1.2rem;}
+.section-title{font-size:.63rem;text-transform:uppercase;letter-spacing:.1em;color:var(--bleu2);font-weight:600;margin:1.1rem 0 .7rem;padding-bottom:.4rem;border-bottom:1px solid var(--border);}
+.section-title:first-child{margin-top:0;}
+.f{margin-bottom:.8rem;}
+.f label{display:block;font-size:.76rem;font-weight:500;color:var(--navy);margin-bottom:.22rem;}
+.req{color:var(--bleu2);margin-left:2px;}
+input.ti,select.si{width:100%;border:1px solid var(--border);border-radius:var(--r);padding:.45rem .7rem;font-family:'DM Sans',sans-serif;font-size:.82rem;color:var(--text);background:var(--off);transition:border-color .2s;}
+input.ti:focus,select.si:focus{outline:none;border-color:var(--bleu2);box-shadow:0 0 0 3px rgba(68,114,196,.1);}
+.fr{display:grid;grid-template-columns:1fr 1fr;gap:.8rem;}
+
+.eval-tabs{display:flex;gap:0;border-bottom:2px solid var(--border);margin-bottom:.6rem;}
+.eval-tab{padding:.5rem 1rem;border:none;background:none;font-family:'DM Sans',sans-serif;font-size:.8rem;cursor:pointer;border-bottom:3px solid transparent;margin-bottom:-2px;color:var(--muted);transition:all .15s;font-weight:500;}
+.eval-tab.active{border-bottom-color:var(--bleu);color:var(--navy);font-weight:600;}
+.eval-tab:hover:not(.active){background:rgba(47,84,150,.05);}
+.eval-tab.ev1.active{border-bottom-color:var(--ev1);color:var(--ev1);}
+.eval-tab.ev2.active{border-bottom-color:var(--ev2);color:var(--ev2);}
+.eval-tab.ev3.active{border-bottom-color:var(--ev3);color:var(--ev3);}
+.eval-tab.ev4.active{border-bottom-color:var(--ev4);color:var(--ev4);}
+.eval-panel{display:none;}
+.eval-panel.active{display:block;}
+
+.eval-nom-row{display:flex;align-items:center;gap:.6rem;margin-bottom:.8rem;padding:.4rem .6rem;background:rgba(47,84,150,.04);border-radius:var(--r);border:1px solid var(--border);}
+.eval-nom-row label{font-size:.74rem;color:var(--muted);white-space:nowrap;}
+.eval-nom-row input{flex:1;border:1px solid var(--border);border-radius:4px;padding:.3rem .6rem;font-family:'DM Sans',sans-serif;font-size:.8rem;background:var(--white);}
+.eval-nom-row input:focus{outline:none;border-color:var(--bleu2);}
+
+.domain-block{margin-bottom:.9rem;}
+.domain-head{display:flex;align-items:center;justify-content:space-between;gap:.5rem;margin-bottom:.4rem;}
+.domain-tag{font-size:.6rem;text-transform:uppercase;letter-spacing:.08em;font-weight:600;padding:.18rem .5rem;border-radius:2rem;}
+.domain-moy{font-size:.68rem;color:var(--muted);font-style:italic;}
+.gd-item{display:grid;grid-template-columns:22px 1fr auto;align-items:center;gap:.6rem;padding:.42rem .5rem;border-bottom:1px solid var(--border);border-radius:4px;margin-bottom:.2rem;transition:background .12s;}
+.gd-item:hover{background:rgba(47,84,150,.04);}
+.gd-item:last-child{border-bottom:none;}
+.gd-num{font-size:.66rem;font-weight:600;color:var(--muted);text-align:center;}
+.gd-label{font-size:.8rem;color:var(--text);}
+.gd-score{display:flex;gap:.2rem;align-items:center;}
+.gd-btn{width:24px;height:24px;border-radius:50%;border:1.5px solid var(--border);background:var(--white);font-size:.7rem;font-weight:600;color:var(--muted);cursor:pointer;display:flex;align-items:center;justify-content:center;transition:all .12s;flex-shrink:0;}
+.gd-btn:hover{border-color:var(--bleu2);color:var(--bleu2);}
+.gd-btn-na{width:28px;height:24px;border-radius:4px;border:1.5px solid var(--border);background:var(--white);font-size:.65rem;font-weight:700;color:var(--muted);cursor:pointer;display:flex;align-items:center;justify-content:center;transition:all .12s;flex-shrink:0;}
+.gd-btn-na:hover{border-color:#888;color:#555;}
+.gd-btn.active-ev1{background:var(--ev1);border-color:var(--ev1);color:white;}
+.gd-btn.active-ev2{background:var(--ev2);border-color:var(--ev2);color:white;}
+.gd-btn.active-ev3{background:var(--ev3);border-color:var(--ev3);color:white;}
+.gd-btn.active-ev4{background:var(--ev4);border-color:var(--ev4);color:white;}
+.gd-btn-na.active-na{background:#888;border-color:#888;color:white;}
+.gd-val{font-size:.76rem;font-weight:600;color:var(--navy);min-width:18px;text-align:center;}
+
+.domain-comment{margin-top:.4rem;padding:.4rem .5rem;background:rgba(47,84,150,.03);border-radius:4px;border:1px solid rgba(47,84,150,.1);}
+.domain-comment label{font-size:.67rem;color:var(--muted);display:block;margin-bottom:.2rem;}
+.domain-comment textarea{width:100%;border:1px solid var(--border);border-radius:4px;padding:.3rem .5rem;font-family:'DM Sans',sans-serif;font-size:.77rem;resize:vertical;min-height:40px;background:var(--white);color:var(--text);}
+.domain-comment textarea:focus{outline:none;border-color:var(--bleu2);}
+
+.consigne{background:rgba(47,84,150,.07);border:1px solid rgba(47,84,150,.2);border-radius:var(--r);padding:.65rem 1rem;margin-bottom:1rem;font-size:.8rem;color:var(--text);line-height:1.6;}
+
+.btn-submit{width:100%;padding:.6rem;background:var(--navy);color:var(--white);border:none;border-radius:var(--r);font-family:'DM Sans',sans-serif;font-size:.86rem;font-weight:500;cursor:pointer;margin-top:1rem;transition:background .2s;}
+.btn-submit:hover{background:#243352;}
+.btn-submit:disabled{opacity:.6;cursor:not-allowed;}
+.btn-export{width:100%;padding:.6rem;background:var(--bleu);color:var(--white);border:none;border-radius:var(--r);font-family:'DM Sans',sans-serif;font-size:.86rem;font-weight:500;cursor:pointer;margin-top:.5rem;transition:background .2s;}
+.btn-export:hover{background:var(--bleu2);}
+.btn-pdf{width:100%;padding:.6rem;background:#27AE60;color:var(--white);border:none;border-radius:var(--r);font-family:'DM Sans',sans-serif;font-size:.86rem;font-weight:500;cursor:pointer;margin-top:.5rem;}
+.btn-pdf:hover{background:#1E8449;}
+.btn-reset{width:100%;padding:.6rem;background:var(--white);color:#C0392B;border:1.5px solid #C0392B;border-radius:var(--r);font-family:'DM Sans',sans-serif;font-size:.86rem;font-weight:500;cursor:pointer;margin-top:.5rem;}
+
+.radar-card{background:var(--white);border:1px solid var(--border);border-radius:var(--r);overflow:hidden;box-shadow:0 2px 10px rgba(26,39,66,.06);position:sticky;top:74px;}
+.radar-head{background:var(--navy);padding:.85rem 1.3rem;display:flex;justify-content:space-between;align-items:center;}
+.radar-head h3{font-family:'DM Serif Display',serif;font-size:1rem;color:var(--white);font-weight:400;}
+.radar-body{padding:1rem;}
+#radar-svg{width:100%;height:auto;}
+
+.radar-legend{display:flex;flex-wrap:wrap;gap:.4rem .8rem;margin-top:.6rem;font-size:.73rem;}
+.rl-item{display:flex;align-items:center;gap:.35rem;}
+.rl-dot{width:10px;height:10px;border-radius:50%;flex-shrink:0;}
+
+.vis-controls{display:flex;flex-wrap:wrap;gap:.3rem .6rem;margin-top:.7rem;padding-top:.6rem;border-top:1px solid var(--border);}
+.vis-cb{display:flex;align-items:center;gap:.3rem;font-size:.72rem;cursor:pointer;}
+.vis-cb input{accent-color:var(--bleu);width:13px;height:13px;}
+
+.score-summary{margin-top:.8rem;border-top:1px solid var(--border);padding-top:.8rem;}
+.score-row{display:flex;justify-content:space-between;align-items:center;padding:.22rem 0;font-size:.74rem;}
+.score-row-label{color:var(--muted);}
+.score-row-val{font-weight:600;color:var(--navy);}
+.score-global{display:flex;justify-content:space-between;align-items:center;padding:.38rem 0;font-size:.83rem;border-top:1px solid var(--border);margin-top:.4rem;}
+.score-global-label{font-weight:500;color:var(--navy);}
+.score-global-val{font-weight:600;color:var(--bleu);font-size:.95rem;}
+
+.ok{display:none;padding:2rem 1.3rem;text-align:center;}
+.ok-i{width:46px;height:46px;background:rgba(47,84,150,.1);border:2px solid var(--bleu);border-radius:50%;display:flex;align-items:center;justify-content:center;margin:0 auto .9rem;font-size:1.2rem;color:var(--bleu);}
+.ok h3{font-family:'DM Serif Display',serif;font-size:1.1rem;color:var(--navy);margin-bottom:.4rem;}
+.ok p{color:var(--muted);font-size:.8rem;}
+
+footer{background:var(--navy);color:rgba(255,255,255,.45);font-size:.72rem;padding:1rem 2rem;display:flex;justify-content:space-between;flex-wrap:wrap;gap:.5rem;}
+footer a{color:var(--gold);text-decoration:none;}
+
+@media(max-width:750px){.main{grid-template-columns:1fr;}.fr{grid-template-columns:1fr;}.radar-card{position:static;}}
+@media print{nav,.vis-controls,.btn-submit,.btn-export,.btn-pdf,.btn-reset,footer{display:none!important;}.main{grid-template-columns:1fr 260px;}.radar-card{position:static;}body{font-size:11px;}}
+</style>
+</head>
+<body>
+
+<nav>
+  <a href="https://institutipcra.github.io/IPCRA-site/" class="nb">
+    <strong>IPCRA</strong>
+    <span>Institut de Pratiques Cliniques et de Recherche Appliquée</span>
+  </a>
+  <span style="color:rgba(255,255,255,.5);font-size:.76rem;">ORION · Version superposition · v2</span>
+</nav>
+
+<div class="hero">
+  <div class="badge">Évaluation pluridisciplinaire · Projet ORION</div>
+  <h1>Graphe Dimensionnel — <em>Multi-évaluateurs</em></h1>
+  <p class="hero-sub">IPCRA / ACTIF Formation · Cotation 1 à 5 · NA · 30 items · 6 dimensions · 4 évaluateurs superposés</p>
+</div>
+
+<div class="ct">
+<div class="main">
+
+  <div class="fc">
+    <div class="fc-h"><h2>Grille de cotation — GD ORION</h2></div>
+    <div class="form-body" id="form-body">
+
+      <div class="section-title">Identification</div>
+      <div class="fr">
+        <div class="f"><label>Jeune (code anonyme) <span class="req">*</span></label><input class="ti" type="text" id="jeune" placeholder="ex. ENF-001" required></div>
+        <div class="f"><label>Date <span class="req">*</span></label><input class="ti" type="date" id="date_saisie" required></div>
+      </div>
+      <div class="fr">
+        <div class="f"><label>Structure</label><input class="ti" type="text" id="structure" value="DITEP MASSIP"></div>
+        <div class="f"><label>Temps d'évaluation</label>
+          <select class="si" id="phase">
+            <option value="">— Sélectionner —</option>
+            <option value="T1">T1</option>
+            <option value="T2">T2</option>
+            <option value="T3">T3</option>
+          </select>
+        </div>
+      </div>
+      <div class="fr">
+        <div class="f"><label>Période observée</label><input class="ti" type="text" id="periode" placeholder="ex. Oct–Déc 2026"></div>
+      </div>
+
+      <div class="consigne">
+        <strong style="color:var(--navy)">Consigne :</strong> Pour chaque item, cotez de <strong>1</strong> (situation très préoccupante) à <strong>5</strong> (situation satisfaisante). Utilisez <strong>NA</strong> si l'item n'est pas applicable à ce jeune. Cliquez sur l'onglet de chaque évaluateur pour saisir ses scores. Le radar se met à jour en temps réel.
+      </div>
+
+      <div class="eval-tabs">
+        <button class="eval-tab ev1 active" onclick="switchEval('ev1')">Éduc. référent</button>
+        <button class="eval-tab ev2" onclick="switchEval('ev2')">Péda</button>
+        <button class="eval-tab ev3" onclick="switchEval('ev3')">Orion</button>
+        <button class="eval-tab ev4" onclick="switchEval('ev4')">Famille</button>
+      </div>
+
+      <div class="eval-nom-row">
+        <label>Nom / initiales :</label>
+        <input type="text" id="eval-nom-field" placeholder="Initiales ou nom de l'évaluateur actuel" oninput="updateEvalNom()">
+      </div>
+
+      <div id="panels-container"></div>
+
+      <button class="btn-submit" onclick="submitForm()">💾 Enregistrer (Google Sheets)</button>
+      <button class="btn-pdf" onclick="window.print()">📄 Exporter PDF</button>
+      <button class="btn-export" onclick="exportCSV()">📤 Exporter CSV</button>
+      <button class="btn-reset" onclick="resetForm()">🔄 Réinitialiser</button>
+    </div>
+
+    <div class="ok" id="ok-state">
+      <div class="ok-i">✓</div>
+      <h3>Cotation enregistrée</h3>
+      <p>Les données ont été transmises. Vous pouvez fermer ou faire une nouvelle saisie.</p>
+      <button class="btn-export" onclick="resetForm()" style="margin-top:1rem">← Nouvelle saisie</button>
+    </div>
+  </div>
+
+  <div class="radar-card">
+    <div class="radar-head">
+      <h3>Profil dimensionnel superposé</h3>
+    </div>
+    <div class="radar-body">
+      <svg id="radar-svg" viewBox="0 0 300 300" xmlns="http://www.w3.org/2000/svg"></svg>
+
+      <div class="radar-legend">
+        <div class="rl-item"><div class="rl-dot" style="background:var(--ev1)"></div> Éduc. référent</div>
+        <div class="rl-item"><div class="rl-dot" style="background:var(--ev2)"></div> Péda</div>
+        <div class="rl-item"><div class="rl-dot" style="background:var(--ev3)"></div> Orion</div>
+        <div class="rl-item"><div class="rl-dot" style="background:var(--ev4)"></div> Famille</div>
+        <div class="rl-item"><div class="rl-dot" style="background:var(--moy);border:1.5px dashed var(--moy)"></div> Moyenne</div>
+      </div>
+
+      <div class="vis-controls">
+        <label class="vis-cb"><input type="checkbox" id="vis-ev1" checked onchange="updateRadar()"><span style="color:var(--ev1);font-weight:600">Éduc. réf.</span></label>
+        <label class="vis-cb"><input type="checkbox" id="vis-ev2" checked onchange="updateRadar()"><span style="color:var(--ev2);font-weight:600">Péda</span></label>
+        <label class="vis-cb"><input type="checkbox" id="vis-ev3" checked onchange="updateRadar()"><span style="color:var(--ev3);font-weight:600">Orion</span></label>
+        <label class="vis-cb"><input type="checkbox" id="vis-ev4" checked onchange="updateRadar()"><span style="color:var(--ev4);font-weight:600">Famille</span></label>
+        <label class="vis-cb"><input type="checkbox" id="vis-moy" checked onchange="updateRadar()"><span style="color:var(--moy);font-weight:600">Moyenne</span></label>
+      </div>
+
+      <div class="score-summary" id="score-summary"></div>
+    </div>
+  </div>
+
+</div>
+</div>
+
+<footer>
+  <div><strong style="color:#fff">IPCRA</strong> — Institut de Pratiques Cliniques et Recherche Appliquée · institut.ipcra@gmail.com</div>
+  <div><a href="https://institutipcra.github.io/IPCRA-site/">← Site IPCRA</a></div>
+</footer>
+
+<script>
+const DIMS = [
+  { id:"D1", label:"Relation à l'adulte", color:"#2F5496",
+    items:[{n:1,l:"Agressivité"},{n:2,l:"Provocation"},{n:3,l:"Communication"}] },
+  { id:"D2", label:"Relation avec ses pairs", color:"#4472C4",
+    items:[{n:4,l:"Comportement perturbateur"},{n:5,l:"Intégration"},{n:6,l:"Agressivité groupe"},{n:7,l:"Communication groupe"}] },
+  { id:"D3", label:"État de la personne", color:"#70AD47",
+    items:[{n:8,l:"Humeur"},{n:9,l:"État psychosomatique"},{n:10,l:"Fatigabilité"},{n:11,l:"Apparence physique"}] },
+  { id:"D4", label:"Apprentissages scolaires", color:"#B48214",
+    items:[{n:12,l:"Écart âge / niveau"},{n:13,l:"Qualité de travail"},{n:14,l:"Respect des consignes"},{n:15,l:"Assiduité, ponctualité"},{n:16,l:"Niveau de compréhension"}] },
+  { id:"D5", label:"Attitude accompagnement", color:"#7B2D8B",
+    items:[{n:17,l:"Implication"},{n:18,l:"Motivation"},{n:19,l:"Prise d'initiatives"},{n:20,l:"Satisfaction"}] },
+  { id:"D6", label:"Autonomie & Capacités", color:"#A02820",
+    items:[{n:21,l:"Hygiène"},{n:22,l:"Sécurité"},{n:23,l:"Autonomie déplacement"},{n:24,l:"Vie quotidienne"},{n:25,l:"Autonomie travail"},{n:26,l:"Capacités adaptation"},{n:27,l:"Capacités relationnelles"},{n:28,l:"Connaissances élémentaires"},{n:29,l:"Repères spatio-temporels"},{n:30,l:"Respect cadre et règles"}] }
+];
+
+const EVS = [
+  {id:"ev1", label:"Éducateur référent", color:"#2F5496", fillOpacity:"0.10"},
+  {id:"ev2", label:"Péda",              color:"#B48214", fillOpacity:"0.08"},
+  {id:"ev3", label:"Orion",             color:"#4F8C32", fillOpacity:"0.08"},
+  {id:"ev4", label:"Famille",           color:"#A02820", fillOpacity:"0.08"},
+];
+
+const ALL_ITEMS = DIMS.flatMap(d => d.items.map(i=>({...i, dimId:d.id, dimColor:d.color, dimLabel:d.label})));
+const N = ALL_ITEMS.length;
+
+const scores = {};
+const noms = {ev1:'', ev2:'', ev3:'', ev4:''};
+const commentaires = {};
+
+EVS.forEach(ev => {
+  scores[ev.id] = {};
+  commentaires[ev.id] = {};
+  ALL_ITEMS.forEach(it => scores[ev.id][it.n] = null);
+  DIMS.forEach(d => commentaires[ev.id][d.id] = '');
+});
+
+let currentEval = 'ev1';
+
+const panelsContainer = document.getElementById('panels-container');
+
+EVS.forEach(ev => {
+  const panel = document.createElement('div');
+  panel.className = `eval-panel${ev.id==='ev1'?' active':''}`;
+  panel.id = `panel-${ev.id}`;
+
+  DIMS.forEach(dim => {
+    const block = document.createElement('div');
+    block.className = 'domain-block';
+    block.innerHTML = `<div class="domain-head">
+      <span class="domain-tag" style="color:${dim.color};border:1px solid ${dim.color}30;background:${dim.color}12">${dim.label}</span>
+      <span class="domain-moy" id="moy-${ev.id}-${dim.id}">—</span>
+    </div>`;
+
+    dim.items.forEach(item => {
+      const row = document.createElement('div');
+      row.className = 'gd-item';
+      row.innerHTML = `
+        <div class="gd-num">${item.n}</div>
+        <div class="gd-label">${item.l}</div>
+        <div class="gd-score" id="row-${ev.id}-${item.n}">
+          ${[1,2,3,4,5].map(v=>`<button type="button" class="gd-btn" onclick="setScore('${ev.id}',${item.n},${v})">${v}</button>`).join('')}
+          <button type="button" class="gd-btn-na active-na" onclick="setNA('${ev.id}',${item.n})">NA</button>
+          <div class="gd-val" id="val-${ev.id}-${item.n}">NA</div>
+        </div>`;
+      block.appendChild(row);
+    });
+
+    const commentDiv = document.createElement('div');
+    commentDiv.className = 'domain-comment';
+    commentDiv.innerHTML = `
+      <label>Commentaire — ${dim.label}</label>
+      <textarea id="comment-${ev.id}-${dim.id}" placeholder="Observations, nuances, contexte…"
+        oninput="commentaires['${ev.id}']['${dim.id}']=this.value"></textarea>`;
+    block.appendChild(commentDiv);
+
+    panel.appendChild(block);
+  });
+
+  panelsContainer.appendChild(panel);
+});
+
+function switchEval(evId) {
+  currentEval = evId;
+  document.querySelectorAll('.eval-panel').forEach(p => p.classList.remove('active'));
+  document.querySelectorAll('.eval-tab').forEach(t => t.classList.remove('active'));
+  document.getElementById(`panel-${evId}`).classList.add('active');
+  document.querySelector(`.eval-tab.${evId}`).classList.add('active');
+  document.getElementById('eval-nom-field').value = noms[evId] || '';
+}
+
+function updateEvalNom() {
+  noms[currentEval] = document.getElementById('eval-nom-field').value;
+}
+
+function setScore(evId, num, val) {
+  scores[evId][num] = val;
+  const row = document.getElementById(`row-${evId}-${num}`);
+  row.querySelectorAll('.gd-btn').forEach((btn, i) => {
+    btn.classList.remove('active-ev1','active-ev2','active-ev3','active-ev4');
+    if (i === val - 1) btn.classList.add(`active-${evId}`);
+  });
+  row.querySelectorAll('.gd-btn-na').forEach(btn => btn.classList.remove('active-na'));
+  document.getElementById(`val-${evId}-${num}`).textContent = val;
+  updateRadar();
+}
+
+function setNA(evId, num) {
+  scores[evId][num] = null;
+  const row = document.getElementById(`row-${evId}-${num}`);
+  row.querySelectorAll('.gd-btn').forEach(btn =>
+    btn.classList.remove('active-ev1','active-ev2','active-ev3','active-ev4'));
+  row.querySelectorAll('.gd-btn-na').forEach(btn => btn.classList.add('active-na'));
+  document.getElementById(`val-${evId}-${num}`).textContent = 'NA';
+  updateRadar();
+}
+
+const CX=150, CY=150, R=108, MAXVAL=5;
+
+function polarToXY(angle, radius) {
+  const a = (angle - 90) * Math.PI / 180;
+  return {x: CX + radius * Math.cos(a), y: CY + radius * Math.sin(a)};
+}
+
+function svgEl(tag, attrs, text) {
+  const el = document.createElementNS('http://www.w3.org/2000/svg', tag);
+  Object.entries(attrs).forEach(([k,v]) => el.setAttribute(k,v));
+  if (text !== undefined) el.textContent = text;
+  return el;
+}
+
+function valide(v) { return v !== null && v !== undefined; }
+
+function updateRadar() {
+  const svg = document.getElementById('radar-svg');
+  svg.innerHTML = '';
+  const angleStep = 360 / N;
+
+  [1,2,3,4,5].forEach(lvl => {
+    const pts = ALL_ITEMS.map((_,i)=>{const p=polarToXY(i*angleStep,(lvl/MAXVAL)*R);return `${p.x},${p.y}`;}).join(' ');
+    svg.appendChild(svgEl('polygon',{points:pts,fill:'none',stroke:'#d8d4cc','stroke-width':lvl===5?'1':'0.5'}));
+  });
+
+  [1,3,5].forEach(lvl => {
+    const p = polarToXY(0,(lvl/MAXVAL)*R);
+    svg.appendChild(svgEl('text',{x:CX+2,y:p.y-2,'font-size':'6',fill:'#aaa','text-anchor':'middle'}, String(lvl)));
+  });
+
+  ALL_ITEMS.forEach((_,i) => {
+    const outer = polarToXY(i*angleStep, R);
+    svg.appendChild(svgEl('line',{x1:CX,y1:CY,x2:outer.x,y2:outer.y,stroke:'#ccc','stroke-width':'0.5'}));
+  });
+
+  // Dessiner un radar en sautant les items NA (tracé par segments, polygone fermé si possible)
+  function drawRadarPath(itemScores, color, fillColor, fillOpacity, strokeWidth, dashArray) {
+    const n = itemScores.length;
+
+    // Calculer les points valides avec leur index angulaire
+    const points = itemScores.map((entry, i) => {
+      if (entry.v === null) return null;
+      return polarToXY(i * angleStep, (entry.v / MAXVAL) * R);
+    });
+
+    // Zone remplie : seulement si tous les items sont valides
+    const allValid = itemScores.every(e => e.v !== null);
+    if (allValid) {
+      const pts = points.map(p => `${p.x},${p.y}`).join(' ');
+      svg.appendChild(svgEl('polygon', {
+        points: pts, fill: fillColor, 'fill-opacity': fillOpacity, stroke: 'none'
+      }));
+    }
+
+    // Construire les segments continus en tenant compte de la circularité (30→1)
+    // On duplique le tableau pour détecter la jointure circulaire
+    const segments = [];
+    let current = [];
+
+    for (let k = 0; k < n; k++) {
+      if (points[k] !== null) {
+        current.push({p: points[k], idx: k});
+      } else {
+        if (current.length > 0) { segments.push(current); current = []; }
+      }
+    }
+    if (current.length > 0) segments.push(current);
+
+    // Si le premier et dernier segment peuvent se rejoindre (pas de NA entre item n et item 0)
+    if (segments.length >= 2) {
+      const first = segments[0];
+      const last = segments[segments.length - 1];
+      const lastIdx = last[last.length - 1].idx;
+      const firstIdx = first[0].idx;
+      // Jointure circulaire : si le dernier item valide est adjacent au premier (pas de NA entre 30 et 1)
+      if (lastIdx === n - 1 && firstIdx === 0) {
+        // Fusionner le dernier segment avec le premier
+        const merged = [...last, ...first];
+        segments.splice(0, 1);
+        segments.splice(segments.length - 1, 1);
+        segments.push(merged);
+      }
+    }
+
+    // Tracer les segments
+    segments.forEach(seg => {
+      if (seg.length < 2) {
+        // Point isolé : juste un cercle
+        const p = seg[0].p;
+        svg.appendChild(svgEl('circle', {
+          cx: p.x.toFixed(2), cy: p.y.toFixed(2), r: '2.5',
+          fill: color, stroke: 'white', 'stroke-width': '1'
+        }));
+        return;
+      }
+      // Fermer le segment si c'est un tour complet
+      const isLoop = seg[0].idx === seg[seg.length-1].idx + 1 - n ||
+                     (seg.length === n);
+      let d = seg.map((s, i) => `${i === 0 ? 'M' : 'L'}${s.p.x.toFixed(2)},${s.p.y.toFixed(2)}`).join(' ');
+      if (isLoop || allValid) d += ' Z';
+      const pathAttrs = {
+        d, fill: 'none', stroke: color,
+        'stroke-width': strokeWidth, 'stroke-linejoin': 'round'
+      };
+      if (dashArray) pathAttrs['stroke-dasharray'] = dashArray;
+      svg.appendChild(svgEl('path', pathAttrs));
+    });
+
+    // Points sur les items valides
+    points.forEach((p, i) => {
+      if (p === null) return;
+      svg.appendChild(svgEl('circle', {
+        cx: p.x.toFixed(2), cy: p.y.toFixed(2), r: '2.5',
+        fill: color, stroke: 'white', 'stroke-width': '1'
+      }));
+    });
+  }
+
+  const visEv = EVS.filter(ev => document.getElementById(`vis-${ev.id}`)?.checked);
+  visEv.forEach(ev => {
+    const itemScores = ALL_ITEMS.map(item => ({ v: scores[ev.id][item.n] }));
+    drawRadarPath(itemScores, ev.color, ev.color, ev.fillOpacity, '1.5', null);
+  });
+
+  if (document.getElementById('vis-moy')?.checked) {
+    const itemScores = ALL_ITEMS.map(item => {
+      const vals = EVS.map(ev => scores[ev.id][item.n]).filter(valide);
+      return { v: vals.length > 0 ? vals.reduce((a,b)=>a+b,0)/vals.length : null };
+    });
+    drawRadarPath(itemScores, '#7B2D8B', 'rgba(123,45,139,0.12)', '1', '2', '5,3');
+  }
+
+  ALL_ITEMS.forEach((item,i) => {
+    const labelP = polarToXY(i*angleStep, R+16);
+    svg.appendChild(svgEl('text',{x:labelP.x,y:labelP.y,
+      'text-anchor':'middle','dominant-baseline':'central',
+      'font-size':'6.5',fill:item.dimColor,'font-family':'DM Sans, sans-serif','font-weight':'600'}, String(item.n)));
+  });
+
+  svg.appendChild(svgEl('circle',{cx:CX,cy:CY,r:'2',fill:'#1a2742'}));
+
+  updateSummary();
+  updateDimMoyennes();
+}
+
+function updateDimMoyennes() {
+  EVS.forEach(ev => {
+    DIMS.forEach(dim => {
+      const el = document.getElementById(`moy-${ev.id}-${dim.id}`);
+      if (!el) return;
+      const vals = dim.items.map(it=>scores[ev.id][it.n]).filter(valide);
+      el.textContent = vals.length > 0 ? `moy. ${(vals.reduce((a,b)=>a+b,0)/vals.length).toFixed(1)}` : '—';
+    });
+  });
+}
+
+function updateSummary() {
+  let html = '';
+  DIMS.forEach(dim => {
+    const allVals = [];
+    EVS.forEach(ev => dim.items.forEach(it => {
+      if (valide(scores[ev.id][it.n])) allVals.push(scores[ev.id][it.n]);
+    }));
+    const moy = allVals.length > 0 ? (allVals.reduce((a,b)=>a+b,0)/allVals.length).toFixed(1) : '—';
+    html += `<div class="score-row">
+      <span class="score-row-label" style="color:${dim.color}">${dim.label.length>22?dim.label.substring(0,22)+'…':dim.label}</span>
+      <span class="score-row-val">${moy !== '—' ? moy+'/5' : '—'}</span>
+    </div>`;
+  });
+
+  const allVals = [];
+  EVS.forEach(ev => ALL_ITEMS.forEach(it => {
+    if (valide(scores[ev.id][it.n])) allVals.push(scores[ev.id][it.n]);
+  }));
+  const globalAll = allVals.length > 0 ? (allVals.reduce((a,b)=>a+b,0)/allVals.length).toFixed(1) : '—';
+
+  html += `<div class="score-global">
+    <span class="score-global-label">Moyenne globale</span>
+    <span class="score-global-val">${globalAll !== '—' ? globalAll+'/5' : '—'}</span>
+  </div>`;
+  document.getElementById('score-summary').innerHTML = html;
+}
+
+const SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbziJYZXS8ElfpT6PhGjem5-UbsU41uHIOnciepSpDT0MoXk1J4kRbtdowXUSre48P5-ig/exec';
+
+function submitForm() {
+  const jeune = document.getElementById('jeune').value.trim();
+  const date = document.getElementById('date_saisie').value;
+  if (!jeune || !date) { alert('Veuillez remplir au moins le code du jeune et la date.'); return; }
+
+  if (SCRIPT_URL === 'REMPLACER_PAR_URL_APPS_SCRIPT_GD') {
+    alert('⚠️ URL Google Apps Script non configurée.\nUtilisez le bouton "Exporter CSV" pour récupérer les données.');
+    return;
+  }
+
+  const btn = document.querySelector('.btn-submit');
+  btn.textContent = 'Enregistrement…'; btn.disabled = true;
+
+  const ident = {
+    jeune, date,
+    structure: document.getElementById('structure').value.trim(),
+    phase: document.getElementById('phase').value,
+    nEvaluation: document.getElementById('phase').value,
+    periode: document.getElementById('periode').value,
+  };
+
+  const promises = EVS.map(ev => {
+    const data = {
+      ...ident,
+      evaluateurRole: ev.label,
+      evaluateurNom: noms[ev.id] || '',
+      items: Object.fromEntries(ALL_ITEMS.map(it => [it.n, scores[ev.id][it.n]])),
+      commentaires: commentaires[ev.id],
+    };
+    return fetch(SCRIPT_URL, {
+      method:'POST', mode:'no-cors',
+      headers:{'Content-Type':'application/json'},
+      body: JSON.stringify(data)
+    });
+  });
+
+  Promise.all(promises)
+    .then(() => {
+      document.getElementById('form-body').style.display='none';
+      document.getElementById('ok-state').style.display='block';
+      btn.textContent='💾 Enregistrer (Google Sheets)'; btn.disabled=false;
+    })
+    .catch(() => {
+      btn.textContent='💾 Enregistrer (Google Sheets)'; btn.disabled=false;
+      alert('Erreur de connexion. Utilisez "Exporter CSV" pour sauvegarder vos données.');
+    });
+}
+
+function exportCSV() {
+  const jeune = document.getElementById('jeune').value||'';
+  const date = document.getElementById('date_saisie').value||'';
+  const structure = document.getElementById('structure').value||'';
+  const phase = document.getElementById('phase').value||'';
+  const numEval = document.getElementById('phase').value||'';
+
+  let csv = 'Jeune;Date;Structure;Phase;T;Évaluateur;Nom;Item;Label;Dimension;Score\n';
+  EVS.forEach(ev => {
+    ALL_ITEMS.forEach(item => {
+      const v = scores[ev.id][item.n];
+      csv += `${jeune};${date};${structure};${phase};${numEval};${ev.label};${noms[ev.id]||''};${item.n};${item.l};${item.dimLabel};${v===null?'NA':v}\n`;
+    });
+  });
+
+  const a = document.createElement('a');
+  a.href = URL.createObjectURL(new Blob(['\uFEFF'+csv],{type:'text/csv;charset=utf-8;'}));
+  a.download = `GD_ORION_${jeune||'export'}_${numEval||'T?'}_${date||new Date().toISOString().slice(0,10)}.csv`;
+  a.click();
+}
+
+function resetForm() {
+  EVS.forEach(ev => {
+    ALL_ITEMS.forEach(it => {
+      scores[ev.id][it.n] = null;
+      const row = document.getElementById(`row-${ev.id}-${it.n}`);
+      if (row) {
+        row.querySelectorAll('.gd-btn').forEach(btn => {
+          btn.classList.remove('active-ev1','active-ev2','active-ev3','active-ev4');
+        });
+        row.querySelectorAll('.gd-btn-na').forEach(btn => btn.classList.add('active-na'));
+        document.getElementById(`val-${ev.id}-${it.n}`).textContent='NA';
+      }
+    });
+    DIMS.forEach(d => {
+      commentaires[ev.id][d.id] = '';
+      const ta = document.getElementById(`comment-${ev.id}-${d.id}`);
+      if (ta) ta.value = '';
+    });
+    noms[ev.id] = '';
+  });
+  document.getElementById('eval-nom-field').value = '';
+  document.getElementById('jeune').value = '';
+  document.getElementById('structure').value = 'DITEP MASSIP';
+  document.getElementById('phase').value = '';
+  
+  document.getElementById('periode').value = '';
+  document.getElementById('date_saisie').valueAsDate = new Date();
+  document.getElementById('form-body').style.display='block';
+  document.getElementById('ok-state').style.display='none';
+  switchEval('ev1');
+  updateRadar();
+}
+
+document.getElementById('date_saisie').valueAsDate = new Date();
+updateRadar();
+</script>
+</body>
+</html>
