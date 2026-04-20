@@ -1,0 +1,287 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>AAQ-II · Flexibilité psychologique · ABILITY / IPCRA</title>
+<link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@300;400;500;600&family=DM+Serif+Display:ital@0;1&display=swap" rel="stylesheet">
+<style>
+:root{--navy:#1a2744;--teal:#1a8c7a;--teal-light:#e8f5f3;--teal-mid:#b3dfd8;--gold:#c8923a;--gold-light:#fdf3e3;--text:#1e1e1e;--muted:#6b7280;--border:#e2e5e0;--bg:#fafaf8;--white:#ffffff;}
+*{box-sizing:border-box;margin:0;padding:0;}
+body{font-family:'DM Sans',sans-serif;color:var(--text);background:var(--bg);font-size:15px;line-height:1.6;}
+nav{background:var(--navy);padding:0 2rem;display:flex;align-items:center;justify-content:space-between;height:60px;position:sticky;top:0;z-index:100;}
+.nav-brand{color:#fff;font-family:'DM Serif Display',serif;font-size:1rem;text-decoration:none;}
+.hero{background:var(--navy);padding:2rem 2rem 1.8rem;border-bottom:3px solid var(--teal);}
+.hero-badge{display:inline-block;background:rgba(26,140,122,.18);color:#7dd4c8;font-size:.68rem;letter-spacing:.09em;text-transform:uppercase;padding:4px 12px;border-radius:20px;margin-bottom:.7rem;}
+.hero h1{font-family:'DM Serif Display',serif;color:#fff;font-size:clamp(1.2rem,3vw,1.7rem);margin-bottom:.3rem;}
+.hero h1 em{color:#7dd4c8;font-style:italic;}
+.hero-sub{color:rgba(255,255,255,.6);font-size:.82rem;}
+.ct{max-width:780px;margin:0 auto;padding:0 1.5rem;}
+.main{padding:1.5rem 0 4rem;}
+.card{background:var(--white);border:1px solid var(--border);border-radius:8px;overflow:hidden;box-shadow:0 2px 8px rgba(26,39,68,.05);margin-bottom:1rem;}
+.card-h{background:var(--navy);padding:.75rem 1.2rem;}
+.card-h h2{font-family:'DM Serif Display',serif;color:#fff;font-size:.95rem;font-weight:400;}
+.card-body{padding:1.2rem;}
+.f{margin-bottom:.9rem;}
+.f label{display:block;font-size:.76rem;font-weight:500;color:var(--navy);margin-bottom:.2rem;}
+.f input,.f select{width:100%;border:1px solid var(--border);border-radius:6px;padding:.45rem .7rem;font-family:'DM Sans',sans-serif;font-size:.85rem;background:var(--bg);}
+.f input:focus,.f select:focus{outline:none;border-color:var(--teal);}
+.fg{display:grid;grid-template-columns:1fr 1fr;gap:.8rem;}
+.consigne{background:var(--teal-light);border-left:3px solid var(--teal);padding:.75rem 1rem;font-size:.82rem;border-radius:0 6px 6px 0;margin-bottom:1rem;line-height:1.6;}
+.scale-header{display:grid;gap:.4rem;padding:.6rem 1.2rem;background:#f8f9fc;border-bottom:1px solid var(--border);}
+.scale-labels{display:flex;justify-content:space-between;font-size:.68rem;color:var(--muted);}
+.item-row{display:grid;grid-template-columns:28px 1fr auto;align-items:center;gap:.8rem;padding:.55rem 1.2rem;border-bottom:1px solid var(--border);}
+.item-row:last-child{border-bottom:none;}
+.item-row:hover{background:#fafbff;}
+.item-num{font-size:.66rem;color:var(--muted);font-weight:700;text-align:center;}
+.item-label{font-size:.85rem;}
+.item-label.pos{color:var(--teal);}
+.item-label.neg{color:#7b3f3f;}
+.item-btns{display:flex;gap:3px;}
+.sb{width:28px;height:28px;border-radius:4px;border:1.5px solid var(--border);font-size:.78rem;font-weight:600;cursor:pointer;background:var(--white);color:var(--muted);display:flex;align-items:center;justify-content:center;transition:all .12s;}
+.sb:hover{border-color:var(--teal);color:var(--teal);}
+.sb.active-pos{background:var(--teal);border-color:var(--teal);color:#fff;}
+.sb.active-neg{background:#7b3f3f;border-color:#7b3f3f;color:#fff;}
+.res-grid{display:grid;grid-template-columns:1fr 1fr;gap:.8rem;margin-bottom:.8rem;}
+.res-card{border-radius:6px;padding:.8rem 1rem;}
+.res-card.pos{background:var(--teal-light);border:1px solid var(--teal-mid);}
+.res-card.neg{background:#fdf0f0;border:1px solid #f0c0c0;}
+.res-card.global{background:var(--navy);border:none;grid-column:1/-1;}
+.res-label{font-size:.72rem;color:var(--muted);margin-bottom:.2rem;}
+.res-card.global .res-label{color:rgba(255,255,255,.6);}
+.res-val{font-size:1.5rem;font-weight:700;}
+.res-card.pos .res-val{color:var(--teal);}
+.res-card.neg .res-val{color:#7b3f3f;}
+.res-card.global .res-val{color:#7dd4c8;}
+.res-sub{font-size:.72rem;color:var(--muted);margin-top:.15rem;}
+.res-card.global .res-sub{color:rgba(255,255,255,.5);}
+.profil-card{border:1px solid var(--gold);background:var(--gold-light);border-radius:6px;padding:.8rem 1rem;}
+.profil-label{font-size:.72rem;color:var(--gold);font-weight:600;text-transform:uppercase;letter-spacing:.04em;margin-bottom:.2rem;}
+.profil-val{font-size:1rem;font-weight:700;color:var(--navy);}
+.profil-desc{font-size:.78rem;color:var(--muted);margin-top:.3rem;line-height:1.4;}
+.btn{display:flex;align-items:center;justify-content:center;gap:6px;padding:9px 20px;border-radius:6px;font-family:'DM Sans',sans-serif;font-size:.85rem;font-weight:500;cursor:pointer;border:none;width:100%;margin-top:.6rem;}
+.btn-navy{background:var(--navy);color:#fff;}
+.btn-teal{background:var(--teal);color:#fff;}
+.btn-muted{background:var(--white);color:var(--muted);border:1px solid var(--border);}
+footer{background:var(--navy);color:rgba(255,255,255,.4);font-size:.72rem;padding:1rem 2rem;display:flex;justify-content:space-between;}
+footer a{color:#7dd4c8;text-decoration:none;}
+</style>
+</head>
+<body>
+
+<nav>
+  <a href="https://institutipcra.github.io/IPCRA-site/" class="nav-brand">IPCRA <span style="color:rgba(255,255,255,.4);font-size:.7rem;">· Protocole ABILITY</span></a>
+  <span style="color:rgba(255,255,255,.45);font-size:.75rem;">AAQ-II</span>
+</nav>
+
+<div class="hero">
+  <div style="max-width:780px;margin:0 auto;">
+    <div class="hero-badge">Auto-évaluation · Protocole ABILITY</div>
+    <h1>AAQ-II — <em>AAQ-II</em></h1>
+    <p class="hero-sub">Auto-évaluation · Protocole ABILITY · IPCRA / Association Lamourous — SAVS Cahors</p>
+  </div>
+</div>
+
+<div class="ct"><div class="main">
+
+<div class="card">
+  <div class="card-h"><h2>Identification</h2></div>
+  <div class="card-body">
+    <div class="fg">
+      <div class="f"><label>Code participant *</label><input type="text" id="code" placeholder="ex. PART-001"></div>
+      <div class="f"><label>Date *</label><input type="date" id="date"></div>
+    </div>
+    <div class="fg">
+      <div class="f"><label>Structure / SAVS</label><input type="text" id="structure" placeholder="ex. SAVS Cahors"></div>
+      <div class="f"><label>Temps de passation</label>
+        <select id="temps">
+          <option value="">— Sélectionner —</option>
+          <option value="T0">T0 — Baseline</option>
+          <option value="T1">T1 — Bilan intermédiaire</option>
+          <option value="T2">T2 — Bilan final</option>
+        </select>
+      </div>
+    </div>
+    <div class="fg">
+      <div class="f"><label>Groupe</label>
+        <select id="groupe">
+          <option value="">— Sélectionner —</option>
+          <option>Expérimental</option>
+          <option>Contrôle</option>
+        </select>
+      </div>
+      <div class="f"><label>Professionnel référent</label><input type="text" id="referent" placeholder="Initiales"></div>
+    </div>
+  </div>
+</div>
+
+<div class="consigne">
+  <strong>Consigne :</strong> Voici une liste d'affirmations. Merci d'évaluer à quel point chacune est vraie pour vous en ce moment, en cliquant sur le chiffre correspondant (1 = Jamais vrai, 7 = Toujours vrai).
+</div>
+<div class="card">
+  <div class="card-h"><h2>Questionnaire — 10 items</h2></div>
+  <div class="scale-header"><div class="scale-labels">
+          <span>1 — Jamais vrai</span>
+          <span>2 — Très rarement</span>
+          <span>3 — Rarement</span>
+          <span>4 — Parfois</span>
+          <span>5 — Souvent</span>
+          <span>6 — Presque toujours</span>
+          <span>7 — Toujours vrai</span>
+        </div></div>
+  <div id="items-container"></div>
+</div>
+
+<div class="card" style="display:none;" id="results-card">
+  <div class="card-h"><h2>Résultats</h2></div>
+  <div class="card-body" id="results-body"></div>
+</div>
+
+<button class="btn btn-navy" onclick="calculer()">📊 Calculer les scores</button>
+<button class="btn btn-teal" onclick="enregistrer()" id="btn-enregistrer" style="display:none;">💾 Enregistrer (Google Sheets)</button>
+<button class="btn btn-muted" onclick="resetForm()">🔄 Réinitialiser</button>
+
+</div></div>
+
+<footer>
+  <div><strong style="color:#fff">IPCRA</strong> — Protocole ABILITY · Association Lamourous / SAVS Cahors</div>
+  <div><a href="https://institutipcra.github.io/IPCRA-site/">← Site IPCRA</a></div>
+</footer>
+
+<script>
+const SCRIPT_URL = 'REMPLACER_PAR_URL_APPS_SCRIPT_ABILITY';
+const IS_PANAS = false;
+const MAX_VAL = 7;
+const ITEMS = [
+  {n:1, l:"Si j'ai un souvenir désagréable, je le laisse venir.", flag:false},
+  {n:2, l:'Mes expériences et mes souvenirs douloureux me gênent pour conduire ma vie comme il me tiendrait à cœur de le faire.', flag:true},
+  {n:3, l:"J'ai peur de mes émotions.", flag:true},
+  {n:4, l:"J'ai peur de ne pas être capable de contrôler mes inquiétudes et mes émotions.", flag:true},
+  {n:5, l:"Mes souvenirs douloureux m'empêchent de m'épanouir dans la vie.", flag:true},
+  {n:6, l:"J'ai le contrôle de ma vie.", flag:false},
+  {n:7, l:'Les émotions sont une source de problème dans ma vie.', flag:true},
+  {n:8, l:"J'ai l'impression que la plupart des gens gèrent leur vie mieux que moi.", flag:true},
+  {n:9, l:"Mes soucis m'empêchent de réussir.", flag:true},
+  {n:10, l:"Mes pensées et mes émotions ne m'empêchent pas de vivre ma vie comme je le veux.", flag:false},
+];
+
+const scores = {};
+ITEMS.forEach(it => scores[it.n] = 0);
+
+const container = document.getElementById('items-container');
+ITEMS.forEach(item => {
+  const div = document.createElement('div');
+  div.className = 'item-row';
+  const activeClass = item.flag ? 'active-pos' : 'active-neg';
+  const labelClass = IS_PANAS ? (item.flag ? 'pos' : 'neg') : '';
+  const btns = [1, 2, 3, 4, 5, 6, 7].map(v =>
+    `<button type="button" class="sb" id="btn-${item.n}-${v}" onclick="setScore(${item.n},${v},'${activeClass}')">${v}</button>`
+  ).join('');
+  div.innerHTML = `
+    <div class="item-num">${item.n}</div>
+    <div class="item-label ${labelClass}">${item.l}</div>
+    <div class="item-btns">${btns}</div>`;
+  container.appendChild(div);
+});
+
+function setScore(n, val, activeClass) {
+  scores[n] = val;
+  [1, 2, 3, 4, 5, 6, 7].forEach(v => {
+    const btn = document.getElementById(`btn-${n}-${v}`);
+    if (btn) btn.className = 'sb' + (v === val ? ' ' + activeClass : '');
+  });
+}
+
+function calculer() {
+  const code = document.getElementById('code').value.trim();
+  const date = document.getElementById('date').value;
+  if (!code || !date) { alert('Veuillez renseigner le code participant et la date.'); return; }
+
+  // Items inversés : 2,3,4,5,7,8,9
+  const inverted = [2,3,4,5,7,8,9];
+  let total = 0;
+  ITEMS.forEach(item => {
+    const raw = scores[item.n] || 0;
+    const val = item.flag ? (8 - raw) : raw; // inversion si flag=true
+    total += val;
+  });
+
+  // Interprétation
+  let niveau, desc;
+  if (total >= 48) { niveau = "Flexibilité élevée"; desc = "La personne fait preuve d'une bonne capacité à accepter ses expériences intérieures et à agir en accord avec ses valeurs malgré l'inconfort."; }
+  else if (total >= 35) { niveau = "Flexibilité modérée"; desc = "La personne présente une flexibilité psychologique partielle avec des zones de rigidité ou d'évitement à explorer."; }
+  else { niveau = "Flexibilité limitée"; desc = "La personne présente des difficultés à accepter ses expériences intérieures, avec tendance à l'évitement expérientiel. À explorer en séance."; }
+
+  const rb = document.getElementById('results-body');
+  rb.innerHTML = `
+    <p style="font-size:.8rem;color:var(--muted);margin-bottom:.8rem;">${code} · ${date}</p>
+    <div class="res-grid">
+      <div class="res-card global">
+        <div class="res-label">Score AAQ-II (flexibilité psychologique)</div>
+        <div class="res-val">${total}<span style="font-size:1rem;color:rgba(125,212,200,.6)">/70</span></div>
+        <div class="res-sub">Score élevé = flexibilité plus grande · M normative = 47.5 (population générale)</div>
+      </div>
+    </div>
+    <div class="profil-card" style="margin-bottom:.8rem;">
+      <div class="profil-label">Niveau de flexibilité psychologique</div>
+      <div class="profil-val">${niveau}</div>
+      <div class="profil-desc">${desc}</div>
+    </div>
+    <p style="font-size:.75rem;color:var(--muted);font-style:italic;">Référence : Bond et al. (2011) · Version française : Monestès et al. (2009) · Version ABILITY — face validity en cours (pré-test)</p>`;
+
+  document.getElementById('results-card').style.display = 'block';
+  document.getElementById('btn-enregistrer').style.display = 'flex';
+  document.getElementById('results-card').scrollIntoView({behavior:'smooth'});
+
+  window._resultats = {
+    code, date,
+    structure: document.getElementById('structure').value,
+    temps: document.getElementById('temps').value,
+    groupe: document.getElementById('groupe').value,
+    referent: document.getElementById('referent').value,
+    scoreTotal: total, niveau, items: {...scores}
+  };
+}
+
+function enregistrer() {
+  if (!window._resultats) { alert('Calculez d\'abord les scores.'); return; }
+  if (SCRIPT_URL === 'REMPLACER_PAR_URL_APPS_SCRIPT_ABILITY') {
+    alert('⚠️ URL non configurée. Les données seront disponibles après déploiement.');
+    return;
+  }
+  const btn = document.getElementById('btn-enregistrer');
+  btn.textContent = 'Enregistrement…'; btn.disabled = true;
+  fetch(SCRIPT_URL, {
+    method:'POST', mode:'no-cors',
+    headers:{'Content-Type':'application/json'},
+    body: JSON.stringify({outil:'AAQ-II', ...window._resultats})
+  }).then(() => {
+    btn.textContent = '✓ Enregistré';
+    alert('✓ Données enregistrées dans Google Sheets.');
+  }).catch(() => {
+    btn.textContent = '💾 Enregistrer'; btn.disabled = false;
+    alert('Erreur de connexion.');
+  });
+}
+
+function resetForm() {
+  ITEMS.forEach(item => {
+    scores[item.n] = 0;
+    [1, 2, 3, 4, 5, 6, 7].forEach(v => {
+      const btn = document.getElementById(`btn-${item.n}-${v}`);
+      if (btn) btn.className = 'sb';
+    });
+  });
+  document.getElementById('results-card').style.display = 'none';
+  document.getElementById('btn-enregistrer').style.display = 'none';
+  ['code','structure','referent'].forEach(id => document.getElementById(id).value='');
+  ['date','temps','groupe'].forEach(id => { const el=document.getElementById(id); if(el) el.value=''; });
+  document.getElementById('date').valueAsDate = new Date();
+  window._resultats = null;
+  window.scrollTo({top:0, behavior:'smooth'});
+}
+
+document.getElementById('date').valueAsDate = new Date();
+</script>
+</body>
+</html>
