@@ -218,8 +218,7 @@ function envoyer(){
   btn.disabled=true;
   st.innerHTML='<span class="sending"><span class="spinner"></span>Envoi en cours…</span>';
 
-  const params = new URLSearchParams({data: JSON.stringify(data)});
-  fetch(GAS_URL, {method:'POST', mode:'no-cors', body:params})
+  fetch(GAS_URL, {method:'POST', mode:'no-cors', headers:{'Content-Type':'text/plain'}, body:JSON.stringify(data)})
     .then(()=>{
       document.getElementById("confirm-meta").innerHTML=
         "Code enfant&nbsp;: <strong>"+data.code_enfant+"</strong> &nbsp;·&nbsp; "+data.evaluateur+" &nbsp;·&nbsp; "+data.date;
