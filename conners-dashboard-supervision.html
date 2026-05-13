@@ -1,0 +1,369 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Conners TRS-28 — Dashboard supervision — IPCRA</title>
+<link href="https://fonts.googleapis.com/css2?family=DM+Sans:ital,wght@0,400;0,500;1,400&family=DM+Serif+Display&display=swap" rel="stylesheet">
+<style>
+:root{--navy:#1B3A6B;--navy2:#2a5299;--gold:#C9A84C;--bg:#f4f6fa;--white:#fff;--text:#1a1a2e;--muted:#6b7280;--border:#e5e7eb;--r:8px;
+--c1:#dc2626;--c2:#2563eb;--c3:#16a34a;--c4:#d97706;--ci:#7c3aed;}
+*{box-sizing:border-box;margin:0;padding:0;}
+body{font-family:'DM Sans',sans-serif;background:var(--bg);color:var(--text);font-size:14px;line-height:1.6;}
+.hdr{background:var(--navy);color:#fff;padding:14px 24px;display:flex;align-items:center;gap:12px;flex-wrap:wrap;}
+.hdr-logo{font-family:'DM Serif Display',serif;font-size:22px;color:var(--gold);}
+.hdr-sep{color:rgba(255,255,255,.3);}
+.hdr-title{font-size:13px;color:rgba(255,255,255,.85);}
+.container{max-width:1100px;margin:0 auto;padding:20px 16px 56px;}
+.search-card{background:#fff;border:1px solid var(--border);border-radius:var(--r);padding:20px 24px;margin-bottom:16px;}
+.search-row{display:flex;gap:10px;align-items:flex-end;}
+.fg{display:flex;flex-direction:column;gap:4px;flex:1;}
+label{font-size:11px;font-weight:500;color:var(--muted);text-transform:uppercase;letter-spacing:.5px;}
+input{border:1px solid var(--border);border-radius:6px;padding:9px 14px;font-family:'DM Sans',sans-serif;font-size:14px;color:var(--text);width:100%;}
+input:focus{outline:none;border-color:var(--navy);}
+.btn{display:inline-flex;align-items:center;gap:6px;padding:9px 20px;border-radius:6px;font-family:'DM Sans',sans-serif;font-size:14px;font-weight:500;cursor:pointer;border:none;transition:all .15s;white-space:nowrap;}
+.btn-primary{background:var(--navy);color:#fff;}.btn-primary:hover{background:var(--navy2);}
+.btn-outline{background:#fff;color:var(--navy);border:1px solid var(--navy);}
+.card{background:#fff;border:1px solid var(--border);border-radius:var(--r);padding:18px 22px;margin-bottom:14px;}
+.card-title{font-family:'DM Serif Display',serif;font-size:16px;color:var(--navy);margin-bottom:14px;padding-bottom:8px;border-bottom:2px solid var(--gold);}
+.meta-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:4px;}
+.meta-item{background:var(--bg);border-radius:6px;padding:10px 14px;}
+.meta-lbl{font-size:11px;color:var(--muted);margin-bottom:2px;}
+.meta-val{font-size:13px;font-weight:500;}
+.eval-tag{display:inline-block;font-size:11px;padding:2px 8px;border-radius:12px;font-weight:500;}
+.e1{background:#DBEAFE;color:#1D4ED8;} .e2{background:#D1FAE5;color:#065F46;}
+.scores-grid{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:14px;}
+.factor-card{border-radius:8px;padding:12px 15px;border-left:4px solid;}
+.f1c{background:#FEF2F2;border-color:var(--c1);}
+.f2c{background:#EFF6FF;border-color:var(--c2);}
+.f3c{background:#F0FDF4;border-color:var(--c3);}
+.f4c{background:#FFFBEB;border-color:var(--c4);}
+.fic{background:#F5F3FF;border-color:var(--ci);}
+.fac-name{font-size:11px;font-weight:500;color:var(--muted);margin-bottom:8px;}
+.fac-scores{display:grid;grid-template-columns:1fr 1fr;gap:8px;}
+.fac-score{text-align:center;}
+.fac-val{font-size:22px;font-weight:700;line-height:1;}
+.fac-sub{font-size:10px;color:var(--muted);margin-top:1px;}
+.t-badge{display:inline-block;font-size:10px;padding:2px 6px;border-radius:3px;font-weight:500;margin-top:3px;}
+.tb-p{background:#fee2e2;color:#dc2626;}.tb-b{background:#fff7ed;color:#ea580c;}.tb-n{background:#dcfce7;color:#16a34a;}.tb-na{background:#f3f4f6;color:#6b7280;}
+.chart-section{margin-bottom:14px;}
+.chart-title{font-size:12px;font-weight:500;color:var(--muted);margin-bottom:10px;}
+.bar-group{margin-bottom:10px;}
+.bar-label{font-size:12px;font-weight:500;color:var(--text);margin-bottom:4px;}
+.bar-row{display:grid;grid-template-columns:180px 1fr 50px;align-items:center;gap:8px;margin-bottom:3px;}
+.bar-name{font-size:11px;color:var(--muted);text-align:right;}
+.bar-track{background:#f3f4f6;border-radius:4px;height:16px;position:relative;overflow:visible;}
+.bar-fill{height:100%;border-radius:4px;transition:width .5s;}
+.bar-thr{position:absolute;top:-3px;bottom:-3px;width:2px;background:rgba(220,38,38,.5);}
+.bar-v{font-size:12px;font-weight:500;}
+.delta-badge{display:inline-flex;align-items:center;gap:4px;font-size:11px;padding:2px 8px;border-radius:10px;margin-top:6px;}
+.delta-ok{background:#dcfce7;color:#15803d;}
+.delta-warn{background:#fef9c3;color:#854d0e;}
+.delta-alert{background:#fee2e2;color:#b91c1c;}
+.interp{background:#f8f9fb;border-radius:8px;padding:14px 16px;margin-bottom:10px;border-left:3px solid var(--navy);}
+.interp-title{font-size:13px;font-weight:500;color:var(--navy);margin-bottom:6px;}
+.interp-txt{font-size:13px;color:var(--text);line-height:1.7;}
+.trauma-blk{background:#fefce8;border:1px solid #fef08a;border-left:4px solid #ca8a04;border-radius:8px;padding:14px 16px;margin-top:10px;}
+.trauma-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-top:8px;}
+.hyp{background:#fff;border-radius:6px;padding:10px;font-size:12px;}
+.conv-badge{display:inline-flex;align-items:center;gap:6px;padding:8px 14px;border-radius:6px;font-size:13px;font-weight:500;margin-bottom:12px;}
+.conv-ok{background:#dcfce7;color:#15803d;border:1px solid #bbf7d0;}
+.conv-warn{background:#fef9c3;color:#92400e;border:1px solid #fde68a;}
+.conv-alert{background:#fee2e2;color:#b91c1c;border:1px solid #fecaca;}
+.hidden{display:none;}
+.loading{text-align:center;padding:40px;color:var(--muted);}
+.spinner{width:24px;height:24px;border:3px solid #e5e7eb;border-top-color:var(--navy);border-radius:50%;animation:spin .7s linear infinite;display:inline-block;margin-bottom:8px;}
+@keyframes spin{to{transform:rotate(360deg)}}
+.error{background:#fee2e2;color:#b91c1c;border-radius:var(--r);padding:14px;margin-bottom:14px;font-size:13px;}
+.note{font-size:11px;color:var(--muted);text-align:center;padding:12px 0;font-style:italic;}
+@media(max-width:680px){.scores-grid{grid-template-columns:1fr;}.meta-grid{grid-template-columns:1fr;}.trauma-grid{grid-template-columns:1fr;}.bar-row{grid-template-columns:100px 1fr 40px;}}
+</style>
+</head>
+<body>
+
+<header class="hdr">
+  <div class="hdr-logo">IPCRA</div>
+  <div class="hdr-sep">|</div>
+  <div class="hdr-title">Conners TRS-28 — Dashboard de supervision clinique</div>
+</header>
+
+<div class="container">
+
+  <div class="search-card">
+    <div class="search-row">
+      <div class="fg">
+        <label for="code-input">Code enfant</label>
+        <input type="text" id="code-input" placeholder="ex. MA0312" autocomplete="off">
+      </div>
+      <button class="btn btn-primary" onclick="rechercher()">Afficher les profils</button>
+      <button class="btn btn-outline" onclick="reset()">Effacer</button>
+    </div>
+    <div id="search-msg" style="margin-top:8px;font-size:12px;color:var(--muted);"></div>
+  </div>
+
+  <div id="loading" class="hidden loading">
+    <div class="spinner"></div><br>Chargement des données…
+  </div>
+
+  <div id="error-blk" class="hidden error"></div>
+
+  <div id="results" class="hidden">
+    <div id="meta-section" class="card">
+      <div class="card-title">Informations</div>
+      <div id="meta-content"></div>
+    </div>
+
+    <div class="card">
+      <div class="card-title">Profil comparatif en T-scores</div>
+      <div id="convergence-badge"></div>
+      <div id="chart-section"></div>
+      <div style="font-size:11px;color:var(--muted);margin-top:6px;">La ligne rouge indique T=70 (seuil pathologique). F4 = moyenne/item (non étalonné).</div>
+    </div>
+
+    <div class="card">
+      <div class="card-title">Scores détaillés</div>
+      <div id="scores-section"></div>
+    </div>
+
+    <div class="card">
+      <div class="card-title">Lecture clinique</div>
+      <div id="interpretation"></div>
+    </div>
+  </div>
+
+  <div class="note">IPCRA — Usage clinicien uniquement · Outil de supervision non diagnostique · institutipcra.github.io/IPCRA-site</div>
+</div>
+
+<script>
+const GAS_URL = 'https://script.google.com/macros/s/AKfycbxdxhsi9prL0L18Xd7X1xMRJT2tWavvbeCuEML03SR4YqLn-hNr_1vSSRB5wHQqW5V6/exec';
+
+const FACT = {
+  F1:{label:'F1 — Troubles des conduites',col:'F1 T-score',brut:'F1 brut',moy:'F1 moy/item',color:'#dc2626',cls:'f1c'},
+  F2:{label:'F2 — Hyperactivité',col:'F2 T-score',brut:'F2 brut',moy:'F2 moy/item',color:'#2563eb',cls:'f2c'},
+  F3:{label:'F3 — Inattention-Passivité',col:'F3 T-score',brut:'F3 brut',moy:'F3 moy/item',color:'#16a34a',cls:'f3c',
+      cog:'F3 cognitif moy',dev:'F3 dév moy'},
+  F4:{label:'F4 — Immaturité',col:null,brut:'F4 brut',moy:'F4 moy/item',color:'#d97706',cls:'f4c'},
+  IDX:{label:'Indicateur global de sévérité',col:'Index T-score',brut:'Index brut',moy:'Index moy/item',color:'#7c3aed',cls:'fic'}
+};
+
+function tclass(t){return t>=70?'tb-p':t>=65?'tb-b':'tb-n';}
+function tlabel(t){return t>=70?'Pathologique':t>=65?'Limite':'Normal';}
+function show(id){document.getElementById(id).classList.remove('hidden');}
+function hide(id){document.getElementById(id).classList.add('hidden');}
+function reset(){document.getElementById('code-input').value='';['loading','error-blk','results'].forEach(hide);document.getElementById('search-msg').textContent='';}
+
+function rechercher() {
+  const code = document.getElementById('code-input').value.trim();
+  if (!code) { document.getElementById('search-msg').textContent = 'Entrez un code enfant.'; return; }
+  hide('results'); hide('error-blk');
+  show('loading');
+  document.getElementById('search-msg').textContent = '';
+
+  fetch(GAS_URL + '?code=' + encodeURIComponent(code))
+    .then(r => r.json())
+    .then(data => {
+      hide('loading');
+      if (!data.success && data.error) throw new Error(data.error);
+      if (!data.records || data.records.length === 0) {
+        document.getElementById('error-blk').textContent = 'Aucune évaluation trouvée pour le code "' + code + '". Vérifiez l\'orthographe.';
+        show('error-blk'); return;
+      }
+      afficher(data.records.slice(0, 2));
+    })
+    .catch(err => {
+      hide('loading');
+      document.getElementById('error-blk').textContent = 'Erreur de connexion : ' + err.message;
+      show('error-blk');
+    });
+}
+
+function afficher(records) {
+  const r1 = records[0];
+  const r2 = records[1] || null;
+
+  // META
+  const mc = document.getElementById('meta-content');
+  mc.innerHTML = `
+    <div class="meta-grid">
+      <div class="meta-item"><div class="meta-lbl">Code enfant</div><div class="meta-val" style="font-size:16px;color:var(--navy)">${r1['Code enfant']}</div></div>
+      <div class="meta-item"><div class="meta-lbl">Profil</div><div class="meta-val">${r1['Sexe']==='M'?'Masculin':'Féminin'} · ${r1['Âge']} ans · Groupe ${r1['Groupe âge']}</div></div>
+      <div class="meta-item"><div class="meta-lbl"><span class="eval-tag e1">Éval. 1</span></div><div class="meta-val">${r1['Évaluateur']} · ${r1['Date']}</div></div>
+      ${r2 ? `<div class="meta-item"><div class="meta-lbl"><span class="eval-tag e2">Éval. 2</span></div><div class="meta-val">${r2['Évaluateur']} · ${r2['Date']}</div></div>` : '<div class="meta-item" style="background:#fffbeb"><div class="meta-lbl">Éval. 2</div><div class="meta-val" style="color:#d97706">En attente — une seule passation disponible</div></div>'}
+    </div>`;
+
+  // CHART
+  const maxT = 120;
+  const thr = (70/maxT)*100;
+  let chartHtml = '';
+  let totalDelta = 0; let nDelta = 0;
+
+  ['F1','F2','F3','IDX'].forEach(k => {
+    const f = FACT[k];
+    const t1 = parseFloat(r1[f.col]) || 0;
+    const t2 = r2 ? (parseFloat(r2[f.col]) || 0) : null;
+    const p1 = Math.min((t1/maxT)*100, 100);
+    const p2 = t2 !== null ? Math.min((t2/maxT)*100, 100) : null;
+    const col1 = t1>=70?'#dc2626':t1>=65?'#ea580c':'#16a34a';
+    const col2 = t2!==null?(t2>=70?'#dc2626':t2>=65?'#ea580c':'#16a34a'):null;
+
+    chartHtml += `<div class="bar-group">
+      <div class="bar-label">${f.label.replace('F1 — ','').replace('F2 — ','').replace('F3 — ','').replace('Indicateur global de sévérité','Ind. global sévérité')}</div>
+      <div class="bar-row"><div class="bar-name"><span class="eval-tag e1">É.1</span></div>
+        <div class="bar-track"><div class="bar-fill" style="width:${p1}%;background:${col1}"></div><div class="bar-thr" style="left:${thr}%"></div></div>
+        <div class="bar-v">${t1||'—'}</div></div>`;
+    if (t2 !== null) {
+      chartHtml += `<div class="bar-row"><div class="bar-name"><span class="eval-tag e2">É.2</span></div>
+        <div class="bar-track"><div class="bar-fill" style="width:${p2}%;background:${col2}"></div><div class="bar-thr" style="left:${thr}%"></div></div>
+        <div class="bar-v">${t2||'—'}</div></div>`;
+      const delta = Math.abs(t1 - t2);
+      totalDelta += delta; nDelta++;
+      const dcls = delta<=5?'delta-ok':delta<=10?'delta-warn':'delta-alert';
+      const dlbl = delta<=5?'Convergent (Δ'+delta+')':delta<=10?'Écart modéré (Δ'+delta+')':'Divergence notable (Δ'+delta+')';
+      chartHtml += `<span class="delta-badge ${dcls}">${dlbl}</span>`;
+    }
+    chartHtml += '</div>';
+  });
+
+  // F4
+  const m4_1 = parseFloat(r1['F4 moy/item']) || 0;
+  const m4_2 = r2 ? (parseFloat(r2['F4 moy/item']) || 0) : null;
+  const p4_1 = Math.min((m4_1/3)*100,100);
+  const p4_2 = m4_2!==null?Math.min((m4_2/3)*100,100):null;
+  chartHtml += `<div class="bar-group"><div class="bar-label">Immaturité (moy./item, non étalonné)</div>
+    <div class="bar-row"><div class="bar-name"><span class="eval-tag e1">É.1</span></div>
+      <div class="bar-track" style="background:#f9fafb;border:1px dashed #e5e7eb"><div class="bar-fill" style="width:${p4_1}%;background:${m4_1>=1.5?'#d97706':'#9ca3af'}"></div></div>
+      <div class="bar-v">${m4_1.toFixed(1)}</div></div>`;
+  if (m4_2 !== null) chartHtml += `<div class="bar-row"><div class="bar-name"><span class="eval-tag e2">É.2</span></div>
+    <div class="bar-track" style="background:#f9fafb;border:1px dashed #e5e7eb"><div class="bar-fill" style="width:${p4_2}%;background:${m4_2>=1.5?'#d97706':'#9ca3af'}"></div></div>
+    <div class="bar-v">${m4_2.toFixed(1)}</div></div>`;
+  chartHtml += '</div>';
+
+  document.getElementById('chart-section').innerHTML = chartHtml;
+
+  // CONVERGENCE BADGE
+  if (r2 && nDelta > 0) {
+    const avgDelta = totalDelta / nDelta;
+    const bcls = avgDelta<=5?'conv-ok':avgDelta<=10?'conv-warn':'conv-alert';
+    const blbl = avgDelta<=5?'Profils convergents — symptômes probablement pervasifs':avgDelta<=10?'Convergence partielle — certains facteurs divergent':
+      'Profils divergents — symptômes contextuels/relationnels probables';
+    document.getElementById('convergence-badge').innerHTML = `<div class="conv-badge ${bcls}">${blbl} (Δ moyen : ${avgDelta.toFixed(1)} points)</div>`;
+  } else {
+    document.getElementById('convergence-badge').innerHTML = '';
+  }
+
+  // SCORES
+  let scHtml = '<div class="scores-grid">';
+  Object.entries(FACT).forEach(([k, f]) => {
+    const t1 = f.col ? (parseFloat(r1[f.col]) || null) : null;
+    const t2 = r2 && f.col ? (parseFloat(r2[f.col]) || null) : null;
+    const m1 = parseFloat(r1[f.moy]) || 0;
+    const m2 = r2 ? (parseFloat(r2[f.moy]) || 0) : null;
+    let tHtml1 = t1 ? `<div class="fac-val" style="color:${t1>=70?'#dc2626':t1>=65?'#ea580c':'#16a34a'}">${t1}</div><div class="fac-sub">T-score<br><span class="t-badge ${tclass(t1)}">${tlabel(t1)}</span></div>` :
+      `<div class="fac-val" style="font-size:15px;color:var(--muted)">${m1.toFixed(2)}</div><div class="fac-sub">moy/item</div>`;
+    let tHtml2 = r2 ? (t2 ? `<div class="fac-val" style="color:${t2>=70?'#dc2626':t2>=65?'#ea580c':'#16a34a'}">${t2}</div><div class="fac-sub">T-score<br><span class="t-badge ${tclass(t2)}">${tlabel(t2)}</span></div>` :
+      `<div class="fac-val" style="font-size:15px;color:var(--muted)">${m2.toFixed(2)}</div><div class="fac-sub">moy/item</div>`) : '<div style="color:var(--muted);font-size:12px">—</div>';
+    scHtml += `<div class="factor-card ${f.cls}">
+      <div class="fac-name">${f.label}</div>
+      <div class="fac-scores">
+        <div class="fac-score"><div style="font-size:10px;margin-bottom:4px"><span class="eval-tag e1">É.1</span></div>${tHtml1}</div>
+        <div class="fac-score"><div style="font-size:10px;margin-bottom:4px"><span class="eval-tag ${r2?'e2':''}">É.2</span></div>${tHtml2}</div>
+      </div>
+      ${k==='F3'&&r1['F3 cognitif moy']?`<div style="margin-top:8px;font-size:11px;color:var(--muted)">É.1 — Cognitif : <strong>${parseFloat(r1['F3 cognitif moy']).toFixed(2)}</strong> · Dév : <strong>${parseFloat(r1['F3 dév moy']).toFixed(2)}</strong>${r2?`<br>É.2 — Cognitif : <strong>${parseFloat(r2['F3 cognitif moy']).toFixed(2)}</strong> · Dév : <strong>${parseFloat(r2['F3 dév moy']).toFixed(2)}</strong>`:''}</div>`:''}
+    </div>`;
+  });
+  scHtml += '</div>';
+  document.getElementById('scores-section').innerHTML = scHtml;
+
+  // INTERPRETATION
+  renderInterp(r1, r2);
+  show('results');
+}
+
+function renderInterp(r1, r2) {
+  const ic = document.getElementById('interpretation');
+  const t = k => parseFloat(r1[FACT[k].col]) || 0;
+  const t2 = k => r2 ? (parseFloat(r2[FACT[k].col]) || 0) : null;
+
+  const f1p=t('F1')>=70, f2p=t('F2')>=70, f3p=t('F3')>=70;
+  const f1b=t('F1')>=65, f2b=t('F2')>=65, f3b=t('F3')>=65;
+  const f4s=parseFloat(r1['F4 moy/item'])>=1.5;
+
+  let html = '';
+
+  // Convergence globale
+  if (r2) {
+    const deltas = ['F1','F2','F3','IDX'].map(k => Math.abs(t(k) - (t2(k)||0)));
+    const avg = deltas.reduce((a,b)=>a+b,0)/deltas.length;
+    const maxDelta = Math.max(...deltas);
+    if (avg <= 5) {
+      html += interp('Convergence des profils', 'Les deux évaluatrices décrivent des comportements similaires. Les symptômes sont probablement <strong>pervasifs</strong> — présents dans différents contextes relationnels, ce qui renforce l\'hypothèse neurodéveloppementale (TDAH).', '#16a34a');
+    } else if (maxDelta > 10) {
+      html += interp('Divergence notable', 'Les profils divergent significativement sur au moins un facteur (Δ max = '+maxDelta+' points). Les symptômes sont probablement <strong>contextuels ou relationnels</strong> — liés à la personne, au lieu ou au moment. Question à poser en supervision : dans quel contexte l\'enfant est-il le plus différent ?', '#dc2626');
+    } else {
+      html += interp('Convergence partielle', 'Les profils convergent sur certains facteurs et divergent sur d\'autres. Examinez quels facteurs divergent : une divergence sur F1 (conduites) sans divergence sur F3 (inattention) peut indiquer un comportement d\'opposition contextuel.', '#d97706');
+    }
+  }
+
+  // Profil global
+  let gtxt = '';
+  if (!f1b&&!f2b&&!f3b) gtxt = 'Aucun facteur n\'atteint le seuil d\'attention clinique (T ≥ 65). Le profil n\'oriente pas vers un TDAH ou des troubles comportementaux significatifs.';
+  else if (f2p&&f3p) gtxt = '<strong>Profil TDAH combiné</strong> — hyperactivité (F2) et inattention-passivité (F3) élevées. À articuler avec évaluation neuropsychologique.';
+  else if (f2p&&!f3p) gtxt = '<strong>Profil TDAH hyperactif-impulsif</strong> — F2 pathologique, F3 dans les normes.';
+  else if (f3p&&!f2p) gtxt = '<strong>Profil inattentif prédominant</strong> — F3 élevé. Voir lecture discriminante ci-dessous (TDAH vs hypervigilance).';
+  else if (f1p&&!f2p&&!f3p) gtxt = '<strong>Troubles des conduites au premier plan</strong> sans élévation TDAH. Enjeux éducatifs et relationnels prioritaires. Hypothèse TOD/TC.';
+  else if (f1p&&(f2p||f3p)) gtxt = '<strong>Profil mixte TDAH + troubles des conduites</strong> — comorbidité fréquente en MECS (50-60%). Complexité thérapeutique.';
+  else { const parts=[]; if(f1b)parts.push('F1'); if(f2b)parts.push('F2'); if(f3b)parts.push('F3'); gtxt='Zone limite sur : '+parts.join(', ')+'. Réévaluation dans 4-6 semaines recommandée.'; }
+  html += interp('Lecture du profil', gtxt, 'var(--navy)');
+
+  // F3 discriminant
+  const m3 = parseFloat(r1['F3 moy/item']) || 0;
+  if (f3b || m3 >= 1.5) {
+    const i9 = parseInt(r1['i9'])||0, i6 = parseInt(r1['i6'])||0, i13 = parseInt(r1['i13'])||0;
+    const cm = parseFloat(r1['F3 cognitif moy'])||0, dm = parseFloat(r1['F3 dév moy'])||0;
+    const titre = f3b ? 'Lecture discriminante F3 (T ≥ 65)' : 'Observation F3 (moy/item ≥ 1.5)';
+    html += `<div class="trauma-blk">
+      <div style="font-size:13px;font-weight:500;color:#92400e;margin-bottom:8px">⚑ ${titre}</div>
+      <div style="font-size:12px;color:#78350f;margin-bottom:10px">
+        Items discriminants — É.1 : <strong>#9 Rêveur</strong> (${i9}/3) · <strong>#6 Sensible</strong> (${i6}/3) · <strong>#13 Soumis</strong> (${i13}/3)
+        ${r2?`<br>É.2 : #9=(${parseInt(r2['i9'])||0}/3) · #6=(${parseInt(r2['i6'])||0}/3) · #13=(${parseInt(r2['i13'])||0}/3)`:''}
+      </div>
+      <div class="trauma-grid">
+        <div class="hyp" style="border-left:3px solid #2563eb">
+          <div style="font-weight:500;color:#2563eb;margin-bottom:4px">Hypothèse 1 — TDAH inattentif</div>
+          <div style="color:#374151">Sous-score cognitif É.1 : <strong>${cm.toFixed(2)}/item</strong>${r2?` · É.2 : <strong>${(parseFloat(r2['F3 cognitif moy'])||0).toFixed(2)}/item`+''+'</strong>':''}
+          ${i9>=2?'<br>✓ #9 élevé → décrochage interne':''}
+          </div>
+        </div>
+        <div class="hyp" style="border-left:3px solid #ca8a04">
+          <div style="font-weight:500;color:#92400e;margin-bottom:4px">Hypothèse 2 — Hypervigilance trauma</div>
+          <div style="color:#374151">Sous-score développemental É.1 : <strong>${dm.toFixed(2)}/item</strong>${r2?` · É.2 : <strong>${(parseFloat(r2['F3 dév moy'])||0).toFixed(2)}/item`+''+'</strong>':''}
+          ${(i6>=2||i13>=2)?'<br>⚠ #6/#13 élevés → appeasement traumatique':''}
+          </div>
+        </div>
+      </div>
+      <div style="font-size:11px;color:#92400e;margin-top:10px;font-style:italic">
+        « L'inattention varie-t-elle selon la sécurité relationnelle ? »
+        ${r2?'<br>Comparez les sous-scores cognitifs et développementaux entre les deux évaluatrices — une divergence renforce l\'hypothèse contextuelle/relationnelle.':''}
+      </div>
+    </div>`;
+  }
+
+  // F4
+  if (f4s) {
+    html += interp('F4 — Immaturité (score descriptif)', `Moyenne/item É.1 : <strong>${parseFloat(r1['F4 moy/item']).toFixed(2)}/3</strong>${r2?' · É.2 : <strong>'+parseFloat(r2['F4 moy/item']).toFixed(2)+'/3</strong>':''}. Immaturité sociale et relationnelle significative. À explorer : trajectoire développementale, qualité des attachements, antécédents de carence.`, '#d97706');
+  }
+
+  ic.innerHTML = html;
+}
+
+function interp(titre, txt, color) {
+  return `<div class="interp" style="border-left-color:${color};margin-bottom:10px">
+    <div class="interp-title">${titre}</div>
+    <div class="interp-txt">${txt}</div>
+  </div>`;
+}
+
+document.getElementById('code-input').addEventListener('keydown', e => { if (e.key === 'Enter') rechercher(); });
+</script>
+</body>
+</html>
