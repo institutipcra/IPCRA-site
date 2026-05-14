@@ -1,0 +1,1312 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Évaluation — Souffrances et Plaisirs au Travail</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Source+Serif+4:ital,wght@0,300;0,400;0,600;1,300;1,400&family=DM+Sans:wght@300;400;500&display=swap');
+
+  :root {
+    --bleu: #1a3a5c;
+    --bleu-clair: #2d5f8a;
+    --accent: #c0392b;
+    --fond: #f4f1ec;
+    --blanc: #ffffff;
+    --gris-clair: #e8e4dc;
+    --gris-texte: #555047;
+    --vert: #1e6b4a;
+    --orange: #c0580a;
+  }
+
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+
+  body {
+    font-family: 'DM Sans', sans-serif;
+    background: var(--fond);
+    color: #2a2520;
+    min-height: 100vh;
+  }
+
+  /* ÉCRAN D'ACCUEIL */
+  #accueil {
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    padding: 40px 20px;
+    background: var(--bleu);
+    color: var(--blanc);
+    text-align: center;
+  }
+
+  #accueil h1 {
+    font-family: 'Source Serif 4', serif;
+    font-size: 2.2rem;
+    font-weight: 300;
+    line-height: 1.3;
+    max-width: 600px;
+    margin-bottom: 16px;
+  }
+
+  #accueil .sous-titre {
+    font-size: 1rem;
+    opacity: 0.75;
+    max-width: 500px;
+    line-height: 1.7;
+    margin-bottom: 40px;
+    font-weight: 300;
+  }
+
+  #accueil .info-bloc {
+    background: rgba(255,255,255,0.08);
+    border: 1px solid rgba(255,255,255,0.15);
+    border-radius: 12px;
+    padding: 24px 32px;
+    max-width: 520px;
+    margin-bottom: 40px;
+    text-align: left;
+    font-size: 0.9rem;
+    line-height: 1.8;
+    opacity: 0.9;
+  }
+
+  #accueil .info-bloc strong { opacity: 1; font-weight: 500; }
+
+  .btn-principal {
+    background: var(--blanc);
+    color: var(--bleu);
+    border: none;
+    border-radius: 8px;
+    padding: 16px 40px;
+    font-family: 'DM Sans', sans-serif;
+    font-size: 1rem;
+    font-weight: 500;
+    cursor: pointer;
+    transition: transform 0.15s, box-shadow 0.15s;
+    letter-spacing: 0.02em;
+  }
+
+  .btn-principal:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 8px 24px rgba(0,0,0,0.2);
+  }
+
+  /* PASSATION */
+  #passation { display: none; }
+
+  .header-passation {
+    background: var(--bleu);
+    color: var(--blanc);
+    padding: 16px 32px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    position: sticky;
+    top: 0;
+    z-index: 100;
+  }
+
+  .header-passation .nom-outil {
+    font-family: 'Source Serif 4', serif;
+    font-size: 1rem;
+    font-weight: 300;
+    opacity: 0.9;
+  }
+
+  .barre-progression {
+    height: 3px;
+    background: rgba(255,255,255,0.2);
+    position: relative;
+  }
+  .barre-progression-fill {
+    height: 100%;
+    background: #7eb8e0;
+    transition: width 0.4s ease;
+  }
+
+  .progress-label {
+    font-size: 0.8rem;
+    opacity: 0.7;
+  }
+
+  .contenu-passation {
+    max-width: 760px;
+    margin: 0 auto;
+    padding: 48px 24px 80px;
+  }
+
+  /* SECTIONS */
+  .section-bloc {
+    display: none;
+    animation: fadeIn 0.3s ease;
+  }
+  .section-bloc.active { display: block; }
+
+  @keyframes fadeIn {
+    from { opacity: 0; transform: translateY(10px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+
+  .section-titre {
+    font-family: 'Source Serif 4', serif;
+    font-size: 1.5rem;
+    font-weight: 400;
+    color: var(--bleu);
+    margin-bottom: 8px;
+    padding-bottom: 12px;
+    border-bottom: 2px solid var(--bleu);
+  }
+
+  .section-consigne {
+    font-size: 0.9rem;
+    color: var(--gris-texte);
+    margin-bottom: 32px;
+    line-height: 1.7;
+    font-style: italic;
+  }
+
+  /* ÉCHELLE DE RÉPONSE */
+  .echelle-header {
+    display: grid;
+    gap: 4px;
+    margin-bottom: 8px;
+    font-size: 0.72rem;
+    color: var(--gris-texte);
+    font-weight: 500;
+    text-align: center;
+  }
+
+  .item-question {
+    background: var(--blanc);
+    border-radius: 10px;
+    padding: 16px 20px;
+    margin-bottom: 10px;
+    border: 1.5px solid transparent;
+    transition: border-color 0.2s;
+  }
+
+  .item-question.repondu { border-color: #a8d5b5; }
+  .item-question.alerte-rouge { border-color: #e74c3c; background: #fff5f5; }
+
+  .item-texte {
+    font-size: 0.9rem;
+    line-height: 1.6;
+    margin-bottom: 12px;
+    color: #2a2520;
+  }
+
+  .item-numero {
+    font-size: 0.75rem;
+    color: #999;
+    margin-right: 6px;
+  }
+
+  /* Grille de boutons radio */
+  .radio-grille {
+    display: flex;
+    gap: 6px;
+    flex-wrap: wrap;
+  }
+
+  .radio-grille label {
+    flex: 1;
+    min-width: 36px;
+    text-align: center;
+    cursor: pointer;
+  }
+
+  .radio-grille input[type="radio"] { display: none; }
+
+  .radio-grille .radio-btn {
+    display: block;
+    padding: 8px 4px;
+    border-radius: 6px;
+    border: 1.5px solid var(--gris-clair);
+    background: var(--fond);
+    font-size: 0.8rem;
+    color: var(--gris-texte);
+    transition: all 0.15s;
+    line-height: 1.3;
+  }
+
+  .radio-grille input[type="radio"]:checked + .radio-btn {
+    background: var(--bleu);
+    border-color: var(--bleu);
+    color: var(--blanc);
+    font-weight: 500;
+  }
+
+  .radio-grille label:hover .radio-btn {
+    border-color: var(--bleu-clair);
+    background: #e8f0f8;
+  }
+
+  /* Boutons navigation */
+  .nav-boutons {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-top: 40px;
+    gap: 16px;
+  }
+
+  .btn-nav {
+    padding: 12px 28px;
+    border-radius: 8px;
+    border: none;
+    font-family: 'DM Sans', sans-serif;
+    font-size: 0.9rem;
+    font-weight: 500;
+    cursor: pointer;
+    transition: all 0.15s;
+  }
+
+  .btn-suivant {
+    background: var(--bleu);
+    color: var(--blanc);
+    margin-left: auto;
+  }
+  .btn-suivant:hover { background: var(--bleu-clair); }
+
+  .btn-precedent {
+    background: transparent;
+    color: var(--gris-texte);
+    border: 1.5px solid var(--gris-clair);
+  }
+  .btn-precedent:hover { border-color: var(--bleu); color: var(--bleu); }
+
+  .erreur-message {
+    color: var(--accent);
+    font-size: 0.85rem;
+    text-align: center;
+    display: none;
+  }
+
+  /* Questions Oui/Non */
+  .oui-non-grille {
+    display: flex;
+    gap: 10px;
+  }
+  .oui-non-grille label { cursor: pointer; }
+  .oui-non-grille input[type="radio"] { display: none; }
+  .oui-non-grille .on-btn {
+    display: block;
+    padding: 10px 24px;
+    border-radius: 6px;
+    border: 1.5px solid var(--gris-clair);
+    background: var(--fond);
+    font-size: 0.9rem;
+    color: var(--gris-texte);
+    transition: all 0.15s;
+  }
+  .oui-non-grille input[type="radio"]:checked + .on-btn {
+    background: var(--bleu);
+    border-color: var(--bleu);
+    color: var(--blanc);
+    font-weight: 500;
+  }
+
+  /* Champs texte */
+  .champ-groupe {
+    background: var(--blanc);
+    border-radius: 10px;
+    padding: 16px 20px;
+    margin-bottom: 12px;
+    border: 1.5px solid var(--gris-clair);
+  }
+  .champ-groupe label {
+    display: block;
+    font-size: 0.85rem;
+    font-weight: 500;
+    color: var(--bleu);
+    margin-bottom: 8px;
+  }
+  .champ-groupe input, .champ-groupe select {
+    width: 100%;
+    padding: 10px 14px;
+    border: 1.5px solid var(--gris-clair);
+    border-radius: 6px;
+    font-family: 'DM Sans', sans-serif;
+    font-size: 0.9rem;
+    background: var(--fond);
+    color: #2a2520;
+  }
+  .champ-groupe input:focus, .champ-groupe select:focus {
+    outline: none;
+    border-color: var(--bleu);
+  }
+
+  /* SOUTIEN SOCIAL - tableau */
+  .tableau-soutien {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 0.85rem;
+    background: var(--blanc);
+    border-radius: 10px;
+    overflow: hidden;
+    margin-bottom: 24px;
+  }
+  .tableau-soutien thead th {
+    background: var(--bleu);
+    color: var(--blanc);
+    padding: 10px 12px;
+    font-weight: 400;
+    text-align: center;
+    font-size: 0.8rem;
+  }
+  .tableau-soutien thead th:first-child { text-align: left; }
+  .tableau-soutien tbody tr:nth-child(even) { background: #f8f6f2; }
+  .tableau-soutien tbody td {
+    padding: 12px;
+    border-bottom: 1px solid var(--gris-clair);
+    vertical-align: middle;
+  }
+  .tableau-soutien tbody td:first-child { font-size: 0.88rem; color: var(--gris-texte); }
+  .tableau-soutien input[type="radio"] { display: none; }
+  .tableau-soutien .r-btn {
+    display: block;
+    width: 28px;
+    height: 28px;
+    border-radius: 50%;
+    border: 2px solid var(--gris-clair);
+    margin: 0 auto;
+    cursor: pointer;
+    transition: all 0.15s;
+    background: var(--fond);
+  }
+  .tableau-soutien input[type="radio"]:checked + .r-btn {
+    background: var(--bleu);
+    border-color: var(--bleu);
+  }
+  .tableau-soutien .question-soutien {
+    font-size: 0.82rem;
+    color: var(--gris-texte);
+    font-style: italic;
+    margin-bottom: 8px;
+    padding: 8px 12px;
+    background: rgba(26,58,92,0.05);
+    border-left: 3px solid var(--bleu);
+    border-radius: 0 4px 4px 0;
+  }
+
+  /* RÉSULTATS */
+  #resultats { display: none; }
+
+  .resultats-header {
+    background: var(--bleu);
+    color: var(--blanc);
+    padding: 48px 32px;
+    text-align: center;
+  }
+  .resultats-header h2 {
+    font-family: 'Source Serif 4', serif;
+    font-size: 2rem;
+    font-weight: 300;
+    margin-bottom: 8px;
+  }
+  .resultats-header p { opacity: 0.75; font-size: 0.9rem; }
+
+  .resultats-corps {
+    max-width: 760px;
+    margin: 0 auto;
+    padding: 48px 24px;
+  }
+
+  .score-carte {
+    background: var(--blanc);
+    border-radius: 12px;
+    padding: 24px 28px;
+    margin-bottom: 16px;
+    border-left: 5px solid var(--bleu);
+    box-shadow: 0 2px 12px rgba(0,0,0,0.06);
+  }
+
+  .score-carte.vert { border-left-color: var(--vert); }
+  .score-carte.orange { border-left-color: var(--orange); }
+  .score-carte.rouge { border-left-color: var(--accent); }
+
+  .score-carte .outil-nom {
+    font-size: 0.75rem;
+    font-weight: 500;
+    text-transform: uppercase;
+    letter-spacing: 0.1em;
+    color: var(--gris-texte);
+    margin-bottom: 6px;
+  }
+
+  .score-carte .score-valeur {
+    font-family: 'Source Serif 4', serif;
+    font-size: 2.2rem;
+    font-weight: 300;
+    color: var(--bleu);
+    margin-bottom: 4px;
+  }
+
+  .score-carte.vert .score-valeur { color: var(--vert); }
+  .score-carte.orange .score-valeur { color: var(--orange); }
+  .score-carte.rouge .score-valeur { color: var(--accent); }
+
+  .score-carte .score-label {
+    font-size: 0.95rem;
+    font-weight: 500;
+    margin-bottom: 6px;
+  }
+
+  .score-carte .score-detail {
+    font-size: 0.82rem;
+    color: var(--gris-texte);
+    line-height: 1.6;
+  }
+
+  .sous-scores {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 10px;
+    margin-top: 12px;
+  }
+
+  .sous-score-item {
+    background: var(--fond);
+    border-radius: 8px;
+    padding: 10px 14px;
+    font-size: 0.82rem;
+  }
+
+  .sous-score-item .ss-nom { color: var(--gris-texte); margin-bottom: 2px; }
+  .sous-score-item .ss-val { font-weight: 500; color: var(--bleu); }
+
+  .alerte-suicidaire {
+    background: #fff0f0;
+    border: 2px solid var(--accent);
+    border-radius: 12px;
+    padding: 20px 24px;
+    margin-bottom: 20px;
+    display: none;
+  }
+  .alerte-suicidaire h3 { color: var(--accent); font-size: 1rem; margin-bottom: 8px; }
+  .alerte-suicidaire p { font-size: 0.88rem; line-height: 1.7; color: #5a1a1a; }
+
+  .section-resultats-titre {
+    font-family: 'Source Serif 4', serif;
+    font-size: 1.1rem;
+    font-weight: 400;
+    color: var(--bleu);
+    margin: 32px 0 16px;
+    padding-bottom: 8px;
+    border-bottom: 1px solid var(--gris-clair);
+  }
+
+  .btn-imprimer {
+    display: block;
+    width: 100%;
+    max-width: 300px;
+    margin: 40px auto 0;
+    padding: 14px;
+    background: var(--bleu);
+    color: var(--blanc);
+    border: none;
+    border-radius: 8px;
+    font-family: 'DM Sans', sans-serif;
+    font-size: 0.95rem;
+    font-weight: 500;
+    cursor: pointer;
+    text-align: center;
+    transition: background 0.15s;
+  }
+  .btn-imprimer:hover { background: var(--bleu-clair); }
+
+  .note-item9 {
+    font-size: 0.8rem;
+    color: var(--accent);
+    font-style: italic;
+    margin-top: 6px;
+  }
+
+  @media print {
+    #accueil, #passation, .btn-imprimer { display: none !important; }
+    #resultats { display: block !important; }
+    .resultats-header { background: var(--bleu) !important; -webkit-print-color-adjust: exact; }
+  }
+
+  @media (max-width: 600px) {
+    .echelle-header { display: none; }
+    .radio-grille { gap: 4px; }
+    .sous-scores { grid-template-columns: 1fr; }
+  }
+</style>
+</head>
+<body>
+
+<!-- ACCUEIL -->
+<div id="accueil">
+  <h1>Votre vécu au travail</h1>
+  <p class="sous-titre">Ce questionnaire est confidentiel. Il n'y a pas de bonne ou de mauvaise réponse. Répondez spontanément en pensant à votre situation actuelle.</p>
+  <div class="info-bloc">
+    <strong>Ce questionnaire comprend plusieurs parties :</strong><br>
+    Questions générales · Votre état en ce moment · Votre travail · Votre bien-être · Votre santé · Votre optimisme · Soutien autour de vous<br><br>
+    <strong>Durée estimée :</strong> 20 à 30 minutes<br>
+    <strong>Anonymat :</strong> vos réponses resteront confidentielles
+  </div>
+  <button class="btn-principal" onclick="demarrer()">Commencer le questionnaire</button>
+</div>
+
+<!-- PASSATION -->
+<div id="passation">
+  <div class="header-passation">
+    <span class="nom-outil" id="nom-section-header">—</span>
+    <span class="progress-label" id="progress-label">1 / 8</span>
+  </div>
+  <div class="barre-progression">
+    <div class="barre-progression-fill" id="barre-fill" style="width:0%"></div>
+  </div>
+
+  <div class="contenu-passation">
+
+    <!-- S0 : GÉNÉRAL -->
+    <div class="section-bloc active" id="s0">
+      <div class="section-titre">Quelques informations générales</div>
+      <div class="section-consigne">Ces informations nous aident à mieux comprendre votre situation.</div>
+
+      <div class="champ-groupe">
+        <label>Vos initiales (ex. : G.B.)</label>
+        <input type="text" id="g_initiales" placeholder="ex. : G.B." maxlength="6" style="text-transform:uppercase;">
+      </div>
+      <div class="champ-groupe">
+        <label>Votre date de naissance</label>
+        <input type="date" id="g_ddn">
+      </div>
+      <div class="champ-groupe">
+        <label>Profession actuelle</label>
+        <input type="text" id="g_profession" placeholder="ex. : ouvrière, agent de production...">
+      </div>
+      <div class="champ-groupe">
+        <label>Année de prise de fonction dans ce poste</label>
+        <input type="number" id="g_annee" placeholder="ex. : 2018" min="1970" max="2026">
+      </div>
+      <div class="champ-groupe">
+        <label>Âge</label>
+        <input type="number" id="g_age" placeholder="ex. : 42" min="16" max="70">
+      </div>
+
+      <p style="font-size:0.9rem;font-weight:500;color:var(--bleu);margin:24px 0 16px;">Actuellement, votre plaisir à travailler est :</p>
+      <div class="item-question" id="q_plaisir">
+        <div class="radio-grille" style="justify-content:flex-start;gap:10px;">
+          <label><input type="radio" name="plaisir" value="3"> <span class="radio-btn">Très important</span></label>
+          <label><input type="radio" name="plaisir" value="2"> <span class="radio-btn">Important</span></label>
+          <label><input type="radio" name="plaisir" value="1"> <span class="radio-btn">Peu important</span></label>
+          <label><input type="radio" name="plaisir" value="0"> <span class="radio-btn">Pas du tout</span></label>
+        </div>
+      </div>
+
+      <p style="font-size:0.9rem;font-weight:500;color:var(--bleu);margin:24px 0 8px;">Au cours des 6 derniers mois :</p>
+
+      <div class="item-question" id="q_changer">
+        <div class="item-texte">Vous avez pensé à changer de travail ou de poste</div>
+        <div class="radio-grille" style="justify-content:flex-start;gap:10px;">
+          <label><input type="radio" name="changer" value="0"> <span class="radio-btn">Pas du tout</span></label>
+          <label><input type="radio" name="changer" value="1"> <span class="radio-btn">Quelquefois</span></label>
+          <label><input type="radio" name="changer" value="2"> <span class="radio-btn">Souvent</span></label>
+          <label><input type="radio" name="changer" value="3"> <span class="radio-btn">En permanence</span></label>
+        </div>
+      </div>
+
+      <div class="item-question" id="q_difficultes">
+        <div class="item-texte">Vous avez eu des difficultés à aller au travail avec plaisir</div>
+        <div class="radio-grille" style="justify-content:flex-start;gap:10px;">
+          <label><input type="radio" name="difficultes" value="0"> <span class="radio-btn">Pas du tout</span></label>
+          <label><input type="radio" name="difficultes" value="1"> <span class="radio-btn">Quelquefois</span></label>
+          <label><input type="radio" name="difficultes" value="2"> <span class="radio-btn">Souvent</span></label>
+          <label><input type="radio" name="difficultes" value="3"> <span class="radio-btn">En permanence</span></label>
+        </div>
+      </div>
+
+      <div class="item-question" id="q_demission">
+        <div class="item-texte">Vous avez ressenti l'envie de démissionner</div>
+        <div class="radio-grille" style="justify-content:flex-start;gap:10px;">
+          <label><input type="radio" name="demission" value="0"> <span class="radio-btn">Pas du tout</span></label>
+          <label><input type="radio" name="demission" value="1"> <span class="radio-btn">Quelquefois</span></label>
+          <label><input type="radio" name="demission" value="2"> <span class="radio-btn">Souvent</span></label>
+          <label><input type="radio" name="demission" value="3"> <span class="radio-btn">En permanence</span></label>
+        </div>
+      </div>
+
+      <div class="item-question">
+        <div class="item-texte">Vous avez bénéficié d'un arrêt de travail</div>
+        <div class="oui-non-grille">
+          <label><input type="radio" name="arret" value="non"> <span class="on-btn">Non</span></label>
+          <label><input type="radio" name="arret" value="oui"> <span class="on-btn">Oui</span></label>
+        </div>
+      </div>
+
+      <div class="nav-boutons">
+        <span class="erreur-message" id="err-s0"></span>
+        <button class="btn-nav btn-suivant" onclick="allerSection(1)">Suivant →</button>
+      </div>
+    </div>
+
+    <!-- S1 : BURNOUT -->
+    <div class="section-bloc" id="s1">
+      <div class="section-titre">Comment vous sentez-vous ?</div>
+      <div class="section-consigne">En pensant aux dernières semaines et à votre travail, indiquez à quelle fréquence vous vous êtes senti(e) ainsi.</div>
+
+      <div class="echelle-header" style="grid-template-columns: 2fr repeat(7, 1fr);">
+        <span></span>
+        <span>Jamais</span><span>Presque<br>jamais</span><span>Rarement</span>
+        <span>Parfois</span><span>Souvent</span><span>Très<br>souvent</span><span>Toujours</span>
+      </div>
+
+      <div id="items-burnout"></div>
+
+      <div class="nav-boutons">
+        <button class="btn-nav btn-precedent" onclick="allerSection(0)">← Retour</button>
+        <span class="erreur-message" id="err-s1">Merci de répondre à toutes les questions.</span>
+        <button class="btn-nav btn-suivant" onclick="allerSection(2)">Suivant →</button>
+      </div>
+    </div>
+
+    <!-- S2 : PHQ-9 -->
+    <div class="section-bloc" id="s2">
+      <div class="section-titre">Votre humeur ces dernières semaines</div>
+      <div class="section-consigne">Au cours des <strong>2 dernières semaines</strong>, à quelle fréquence avez-vous été gêné(e) par les problèmes suivants ?</div>
+
+      <div class="echelle-header" style="grid-template-columns: 2fr repeat(4, 1fr);">
+        <span></span>
+        <span>Jamais</span><span>Plusieurs<br>jours</span><span>Plus de la<br>moitié du temps</span><span>Presque<br>tous les jours</span>
+      </div>
+
+      <div id="items-phq9"></div>
+
+      <div class="nav-boutons">
+        <button class="btn-nav btn-precedent" onclick="allerSection(1)">← Retour</button>
+        <span class="erreur-message" id="err-s2">Merci de répondre à toutes les questions.</span>
+        <button class="btn-nav btn-suivant" onclick="allerSection(3)">Suivant →</button>
+      </div>
+    </div>
+
+    <!-- S3 : GAD-7 -->
+    <div class="section-bloc" id="s3">
+      <div class="section-titre">Votre anxiété ces dernières semaines</div>
+      <div class="section-consigne">Au cours des <strong>2 dernières semaines</strong>, à quelle fréquence avez-vous été gêné(e) par les problèmes suivants ?</div>
+
+      <div class="echelle-header" style="grid-template-columns: 2fr repeat(4, 1fr);">
+        <span></span>
+        <span>Jamais</span><span>Plusieurs<br>jours</span><span>Plus de la<br>moitié du temps</span><span>Presque<br>tous les jours</span>
+      </div>
+
+      <div id="items-gad7"></div>
+
+      <div class="nav-boutons">
+        <button class="btn-nav btn-precedent" onclick="allerSection(2)">← Retour</button>
+        <span class="erreur-message" id="err-s3">Merci de répondre à toutes les questions.</span>
+        <button class="btn-nav btn-suivant" onclick="allerSection(4)">Suivant →</button>
+      </div>
+    </div>
+
+    <!-- S4 : KARASEK -->
+    <div class="section-bloc" id="s4">
+      <div class="section-titre">Votre travail au quotidien</div>
+      <div class="section-consigne">En général, mon travail me demande de... Indiquez votre niveau d'accord avec chaque affirmation.</div>
+
+      <div class="echelle-header" style="grid-template-columns: 2fr repeat(4, 1fr);">
+        <span></span>
+        <span>Fortement<br>en désaccord</span><span>En<br>désaccord</span><span>D'accord</span><span>Tout à fait<br>d'accord</span>
+      </div>
+
+      <div id="items-karasek"></div>
+
+      <div class="nav-boutons">
+        <button class="btn-nav btn-precedent" onclick="allerSection(3)">← Retour</button>
+        <span class="erreur-message" id="err-s4">Merci de répondre à toutes les questions.</span>
+        <button class="btn-nav btn-suivant" onclick="allerSection(5)">Suivant →</button>
+      </div>
+    </div>
+
+    <!-- S5 : ÉPANOUISSEMENT -->
+    <div class="section-bloc" id="s5">
+      <div class="section-titre">Votre épanouissement</div>
+      <div class="section-consigne">En pensant à votre vie en général, indiquez à quelle fréquence les affirmations suivantes vous correspondent.</div>
+
+      <div class="echelle-header" style="grid-template-columns: 2fr repeat(7, 1fr);">
+        <span></span>
+        <span>Jamais</span><span>Presque<br>jamais</span><span>Rarement</span>
+        <span>Parfois</span><span>Souvent</span><span>Très<br>souvent</span><span>Toujours</span>
+      </div>
+
+      <div id="items-epanouissement"></div>
+
+      <div class="nav-boutons">
+        <button class="btn-nav btn-precedent" onclick="allerSection(4)">← Retour</button>
+        <span class="erreur-message" id="err-s5">Merci de répondre à toutes les questions.</span>
+        <button class="btn-nav btn-suivant" onclick="allerSection(6)">Suivant →</button>
+      </div>
+    </div>
+
+    <!-- S6 : LOT-R + MOTIVATION -->
+    <div class="section-bloc" id="s6">
+      <div class="section-titre">Votre optimisme et votre motivation</div>
+      <div class="section-consigne">Voici des affirmations sur votre façon de voir les choses. Indiquez votre niveau d'accord.</div>
+
+      <div class="echelle-header" style="grid-template-columns: 2fr repeat(4, 1fr);">
+        <span></span>
+        <span>Pas du tout<br>d'accord</span><span>Un peu<br>d'accord</span><span>Moyennement<br>d'accord</span><span>Tout à fait<br>d'accord</span>
+      </div>
+
+      <div id="items-lotr"></div>
+
+      <p style="font-size:0.9rem;font-weight:500;color:var(--bleu);margin:32px 0 16px;">Votre motivation à changer les choses :</p>
+      <div id="items-motivation"></div>
+
+      <div class="nav-boutons">
+        <button class="btn-nav btn-precedent" onclick="allerSection(5)">← Retour</button>
+        <span class="erreur-message" id="err-s6">Merci de répondre à toutes les questions.</span>
+        <button class="btn-nav btn-suivant" onclick="allerSection(7)">Suivant →</button>
+      </div>
+    </div>
+
+    <!-- S7 : SOUTIEN SOCIAL -->
+    <div class="section-bloc" id="s7">
+      <div class="section-titre">Le soutien autour de vous</div>
+      <div class="section-consigne">Les questions suivantes portent sur les personnes qui vous entourent au travail et dans votre vie personnelle.</div>
+
+      <div id="blocs-soutien"></div>
+
+      <div class="nav-boutons">
+        <button class="btn-nav btn-precedent" onclick="allerSection(6)">← Retour</button>
+        <span class="erreur-message" id="err-s7">Merci de répondre à toutes les questions.</span>
+        <button class="btn-nav btn-suivant" onclick="calculerEtAfficher()">Transmettre mes réponses →</button>
+      </div>
+    </div>
+
+  </div><!-- fin contenu-passation -->
+</div><!-- fin passation -->
+
+<!-- CONFIRMATION PATIENT -->
+<div id="resultats" style="display:none;">
+  <div style="min-height:100vh;display:flex;flex-direction:column;align-items:center;justify-content:center;padding:48px 24px;background:var(--bleu);color:var(--blanc);text-align:center;">
+    <div id="confirm-ok" style="display:none;">
+      <div style="font-size:3rem;margin-bottom:24px;">✓</div>
+      <h2 style="font-family:'Source Serif 4',serif;font-size:1.8rem;font-weight:300;margin-bottom:16px;max-width:520px;">
+        Vos réponses ont bien été transmises
+      </h2>
+      <p style="font-size:0.95rem;opacity:0.8;max-width:480px;line-height:1.8;font-weight:300;">
+        Votre psychologue analysera vos réponses et les abordera avec vous lors de votre prochaine séance.
+      </p>
+      <div style="margin-top:28px;background:rgba(255,255,255,0.12);border:1px solid rgba(255,255,255,0.25);border-radius:10px;padding:20px 28px;max-width:360px;">
+        <p style="font-size:0.78rem;opacity:0.7;margin-bottom:8px;text-transform:uppercase;letter-spacing:0.08em;">Référence de votre passation</p>
+        <p id="code-session-affiche" style="font-family:'Source Serif 4',serif;font-size:1.5rem;font-weight:300;letter-spacing:0.05em;">—</p>
+        <p style="font-size:0.8rem;opacity:0.65;margin-top:8px;line-height:1.6;">Communiquez cette référence à votre psychologue si nécessaire.</p>
+      </div>
+      <p style="margin-top:28px;font-size:0.82rem;opacity:0.55;">Vous pouvez fermer cette fenêtre.</p>
+    </div>
+    <div id="confirm-attente" style="display:block;">
+      <div style="font-size:1.5rem;margin-bottom:16px;opacity:0.7;">⟳</div>
+      <p style="font-size:0.95rem;opacity:0.75;font-weight:300;">Envoi en cours…</p>
+    </div>
+    <div id="confirm-erreur" style="display:none;">
+      <div style="font-size:2rem;margin-bottom:16px;">⚠</div>
+      <h2 style="font-family:'Source Serif 4',serif;font-size:1.4rem;font-weight:300;margin-bottom:12px;">
+        Une erreur est survenue lors de l'envoi
+      </h2>
+      <p style="font-size:0.88rem;opacity:0.8;max-width:440px;line-height:1.7;margin-bottom:24px;">
+        Vos réponses n'ont pas pu être transmises. Veuillez contacter votre psychologue pour lui signaler le problème ou retenter dans quelques instants.
+      </p>
+      <button onclick="reessayerEnvoi()" style="background:rgba(255,255,255,0.15);border:1px solid rgba(255,255,255,0.3);color:var(--blanc);padding:12px 28px;border-radius:8px;font-family:'DM Sans',sans-serif;font-size:0.9rem;cursor:pointer;">
+        Réessayer
+      </button>
+    </div>
+  </div>
+</div>
+
+<script>
+// ============================================================
+// DONNÉES DES ITEMS
+// ============================================================
+
+const itemsBurnout = [
+  "Fatigué(e)",
+  "Déçu(e) par certaines personnes",
+  "Désespéré(e)",
+  "Sous pression",
+  "Physiquement faible ou malade",
+  "Sans valeur ou en échec",
+  "Avec des difficultés de sommeil",
+  "Délaissé(e)",
+  "Déprimé(e)",
+  "Prêt(e) à dire « j'en ai assez »"
+];
+
+const itemsPHQ9 = [
+  "Peu d'intérêt ou de plaisir à faire les choses",
+  "Être triste, déprimé(e) ou désespéré(e)",
+  "Difficultés à s'endormir ou à rester endormi(e), ou dormir trop",
+  "Se sentir fatigué(e) ou manquer d'énergie",
+  "Avoir peu d'appétit ou manger trop",
+  "Avoir une mauvaise opinion de soi-même, ou avoir le sentiment d'être nul(le), ou d'avoir déçu sa famille ou soi-même",
+  "Avoir du mal à se concentrer, par exemple pour lire ou regarder la télévision",
+  "Bouger ou parler si lentement que les autres auraient pu le remarquer. Ou au contraire, être si agité(e) que vous avez eu du mal à tenir en place",
+  "Avoir des pensées qu'il vaudrait mieux mourir ou qu'on voudrait se faire du mal d'une façon ou d'une autre"
+];
+
+const itemsGAD7 = [
+  "Vous sentir nerveux(se), anxieux(se) ou à bout",
+  "Ne pas être capable d'arrêter de vous inquiéter ou de contrôler vos inquiétudes",
+  "Vous inquiéter trop à propos de différentes choses",
+  "Avoir du mal à vous détendre",
+  "Être tellement agité(e) qu'il est difficile de rester en place",
+  "Devenir facilement contrarié(e) ou irritable",
+  "Avoir peur que quelque chose de terrible puisse se produire"
+];
+
+// Karasek : items, dimension (D=demande, L=latitude, S=soutien), sens (+ direct, - inversé)
+const itemsKarasek = [
+  { texte: "Mon travail nécessite que j'apprenne des choses nouvelles", dim: "L", sens: 1 },
+  { texte: "Mon travail nécessite un niveau élevé de qualifications", dim: "L", sens: 1 },
+  { texte: "Dans mon travail, je dois faire preuve de créativité", dim: "L", sens: 1 },
+  { texte: "Mon travail consiste à refaire toujours les mêmes choses", dim: "L", sens: -1 },
+  { texte: "J'ai la liberté de décider comment je fais mon travail", dim: "L", sens: 1 },
+  { texte: "Mon travail me permet de prendre des décisions de façon autonome", dim: "L", sens: 1 },
+  { texte: "Au travail, j'ai l'opportunité de faire plusieurs choses différentes", dim: "L", sens: 1 },
+  { texte: "J'ai une réelle influence sur la façon dont les choses se passent dans mon travail", dim: "L", sens: 1 },
+  { texte: "Au travail, j'ai la possibilité de développer mes capacités personnelles", dim: "L", sens: 1 },
+  { texte: "Mon travail exige d'aller très vite", dim: "D", sens: 1 },
+  { texte: "Mon travail exige de travailler très fort mentalement", dim: "D", sens: 1 },
+  { texte: "On ne me demande pas de faire une quantité excessive de travail", dim: "D", sens: -1 },
+  { texte: "J'ai suffisamment de temps pour faire mon travail", dim: "D", sens: -1 },
+  { texte: "Je ne reçois pas de demandes contradictoires de la part des autres", dim: "D", sens: -1 },
+  { texte: "Mon travail m'oblige à me concentrer intensément pendant de longues périodes", dim: "D", sens: 1 },
+  { texte: "Ma tâche est souvent interrompue avant que je l'aie terminée, je dois alors y revenir plus tard", dim: "D", sens: 1 },
+  { texte: "Mon travail est très souvent mouvementé", dim: "D", sens: 1 },
+  { texte: "Mon chef se soucie du bien-être des travailleurs sous sa supervision", dim: "S", sens: 1 },
+  { texte: "Mon chef prête attention à ce que je dis", dim: "S", sens: 1 },
+  { texte: "Mon chef a une attitude hostile ou conflictuelle envers moi", dim: "S", sens: -1 },
+  { texte: "Mon chef facilite la réalisation du travail", dim: "S", sens: 1 },
+  { texte: "Mon chef réussit à faire travailler les gens ensemble", dim: "S", sens: 1 },
+  { texte: "Les gens avec qui je travaille sont qualifiés pour les tâches qu'ils accomplissent", dim: "S", sens: 1 },
+  { texte: "Les gens avec qui je travaille s'intéressent personnellement à moi", dim: "S", sens: 1 },
+  { texte: "Les gens avec qui je travaille ont des attitudes hostiles ou conflictuelles envers moi", dim: "S", sens: -1 },
+  { texte: "Les gens avec qui je travaille sont amicaux", dim: "S", sens: 1 },
+  { texte: "Les gens avec qui je travaille s'encouragent mutuellement à travailler ensemble", dim: "S", sens: 1 },
+  { texte: "Les gens avec qui je travaille facilitent la réalisation du travail", dim: "S", sens: 1 }
+];
+
+const itemsEpanouissement = [
+  "Je mène une vie qui a un but et du sens.",
+  "Mes relations sociales me soutiennent et sont enrichissantes.",
+  "Je suis impliqué(e) et intéressé(e) par mes activités quotidiennes.",
+  "Je contribue activement au bonheur et au bien-être des autres.",
+  "Je suis compétent(e) et appliqué(e) dans les activités importantes pour moi.",
+  "Je suis quelqu'un de « bien » qui a une bonne vie.",
+  "Je suis optimiste quant à mon avenir.",
+  "Les gens me respectent."
+];
+
+const itemsLOTR = [
+  { texte: "Dans les moments d'incertitude, je m'attends généralement à la meilleure issue possible.", sens: 1 },
+  { texte: "Quand quelque chose doit aller mal pour moi, ça va mal.", sens: -1 },
+  { texte: "Je suis toujours optimiste au sujet de mon avenir.", sens: 1 },
+  { texte: "Je m'attends rarement à ce que les choses s'arrangent pour moi.", sens: -1 },
+  { texte: "Je m'attends rarement à ce que des choses positives m'arrivent.", sens: -1 },
+  { texte: "Dans l'ensemble, je m'attends à ce qu'il m'arrive plus de bonnes choses que de mauvaises.", sens: 1 }
+];
+
+const questionsSoutien = [
+  "À quelle fréquence ces personnes ont pris de leur temps pour vous aider à rendre votre travail plus facile ?",
+  "Dans quelle mesure est-il facile de parler avec elles ?",
+  "Dans quelle mesure pouvez-vous bénéficier de leur aide quand les choses deviennent difficiles ?",
+  "Dans quelle mesure sont-elles disposées à écouter vos problèmes personnels ?"
+];
+
+const sourcesSoutien = ["Supérieur hiérarchique", "Collègues de travail", "Partenaire / famille / amis"];
+const niveauxSoutien = ["Rarement", "Parfois", "Souvent", "Très souvent"];
+
+// ============================================================
+// GÉNÉRATION DES ITEMS
+// ============================================================
+
+function genItems7(conteneur, items, prefixe) {
+  const vals = ["1","2","3","4","5","6","7"];
+  items.forEach((texte, i) => {
+    const div = document.createElement('div');
+    div.className = 'item-question';
+    div.id = `item_${prefixe}_${i}`;
+    let radios = vals.map(v =>
+      `<label><input type="radio" name="${prefixe}_${i}" value="${v}"><span class="radio-btn">${v}</span></label>`
+    ).join('');
+    div.innerHTML = `<div class="item-texte"><span class="item-numero">${i+1}.</span>${texte}</div>
+      <div class="radio-grille">${radios}</div>`;
+    document.getElementById(conteneur).appendChild(div);
+  });
+}
+
+function genItems4(conteneur, items, prefixe, labels) {
+  items.forEach((item, i) => {
+    const texte = typeof item === 'string' ? item : item.texte;
+    const div = document.createElement('div');
+    div.className = 'item-question';
+    div.id = `item_${prefixe}_${i}`;
+    let radios = labels.map((l, v) =>
+      `<label><input type="radio" name="${prefixe}_${i}" value="${v+1}"><span class="radio-btn">${l}</span></label>`
+    ).join('');
+    div.innerHTML = `<div class="item-texte"><span class="item-numero">${i+1}.</span>${texte}</div>
+      <div class="radio-grille">${radios}</div>`;
+    if (prefixe === 'phq' && i === 8) {
+      div.innerHTML += `<div class="note-item9">⚠ Cet item sera signalé au professionnel si vous répondez autre chose que « Jamais ».</div>`;
+    }
+    document.getElementById(conteneur).appendChild(div);
+  });
+}
+
+function genMotivation() {
+  const questions = [
+    "Au cours de ces derniers mois, avez-vous essayé concrètement de modifier vos habitudes de travail ?",
+    "Avez-vous sérieusement envisagé de les modifier dans les prochains mois ?",
+    "Actuellement, êtes-vous en train d'essayer de les modifier ?"
+  ];
+  const cont = document.getElementById('items-motivation');
+  questions.forEach((q, i) => {
+    const div = document.createElement('div');
+    div.className = 'item-question';
+    div.id = `item_motiv_${i}`;
+    div.innerHTML = `<div class="item-texte"><span class="item-numero">${i+1}.</span>${q}</div>
+      <div class="oui-non-grille">
+        <label><input type="radio" name="motiv_${i}" value="oui"><span class="on-btn">Oui</span></label>
+        <label><input type="radio" name="motiv_${i}" value="non"><span class="on-btn">Non</span></label>
+      </div>`;
+    cont.appendChild(div);
+  });
+}
+
+function genSoutien() {
+  const cont = document.getElementById('blocs-soutien');
+  questionsSoutien.forEach((q, qi) => {
+    const div = document.createElement('div');
+    div.style.marginBottom = '24px';
+    let lignes = sourcesSoutien.map((src, si) => {
+      let radios = niveauxSoutien.map((n, ni) =>
+        `<td style="text-align:center"><label><input type="radio" name="soutien_${qi}_${si}" value="${ni+1}"><span class="r-btn"></span></label></td>`
+      ).join('');
+      return `<tr><td>${src}</td>${radios}</tr>`;
+    }).join('');
+    div.innerHTML = `<div class="question-soutien">${q}</div>
+      <table class="tableau-soutien">
+        <thead><tr><th></th>${niveauxSoutien.map(n=>`<th>${n}</th>`).join('')}</tr></thead>
+        <tbody>${lignes}</tbody>
+      </table>`;
+    cont.appendChild(div);
+  });
+}
+
+// ============================================================
+// NAVIGATION
+// ============================================================
+
+const nSections = 8;
+const nomsSections = [
+  "Informations générales",
+  "État général",
+  "Humeur (PHQ-9)",
+  "Anxiété (GAD-7)",
+  "Conditions de travail",
+  "Épanouissement",
+  "Optimisme & motivation",
+  "Soutien social"
+];
+
+function demarrer() {
+  document.getElementById('accueil').style.display = 'none';
+  document.getElementById('passation').style.display = 'block';
+  genItems7('items-burnout', itemsBurnout, 'burn');
+  genItems4('items-phq9', itemsPHQ9, 'phq', ['Jamais','Plusieurs jours','Plus de la moitié du temps','Presque tous les jours']);
+  genItems4('items-gad7', itemsGAD7, 'gad', ['Jamais','Plusieurs jours','Plus de la moitié du temps','Presque tous les jours']);
+  genItems4('items-karasek', itemsKarasek.map(k=>k.texte), 'kar', ['Fortement en désaccord','En désaccord','D\'accord','Tout à fait d\'accord']);
+  genItems7('items-epanouissement', itemsEpanouissement, 'epan');
+  genItems4('items-lotr', itemsLOTR, 'lotr', ['Pas du tout d\'accord','Un peu d\'accord','Moyennement d\'accord','Tout à fait d\'accord']);
+  genMotivation();
+  genSoutien();
+  allerSection(0);
+}
+
+function allerSection(n) {
+  // Validation
+  if (n > 0) {
+    const prev = n - 1;
+    if (!validerSection(prev)) return;
+  }
+  document.querySelectorAll('.section-bloc').forEach(s => s.classList.remove('active'));
+  document.getElementById(`s${n}`).classList.add('active');
+  document.getElementById('nom-section-header').textContent = nomsSections[n];
+  document.getElementById('progress-label').textContent = `${n+1} / ${nSections}`;
+  document.getElementById('barre-fill').style.width = `${((n+1)/nSections)*100}%`;
+  window.scrollTo(0, 0);
+}
+
+function validerSection(n) {
+  const errId = `err-s${n}`;
+  const err = document.getElementById(errId);
+  if (!err) return true;
+
+  const checks = {
+    1: () => tousRepondus('burn', itemsBurnout.length, 7),
+    2: () => tousRepondus('phq', itemsPHQ9.length, 4),
+    3: () => tousRepondus('gad', itemsGAD7.length, 4),
+    4: () => tousRepondus('kar', itemsKarasek.length, 4),
+    5: () => tousRepondus('epan', itemsEpanouissement.length, 7),
+    6: () => tousRepondus('lotr', itemsLOTR.length, 4) && tousRepondusMotiv(),
+    7: () => tousRepondusSoutien()
+  };
+
+  if (checks[n] && !checks[n]()) {
+    err.style.display = 'inline';
+    return false;
+  }
+  if (err) err.style.display = 'none';
+  return true;
+}
+
+function tousRepondus(prefixe, nb, max) {
+  for (let i = 0; i < nb; i++) {
+    const sel = document.querySelector(`input[name="${prefixe}_${i}"]:checked`);
+    const item = document.getElementById(`item_${prefixe}_${i}`);
+    if (!sel) {
+      if (item) item.style.borderColor = '#e74c3c';
+      return false;
+    } else {
+      if (item) { item.style.borderColor = 'transparent'; item.classList.add('repondu'); }
+    }
+  }
+  return true;
+}
+
+function tousRepondusMotiv() {
+  for (let i = 0; i < 3; i++) {
+    if (!document.querySelector(`input[name="motiv_${i}"]:checked`)) return false;
+  }
+  return true;
+}
+
+function tousRepondusSoutien() {
+  for (let qi = 0; qi < questionsSoutien.length; qi++) {
+    for (let si = 0; si < sourcesSoutien.length; si++) {
+      if (!document.querySelector(`input[name="soutien_${qi}_${si}"]:checked`)) return false;
+    }
+  }
+  return true;
+}
+
+// ============================================================
+// CALCUL DES SCORES
+// ============================================================
+
+function getVal(name) {
+  const el = document.querySelector(`input[name="${name}"]:checked`);
+  return el ? parseInt(el.value) : 0;
+}
+
+function getValStr(name) {
+  const el = document.querySelector(`input[name="${name}"]:checked`);
+  return el ? el.value : '—';
+}
+
+function scoreSomme(prefixe, nb) {
+  let s = 0;
+  for (let i = 0; i < nb; i++) s += getVal(`${prefixe}_${i}`);
+  return s;
+}
+
+function scorePHQ9() {
+  let s = 0;
+  for (let i = 0; i < 9; i++) s += (getVal(`phq_${i}`) - 1); // 0-3
+  return s;
+}
+
+function scoreGAD7() {
+  let s = 0;
+  for (let i = 0; i < 7; i++) s += (getVal(`gad_${i}`) - 1);
+  return s;
+}
+
+function scoreKarasek() {
+  let D = 0, L = 0, S = 0, nD = 0, nL = 0, nS = 0;
+  itemsKarasek.forEach((item, i) => {
+    let v = getVal(`kar_${i}`);
+    if (item.sens === -1) v = 5 - v;
+    if (item.dim === 'D') { D += v; nD++; }
+    if (item.dim === 'L') { L += v; nL++; }
+    if (item.dim === 'S') { S += v; nS++; }
+  });
+  return { D: Math.round(D/nD*10)/10, L: Math.round(L/nL*10)/10, S: Math.round(S/nS*10)/10 };
+}
+
+function scoreLOTR() {
+  let s = 0;
+  itemsLOTR.forEach((item, i) => {
+    let v = getVal(`lotr_${i}`);
+    if (item.sens === -1) v = 5 - v;
+    s += v;
+  });
+  return s;
+}
+
+function scoreSoutien() {
+  let total = 0, n = 0;
+  const parSource = sourcesSoutien.map(() => ({ total: 0, n: 0 }));
+  for (let qi = 0; qi < questionsSoutien.length; qi++) {
+    for (let si = 0; si < sourcesSoutien.length; si++) {
+      const v = getVal(`soutien_${qi}_${si}`);
+      total += v; n++;
+      parSource[si].total += v;
+      parSource[si].n++;
+    }
+  }
+  return {
+    total: Math.round(total/n*10)/10,
+    parSource: parSource.map(ps => Math.round(ps.total/ps.n*10)/10)
+  };
+}
+
+// ── URL de l'Apps Script (à remplacer après déploiement) ────
+const APPS_SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbxZb8YljCnQYNXfIsGXzjjCndq9y88CY1-aJZCVduXev7hdQbK6txL-sBKHOkkd2aAC/exec';
+
+function genererIdentifiant() {
+  const initiales = (document.getElementById('g_initiales').value || '').toUpperCase().replace(/[^A-Z]/g, '');
+  const ddn = document.getElementById('g_ddn').value || '';
+  let ddnCode = '';
+  if (ddn) {
+    const [a, m, j] = ddn.split('-');
+    ddnCode = `${j}${m}${a.slice(2)}`;
+  }
+  return `${initiales}${ddnCode}` || '—';
+}
+
+// ============================================================
+// CALCUL ET ENVOI AU GOOGLE SHEET
+// ============================================================
+
+function calculerEtAfficher() {
+  if (!validerSection(7)) return;
+
+  // Scores
+  const burnRaw = scoreSomme('burn', 10);
+  const phq = scorePHQ9();
+  const gad = scoreGAD7();
+  const kar = scoreKarasek();
+  const epanRaw = scoreSomme('epan', 8);
+  const lotr = scoreLOTR();
+  const sout = scoreSoutien();
+
+  const burnPct = Math.round((burnRaw - 10) / 60 * 100);
+  const burnLabel = burnPct < 33 ? 'Niveau faible' : burnPct < 60 ? 'Niveau modéré' : 'Niveau élevé';
+  const epanPct = Math.round((epanRaw - 8) / 48 * 100);
+  const lotrPct = Math.round((lotr - 6) / 18 * 100);
+  const phqItem9 = getVal('phq_8') - 1;
+  const m = [0,1,2].map(i => getValStr(`motiv_${i}`));
+  const stade = m[0]==='oui' ? 'Action / Maintenance' : m[1]==='oui' ? 'Préparation / Contemplation' : m[2]==='oui' ? 'Action' : 'Pré-contemplation';
+
+  let karLabel = '';
+  if (kar.D > 3 && kar.L < 2.5 && kar.S < 2.5) karLabel = 'Job strain avec isolement';
+  else if (kar.D > 3 && kar.L < 2.5) karLabel = 'Job strain';
+  else if (kar.D > 3) karLabel = 'Forte demande psychologique';
+  else if (kar.L < 2.5) karLabel = 'Faible latitude décisionnelle';
+  else karLabel = 'Conditions équilibrées';
+
+  // Constitution du payload
+  const code = genererIdentifiant();
+  const payload = {
+    code_session: code,
+    date: new Date().toISOString(),
+    profession: document.getElementById('g_profession').value || '—',
+    annee_prise_fonction: document.getElementById('g_annee').value || '—',
+    age: document.getElementById('g_age').value || '—',
+    plaisir_travail: ['Pas du tout','Peu important','Important','Très important'][getVal('plaisir')] || '—',
+    pensee_changer_poste: ['Pas du tout','Quelquefois','Souvent','En permanence'][getVal('changer')] || '—',
+    envie_demissionner: ['Pas du tout','Quelquefois','Souvent','En permanence'][getVal('demission')] || '—',
+    arret_travail: getValStr('arret'),
+    burnout_score: burnRaw,
+    burnout_pct: burnPct,
+    burnout_niveau: burnLabel,
+    phq9_score: phq,
+    phq9_label: labelPHQ(phq),
+    phq9_item9: phqItem9 > 0 ? 'OUI' : 'non',
+    gad7_score: gad,
+    gad7_label: labelGAD(gad),
+    karasek_demande: kar.D,
+    karasek_latitude: kar.L,
+    karasek_soutien_travail: kar.S,
+    karasek_label: karLabel,
+    epanouissement_score: epanRaw,
+    epanouissement_pct: epanPct,
+    lotr_score: lotr,
+    lotr_pct: lotrPct,
+    soutien_global: sout.total,
+    soutien_superieur: sout.parSource[0],
+    soutien_collegues: sout.parSource[1],
+    soutien_famille: sout.parSource[2],
+    motivation_stade: stade
+  };
+
+  // Afficher écran de confirmation (attente)
+  document.getElementById('passation').style.display = 'none';
+  document.getElementById('resultats').style.display = 'block';
+  window.scrollTo(0, 0);
+  window._payload = payload; // mémoriser pour réessai
+
+  envoyerPayload(payload);
+}
+
+function envoyerPayload(payload) {
+  document.getElementById('confirm-attente').style.display = 'block';
+  document.getElementById('confirm-ok').style.display = 'none';
+  document.getElementById('confirm-erreur').style.display = 'none';
+
+  fetch(APPS_SCRIPT_URL, {
+    method: 'POST',
+    headers: { 'Content-Type': 'text/plain' },
+    body: JSON.stringify(payload)
+  })
+  .then(r => r.json())
+  .then(data => {
+    if (data.status === 'ok') {
+      document.getElementById('confirm-attente').style.display = 'none';
+      document.getElementById('confirm-ok').style.display = 'block';
+      const el = document.getElementById('code-session-affiche');
+      if (el && window._payload?.code_session) el.textContent = window._payload.code_session;
+    } else {
+      throw new Error('status != ok');
+    }
+  })
+  .catch(() => {
+    document.getElementById('confirm-attente').style.display = 'none';
+    document.getElementById('confirm-erreur').style.display = 'block';
+  });
+}
+
+function reessayerEnvoi() {
+  if (window._payload) envoyerPayload(window._payload);
+}
+
+function labelPHQ(s) {
+  if (s <= 4) return 'Absence de symptômes dépressifs significatifs';
+  if (s <= 9) return 'Symptômes dépressifs légers';
+  if (s <= 14) return 'Symptômes dépressifs modérés';
+  if (s <= 19) return 'Symptômes dépressifs modérément sévères';
+  return 'Symptômes dépressifs sévères';
+}
+
+function labelGAD(s) {
+  if (s <= 4) return 'Absence de symptômes anxieux significatifs';
+  if (s <= 9) return 'Symptômes anxieux légers';
+  if (s <= 14) return 'Symptômes anxieux modérés';
+  return 'Symptômes anxieux sévères';
+}
+
+function labelGAD(s) {
+  if (s <= 4) return 'Absence de symptômes anxieux significatifs';
+  if (s <= 9) return 'Symptômes anxieux légers';
+  if (s <= 14) return 'Symptômes anxieux modérés';
+  return 'Symptômes anxieux sévères';
+}
+</script>
+</body>
+</html>
