@@ -1,0 +1,814 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>RECAP — Enquête de validation psychométrique</title>
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,500;0,600;0,700;1,400&family=DM+Sans:wght@300;400;500;600&display=swap" rel="stylesheet">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.min.js"></script>
+<style>
+:root {
+  --bg: #f4f1eb;
+  --card: #ffffff;
+  --navy: #1c3557;
+  --navy2: #2a4d7a;
+  --terra: #b85c38;
+  --terra2: #cc6e49;
+  --text: #1a1a1a;
+  --muted: #6b6860;
+  --border: #ddd8ce;
+  --green: #3d7a5a;
+  --red: #8b2222;
+  --blue: #2a6496;
+  --amber: #8a6014;
+  --r: 12px;
+  --sh: 0 2px 20px rgba(28,53,87,.07);
+  --sh2: 0 8px 40px rgba(28,53,87,.12);
+}
+*{box-sizing:border-box;margin:0;padding:0;}
+html{scroll-behavior:smooth;}
+body{font-family:'DM Sans',sans-serif;background:var(--bg);color:var(--text);min-height:100vh;line-height:1.6;}
+
+/* HEADER */
+.hdr{background:var(--navy);color:#fff;padding:18px 24px;position:sticky;top:0;z-index:200;box-shadow:0 2px 16px rgba(0,0,0,.18);}
+.hdr-inner{max-width:780px;margin:0 auto;}
+.hdr-logo{display:flex;align-items:baseline;gap:12px;}
+.hdr-title{font-family:'Cormorant Garamond',serif;font-size:24px;font-weight:700;letter-spacing:.5px;}
+.hdr-sub{font-size:11px;opacity:.6;letter-spacing:.3px;}
+.prog-wrap{display:flex;align-items:center;gap:10px;margin-top:12px;}
+.prog-bar{flex:1;height:3px;background:rgba(255,255,255,.2);border-radius:2px;overflow:hidden;}
+.prog-fill{height:100%;background:var(--terra);border-radius:2px;transition:width .5s cubic-bezier(.4,0,.2,1);}
+.prog-lbl{font-size:11px;opacity:.6;white-space:nowrap;}
+
+/* LAYOUT */
+.main{max-width:780px;margin:0 auto;padding:36px 20px 100px;}
+.step{display:none;animation:fadeIn .3s ease;}
+.step.active{display:block;}
+@keyframes fadeIn{from{opacity:0;transform:translateY(8px);}to{opacity:1;transform:none;}}
+
+/* CARD */
+.card{background:var(--card);border-radius:var(--r);padding:36px;box-shadow:var(--sh);margin-bottom:20px;border:1px solid rgba(28,53,87,.06);}
+.card+.card{margin-top:0;}
+
+/* TYPOGRAPHY */
+.step-title{font-family:'Cormorant Garamond',serif;font-size:28px;font-weight:600;color:var(--navy);margin-bottom:6px;line-height:1.2;}
+.step-sub{font-size:14px;color:var(--muted);margin-bottom:28px;line-height:1.65;}
+.section-title{font-family:'Cormorant Garamond',serif;font-size:18px;font-weight:600;color:var(--navy);margin-bottom:4px;}
+
+/* FORM */
+.fgrp{margin-bottom:22px;}
+.flabel{display:block;font-size:13px;font-weight:500;margin-bottom:7px;color:var(--text);}
+.req{color:var(--terra);margin-left:2px;}
+.finput,.fselect{width:100%;padding:10px 14px;border:1.5px solid var(--border);border-radius:8px;font-family:'DM Sans',sans-serif;font-size:14px;color:var(--text);background:var(--bg);transition:border-color .2s,box-shadow .2s;}
+.finput:focus,.fselect:focus{outline:none;border-color:var(--navy);box-shadow:0 0 0 3px rgba(28,53,87,.08);}
+.finput::placeholder{color:#b0ab9e;}
+
+/* CHECKBOXES */
+.cblist{display:flex;flex-direction:column;gap:7px;}
+.cbitem{display:flex;align-items:center;gap:10px;padding:10px 14px;border:1.5px solid var(--border);border-radius:8px;cursor:pointer;transition:all .2s;user-select:none;}
+.cbitem:hover{border-color:var(--navy);background:rgba(28,53,87,.03);}
+.cbitem.on{border-color:var(--navy);background:rgba(28,53,87,.06);}
+.cbitem input{width:16px;height:16px;accent-color:var(--navy);cursor:pointer;flex-shrink:0;}
+.cbitem span{font-size:14px;}
+
+/* LIKERT */
+.dim-hdr{display:flex;align-items:center;gap:12px;margin-bottom:20px;padding-bottom:16px;border-bottom:2px solid var(--border);}
+.dbadge{padding:3px 11px;border-radius:20px;font-size:11px;font-weight:600;letter-spacing:.6px;text-transform:uppercase;}
+.d1 .dbadge{background:#e8f0fa;color:#1e5591;}
+.d2 .dbadge{background:#faf0e6;color:#7a4a10;}
+.d3 .dbadge{background:#e8f5ed;color:#2d5e40;}
+.dim-label{font-family:'Cormorant Garamond',serif;font-size:21px;font-weight:600;color:var(--navy);}
+
+.lhdr{display:grid;grid-template-columns:1fr 52px 52px 52px 52px;gap:6px;padding:6px 14px;margin-bottom:4px;}
+.lhdr-lbl{font-size:10px;text-align:center;color:var(--muted);font-weight:600;text-transform:uppercase;letter-spacing:.4px;line-height:1.3;}
+.litem{display:grid;grid-template-columns:1fr 52px 52px 52px 52px;gap:6px;align-items:center;padding:13px 14px;border-radius:8px;border:1.5px solid transparent;transition:all .2s;margin-bottom:3px;}
+.litem:hover{background:rgba(28,53,87,.025);}
+.litem.done{background:rgba(28,53,87,.04);border-color:rgba(28,53,87,.09);}
+.litem.highlight{background:rgba(184,92,56,.07);border-color:rgba(184,92,56,.25);}
+.itext{font-size:13.5px;line-height:1.5;}
+.inum{font-size:11px;color:var(--muted);font-weight:600;margin-right:5px;}
+.lradio{display:flex;justify-content:center;}
+.lradio input[type=radio]{width:20px;height:20px;accent-color:var(--navy);cursor:pointer;}
+
+/* OPEN QUESTIONS */
+.oq{margin-bottom:24px;}
+.oq-label{font-size:14px;font-weight:500;margin-bottom:8px;line-height:1.55;display:flex;gap:9px;align-items:flex-start;}
+.oq-n{display:inline-flex;align-items:center;justify-content:center;width:24px;height:24px;min-width:24px;background:var(--navy);color:#fff;border-radius:50%;font-size:12px;font-weight:600;margin-top:1px;}
+textarea{width:100%;padding:12px 14px;border:1.5px solid var(--border);border-radius:8px;font-family:'DM Sans',sans-serif;font-size:13.5px;color:var(--text);background:var(--bg);resize:vertical;min-height:88px;transition:border-color .2s;line-height:1.6;}
+textarea:focus{outline:none;border-color:var(--navy);box-shadow:0 0 0 3px rgba(28,53,87,.07);}
+textarea::placeholder{color:#b0ab9e;}
+
+/* CONSENT */
+.consent-box{background:rgba(28,53,87,.04);border:1.5px solid rgba(28,53,87,.12);border-radius:10px;padding:20px 22px;font-size:13px;line-height:1.75;margin-bottom:18px;color:var(--text);}
+.consent-box strong{color:var(--navy);}
+.ccheck{display:flex;align-items:flex-start;gap:12px;padding:16px 18px;border:2px solid var(--border);border-radius:10px;cursor:pointer;transition:all .2s;user-select:none;}
+.ccheck:hover{border-color:var(--navy);}
+.ccheck.on{border-color:var(--navy);background:rgba(28,53,87,.05);}
+.ccheck input{width:18px;height:18px;accent-color:var(--navy);flex-shrink:0;margin-top:2px;}
+.ccheck-txt{font-size:13px;line-height:1.65;}
+.jarde{background:rgba(184,92,56,.06);border-left:3px solid var(--terra);padding:12px 16px;border-radius:0 8px 8px 0;font-size:12px;color:var(--muted);margin-top:16px;line-height:1.65;}
+
+/* NAVIGATION */
+.navbtn{display:flex;justify-content:space-between;align-items:center;margin-top:22px;gap:12px;}
+.btn{padding:11px 26px;border-radius:8px;font-family:'DM Sans',sans-serif;font-size:14px;font-weight:500;cursor:pointer;transition:all .2s;border:none;letter-spacing:.1px;}
+.btn-p{background:var(--navy);color:#fff;}
+.btn-p:hover{background:var(--navy2);transform:translateY(-1px);box-shadow:0 4px 12px rgba(28,53,87,.25);}
+.btn-s{background:transparent;color:var(--muted);border:1.5px solid var(--border);}
+.btn-s:hover{border-color:var(--navy);color:var(--navy);}
+.btn-cta{background:var(--terra);color:#fff;padding:13px 36px;font-size:15px;}
+.btn-cta:hover{background:var(--terra2);transform:translateY(-1px);box-shadow:0 4px 14px rgba(184,92,56,.3);}
+
+/* ERRORS */
+.errmsg{color:var(--terra);font-size:12px;margin-top:8px;display:none;font-weight:500;}
+.errmsg.on{display:block;}
+
+/* RESULTS */
+.scores-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:14px;margin-bottom:24px;}
+.sbox{text-align:center;padding:18px 12px;border-radius:10px;}
+.sbox-1{background:rgba(42,100,150,.09);}
+.sbox-2{background:rgba(122,74,16,.09);}
+.sbox-3{background:rgba(61,122,90,.09);}
+.sval{font-family:'Cormorant Garamond',serif;font-size:36px;font-weight:700;line-height:1;}
+.sbox-1 .sval{color:#1e5591;}
+.sbox-2 .sval{color:#7a4a10;}
+.sbox-3 .sval{color:#2d5e40;}
+.smax{font-size:13px;color:var(--muted);}
+.slbl{font-size:11px;color:var(--muted);margin-top:4px;font-weight:500;line-height:1.3;}
+.chart-wrap{position:relative;height:200px;margin:6px 0 24px;}
+
+.pcard{border-radius:var(--r);padding:26px 28px;margin:0;}
+.p1{background:linear-gradient(135deg,#e8f4ed,#d4eadc);border-left:4px solid #3d7a5a;}
+.p2{background:linear-gradient(135deg,#faeaea,#f5d6d6);border-left:4px solid #8b2222;}
+.p3{background:linear-gradient(135deg,#eaf0fa,#d4e2f5);border-left:4px solid #2a6496;}
+.p4{background:linear-gradient(135deg,#faf4e8,#f5e8cc);border-left:4px solid #8a6014;}
+.pname{font-family:'Cormorant Garamond',serif;font-size:22px;font-weight:700;margin-bottom:8px;}
+.p1 .pname{color:#2a5a3c;} .p2 .pname{color:#6e1a1a;} .p3 .pname{color:#1a4470;} .p4 .pname{color:#6a4a10;}
+.pdesc{font-size:13.5px;line-height:1.75;margin-bottom:12px;}
+.palert{font-size:12px;font-weight:600;padding:5px 12px;border-radius:6px;display:inline-block;}
+.p1 .palert{background:rgba(61,122,90,.15);color:#2a5a3c;}
+.p2 .palert{background:rgba(139,34,34,.15);color:#6e1a1a;}
+.p3 .palert{background:rgba(42,100,150,.15);color:#1a4470;}
+.p4 .palert{background:rgba(138,96,20,.15);color:#6a4a10;}
+
+.exp-notice{background:var(--bg);border:1.5px dashed var(--border);border-radius:8px;padding:14px 18px;font-size:12px;color:var(--muted);line-height:1.65;margin-top:20px;}
+.thankyou{text-align:center;padding:36px 20px;}
+.ty-icon{font-size:52px;margin-bottom:16px;}
+
+/* MODAL */
+.modal-bg{display:none;position:fixed;inset:0;background:rgba(0,0,0,.5);z-index:500;justify-content:center;align-items:center;padding:20px;}
+.modal-bg.on{display:flex;}
+.modal{background:#fff;border-radius:var(--r);padding:36px;max-width:620px;width:100%;max-height:85vh;overflow-y:auto;box-shadow:var(--sh2);}
+.modal-title{font-family:'Cormorant Garamond',serif;font-size:24px;font-weight:600;color:var(--navy);margin-bottom:18px;}
+.modal-body{font-size:13px;line-height:1.8;color:var(--muted);}
+.modal-body h4{color:var(--text);font-size:13px;margin:16px 0 4px;font-weight:600;}
+.modal-body a{color:var(--navy);}
+.lnk{color:var(--navy);text-decoration:underline;cursor:pointer;background:none;border:none;font-family:inherit;font-size:inherit;padding:0;}
+
+/* RESPONSIVE */
+@media(max-width:580px){
+  .card{padding:22px 16px;}
+  .lhdr,.litem{grid-template-columns:1fr 40px 40px 40px 40px;gap:3px;padding:10px 8px;}
+  .scores-grid{gap:8px;}
+  .sval{font-size:28px;}
+  .step-title{font-size:24px;}
+}
+</style>
+</head>
+<body>
+
+<!-- HEADER -->
+<div class="hdr">
+  <div class="hdr-inner">
+    <div class="hdr-logo">
+      <span class="hdr-title">RECAP</span>
+      <span class="hdr-sub">Résonance Émotionnelle et Contre-Attitudes Professionnelles</span>
+    </div>
+    <div class="prog-wrap">
+      <div class="prog-bar"><div class="prog-fill" id="progFill" style="width:0%"></div></div>
+      <span class="prog-lbl" id="progLbl">Étape 1 / 8</span>
+    </div>
+  </div>
+</div>
+
+<div class="main">
+
+<!-- ===== STEP 0 : ACCUEIL / CONSENTEMENT ===== -->
+<div class="step active" id="s0">
+  <div class="card">
+    <div class="step-title">Bienvenue dans l'enquête RECAP</div>
+    <div class="step-sub">Résonance Émotionnelle et Contre-Attitudes Professionnelles — Validation psychométrique V2.0<br>Dr G. Brandibas — IPCRA / ACTIF Formation — Mars 2026</div>
+
+    <div class="consent-box">
+      <strong>Objectif de cette enquête.</strong> Recueillir des données sur la résonance émotionnelle des professionnels du secteur social et médico-social dans leur relation avec une personne accompagnée, afin de contribuer à la validation psychométrique de l'échelle RECAP.<br><br>
+      <strong>Ce que vous allez faire.</strong> Penser à une personne spécifique que vous accompagnez actuellement — une relation qui vous touche, vous questionne ou vous mobilise professionnellement. Répondre aux 28 questions de l'échelle à son propos. Durée estimée : 10 à 15 minutes.<br><br>
+      <strong>Confidentialité.</strong> La participation est volontaire et anonyme. Aucune donnée permettant d'identifier le professionnel ou la personne accompagnée n'est collectée. Les données sont utilisées exclusivement à des fins de recherche scientifique et ne sont ni cédées ni vendues à des tiers.<br><br>
+      <strong>En fin de questionnaire.</strong> Vous recevrez un retour indicatif sur votre profil RECAP — à titre exploratoire, sans valeur normative à ce stade de validation.
+    </div>
+
+    <div class="ccheck" id="ccheckEl" onclick="toggleConsent(event)">
+      <input type="checkbox" id="consentCb">
+      <div class="ccheck-txt">J'ai pris connaissance des informations ci-dessus. Je participe volontairement à cette enquête et j'accepte que mes réponses anonymes soient utilisées dans le cadre de la validation de l'échelle RECAP. Je sais que je peux interrompre à tout moment sans conséquence.</div>
+    </div>
+
+    <div class="jarde">
+      <strong>Mention légale.</strong> Cette collecte de données ne constitue pas une recherche impliquant la personne humaine au sens de la loi Jardé (loi n° 2012-300 du 5 mars 2012). Elle porte sur des données déclaratives relatives aux pratiques et vécus professionnels, sans intervention sur les personnes, sans collecte de données de santé nominatives et sans modification de prise en charge. Elle ne relève pas de l'avis d'un Comité de Protection des Personnes (CPP).
+    </div>
+
+    <p style="font-size:12px;color:var(--muted);margin-top:14px;">
+      <button class="lnk" onclick="openModal()">Politique de confidentialité complète</button> &nbsp;·&nbsp;
+      Contact : <a href="mailto:institut.ipcra@gmail.com" style="color:var(--navy);">institut.ipcra@gmail.com</a>
+    </p>
+  </div>
+  <div class="navbtn" style="justify-content:flex-end">
+    <button class="btn btn-p" onclick="go(1)">Commencer l'enquête →</button>
+  </div>
+  <div class="errmsg" id="e0">Veuillez cocher la case de consentement pour continuer.</div>
+</div>
+
+<!-- ===== STEP 1 : RÉPONDANT ===== -->
+<div class="step" id="s1">
+  <div class="card">
+    <div class="step-title">Votre profil professionnel</div>
+    <div class="step-sub">Ces informations anonymes permettent d'analyser les données selon les profils de répondants.</div>
+
+    <div class="fgrp">
+      <label class="flabel">Âge <span class="req">*</span></label>
+      <input type="number" class="finput" id="age" min="18" max="75" placeholder="Votre âge" style="max-width:110px">
+    </div>
+
+    <div class="fgrp">
+      <label class="flabel">Profession <span class="req">*</span></label>
+      <input type="text" class="finput" id="profession" placeholder="Ex : éducateur spécialisé, psychologue, infirmier, AES, moniteur éducateur…">
+    </div>
+
+    <div class="fgrp">
+      <label class="flabel">Ancienneté dans le poste actuel <span class="req">*</span></label>
+      <select class="fselect" id="anciennete">
+        <option value="">— Sélectionner —</option>
+        <option>Moins d'1 an</option>
+        <option>1 à 3 ans</option>
+        <option>3 à 5 ans</option>
+        <option>5 à 10 ans</option>
+        <option>Plus de 10 ans</option>
+      </select>
+    </div>
+
+    <div class="fgrp">
+      <label class="flabel">Type d'institution <span class="req">*</span></label>
+      <select class="fselect" id="institution" onchange="chkAutreInstit()">
+        <option value="">— Sélectionner —</option>
+        <option>IME (Institut Médico-Éducatif)</option>
+        <option>ITEP / DITEP</option>
+        <option>ESAT</option>
+        <option>EHPAD</option>
+        <option>SAVS / SAMSAH</option>
+        <option>MAS / FAM</option>
+        <option>CHRS / Hébergement social</option>
+        <option>Protection de l'enfance (MECS, foyer…)</option>
+        <option>CAMSP / SESSAD</option>
+        <option>HAD / SSIAD</option>
+        <option>Hôpital / service psychiatrique</option>
+        <option value="autre">Autre</option>
+      </select>
+      <input type="text" class="finput" id="institutionAutre" placeholder="Préciser le type d'institution" style="margin-top:8px;display:none">
+    </div>
+  </div>
+  <div class="navbtn">
+    <button class="btn btn-s" onclick="go(0)">← Retour</button>
+    <button class="btn btn-p" onclick="go(2)">Continuer →</button>
+  </div>
+  <div class="errmsg" id="e1">Veuillez renseigner tous les champs obligatoires.</div>
+</div>
+
+<!-- ===== STEP 2 : CONTEXTE RELATION ===== -->
+<div class="step" id="s2">
+  <div class="card">
+    <div class="step-title">La relation et la personne accompagnée</div>
+    <div class="step-sub">Pensez à une personne que vous accompagnez actuellement — une relation qui vous mobilise, vous touche ou vous questionne. C'est à propos de cette relation spécifique que vous répondrez à l'ensemble du questionnaire.</div>
+
+    <div class="fgrp">
+      <label class="flabel">Nature de votre relation avec cette personne <span class="req">*</span> <span style="font-size:12px;color:var(--muted)">(plusieurs choix possibles)</span></label>
+      <div class="cblist" id="cbNature">
+        <label class="cbitem" onclick="this.classList.toggle('on')"><input type="checkbox" value="difficile"><span>Difficile / conflictuelle</span></label>
+        <label class="cbitem" onclick="this.classList.toggle('on')"><input type="checkbox" value="engagee"><span>Engagée / investie</span></label>
+        <label class="cbitem" onclick="this.classList.toggle('on')"><input type="checkbox" value="positif"><span>Transfert positif / attachement</span></label>
+        <label class="cbitem" onclick="this.classList.toggle('on')"><input type="checkbox" value="distante"><span>Distante / neutre</span></label>
+        <label class="cbitem" onclick="this.classList.toggle('on')"><input type="checkbox" value="ambivalente"><span>Ambivalente</span></label>
+        <label class="cbitem" id="cbAutreNatureEl" onclick="this.classList.toggle('on');chkAutreNature()"><input type="checkbox" value="autre"><span>Autre</span></label>
+      </div>
+      <input type="text" class="finput" id="natureAutre" placeholder="Préciser la nature de la relation" style="margin-top:8px;display:none">
+    </div>
+
+    <div class="fgrp">
+      <label class="flabel">Type de public concerné (personne accompagnée) <span class="req">*</span></label>
+      <select class="fselect" id="typePublic" onchange="chkAutrePublic()">
+        <option value="">— Sélectionner —</option>
+        <option>Handicap mental</option>
+        <option>Handicap psychique</option>
+        <option>Handicap physique</option>
+        <option>TSA (Troubles du Spectre Autistique)</option>
+        <option>Polyhandicap</option>
+        <option>Difficultés sociales / précarité</option>
+        <option>Protection de l'enfance</option>
+        <option>Personne âgée / dépendance</option>
+        <option value="autre">Autre</option>
+      </select>
+      <input type="text" class="finput" id="typePublicAutre" placeholder="Préciser le type de public" style="margin-top:8px;display:none">
+    </div>
+
+    <div class="fgrp">
+      <label class="flabel">Tranche d'âge de la personne accompagnée <span class="req">*</span></label>
+      <select class="fselect" id="trancheAge">
+        <option value="">— Sélectionner —</option>
+        <option>Enfant (moins de 12 ans)</option>
+        <option>Adolescent (12–18 ans)</option>
+        <option>Adulte (18–60 ans)</option>
+        <option>Personne âgée (plus de 60 ans)</option>
+      </select>
+    </div>
+  </div>
+  <div class="navbtn">
+    <button class="btn btn-s" onclick="go(1)">← Retour</button>
+    <button class="btn btn-p" onclick="go(3)">Commencer le questionnaire →</button>
+  </div>
+  <div class="errmsg" id="e2">Veuillez renseigner tous les champs obligatoires.</div>
+</div>
+
+<!-- ===== STEP 3 : DIMENSION 1 ===== -->
+<div class="step" id="s3">
+  <div class="card">
+    <div class="dim-hdr d1">
+      <span class="dbadge">Dimension 1</span>
+      <span class="dim-label">Résonance affective</span>
+    </div>
+    <div class="step-sub" style="margin-bottom:16px">Pour chaque énoncé, indiquez la <strong>fréquence</strong> à laquelle vous avez ressenti cela dans votre relation avec cette personne au cours des <strong>dernières semaines</strong>. Il n'y a pas de bonne ou mauvaise réponse.</div>
+    <div class="lhdr">
+      <div></div>
+      <div class="lhdr-lbl">0<br>Jamais</div>
+      <div class="lhdr-lbl">1<br>Rarement</div>
+      <div class="lhdr-lbl">2<br>Souvent</div>
+      <div class="lhdr-lbl">3<br>Toujours</div>
+    </div>
+    <div id="d1items"></div>
+  </div>
+  <div class="navbtn">
+    <button class="btn btn-s" onclick="go(2)">← Retour</button>
+    <button class="btn btn-p" onclick="go(4)">Continuer →</button>
+  </div>
+  <div class="errmsg" id="e3">Veuillez répondre à tous les items avant de continuer.</div>
+</div>
+
+<!-- ===== STEP 4 : DIMENSION 2 ===== -->
+<div class="step" id="s4">
+  <div class="card">
+    <div class="dim-hdr d2">
+      <span class="dbadge">Dimension 2</span>
+      <span class="dim-label">Position relationnelle perçue</span>
+    </div>
+    <div class="step-sub" style="margin-bottom:16px">Même consigne : <strong>fréquence</strong> au cours des <strong>dernières semaines</strong>.</div>
+    <div class="lhdr">
+      <div></div>
+      <div class="lhdr-lbl">0<br>Jamais</div>
+      <div class="lhdr-lbl">1<br>Rarement</div>
+      <div class="lhdr-lbl">2<br>Souvent</div>
+      <div class="lhdr-lbl">3<br>Toujours</div>
+    </div>
+    <div id="d2items"></div>
+  </div>
+  <div class="navbtn">
+    <button class="btn btn-s" onclick="go(3)">← Retour</button>
+    <button class="btn btn-p" onclick="go(5)">Continuer →</button>
+  </div>
+  <div class="errmsg" id="e4">Veuillez répondre à tous les items avant de continuer.</div>
+</div>
+
+<!-- ===== STEP 5 : DIMENSION 3 ===== -->
+<div class="step" id="s5">
+  <div class="card">
+    <div class="dim-hdr d3">
+      <span class="dbadge">Dimension 3</span>
+      <span class="dim-label">Impact sur les pratiques</span>
+    </div>
+    <div class="step-sub" style="margin-bottom:16px">Même consigne : <strong>fréquence</strong> au cours des <strong>dernières semaines</strong>.</div>
+    <div class="lhdr">
+      <div></div>
+      <div class="lhdr-lbl">0<br>Jamais</div>
+      <div class="lhdr-lbl">1<br>Rarement</div>
+      <div class="lhdr-lbl">2<br>Souvent</div>
+      <div class="lhdr-lbl">3<br>Toujours</div>
+    </div>
+    <div id="d3items"></div>
+  </div>
+  <div class="navbtn">
+    <button class="btn btn-s" onclick="go(4)">← Retour</button>
+    <button class="btn btn-p" onclick="go(6)">Continuer →</button>
+  </div>
+  <div class="errmsg" id="e5">Veuillez répondre à tous les items avant de continuer.</div>
+</div>
+
+<!-- ===== STEP 6 : QUESTIONS OUVERTES ===== -->
+<div class="step" id="s6">
+  <div class="card">
+    <div class="step-title">Questions ouvertes</div>
+    <div class="step-sub">Ces questions sont facultatives. Elles complètent les données quantitatives et permettent de nuancer vos réponses. Répondez aussi librement que vous le souhaitez.</div>
+
+    <div class="oq">
+      <div class="oq-label"><span class="oq-n">1</span><span>Quelle émotion ou réaction domine actuellement dans votre relation avec cette personne accompagnée ?</span></div>
+      <textarea id="q1" placeholder="Répondez librement…"></textarea>
+    </div>
+    <div class="oq">
+      <div class="oq-label"><span class="oq-n">2</span><span>Y a-t-il quelque chose dans la situation de cette personne qui vous rappelle une expérience personnelle ou professionnelle antérieure ?</span></div>
+      <textarea id="q2" placeholder="Répondez librement…"></textarea>
+    </div>
+    <div class="oq">
+      <div class="oq-label"><span class="oq-n">3</span><span>Qu'est-ce que vous aimeriez pouvoir faire différemment dans votre accompagnement ?</span></div>
+      <textarea id="q3" placeholder="Répondez librement…"></textarea>
+    </div>
+    <div class="oq">
+      <div class="oq-label"><span class="oq-n">4</span><span>Après la séance de supervision, qu'est-ce qui a changé dans votre façon de percevoir ou de vivre cette relation ? <em style="font-size:12px;color:var(--muted)">(à compléter après la séance si applicable)</em></span></div>
+      <textarea id="q4" placeholder="Répondez librement…"></textarea>
+    </div>
+  </div>
+  <div class="navbtn">
+    <button class="btn btn-s" onclick="go(5)">← Retour</button>
+    <button class="btn btn-cta" onclick="submitAndShow()">Voir mon profil →</button>
+  </div>
+</div>
+
+<!-- ===== STEP 7 : RESTITUTION ===== -->
+<div class="step" id="s7">
+  <div class="card" id="resultsCard">
+    <div class="step-title">Votre profil RECAP</div>
+    <div class="step-sub">Ce profil est indicatif et reflète vos réponses à ce moment de la relation. Il n'a pas de valeur normative à ce stade de validation de l'outil.</div>
+
+    <div class="scores-grid">
+      <div class="sbox sbox-1">
+        <div class="sval" id="sv1">—</div>
+        <div class="smax">/30</div>
+        <div class="slbl">Résonance affective</div>
+      </div>
+      <div class="sbox sbox-2">
+        <div class="sval" id="sv2">—</div>
+        <div class="smax">/30</div>
+        <div class="slbl">Position relationnelle</div>
+      </div>
+      <div class="sbox sbox-3">
+        <div class="sval" id="sv3">—</div>
+        <div class="smax">/24</div>
+        <div class="slbl">Impact sur les pratiques</div>
+      </div>
+    </div>
+
+    <div class="chart-wrap"><canvas id="rchart"></canvas></div>
+
+    <div id="profileOut"></div>
+
+    <div class="exp-notice">
+      ⚠️ <strong>Version expérimentale V2.0 — Mars 2026.</strong> Le RECAP est en cours de validation psychométrique (Phase 1 — validation de contenu). Ce profil est fourni à titre exploratoire uniquement, pour soutenir la réflexion clinique en supervision. Il ne constitue pas un diagnostic ni une évaluation des compétences professionnelles. &nbsp;—&nbsp; G. Brandibas, IPCRA / ACTIF Formation &nbsp;·&nbsp; <a href="mailto:institut.ipcra@gmail.com" style="color:var(--navy)">institut.ipcra@gmail.com</a>
+    </div>
+  </div>
+
+  <div class="card thankyou" id="tyCard" style="display:none">
+    <div class="ty-icon">✓</div>
+    <div class="step-title" style="margin-bottom:8px">Merci pour votre participation !</div>
+    <p style="font-size:14px;color:var(--muted);line-height:1.7;max-width:480px;margin:0 auto">Vos réponses ont bien été transmises. Elles contribuent à la validation de l'échelle RECAP et seront utilisées exclusivement dans le cadre de la recherche scientifique.</p>
+    <button class="btn btn-p" style="margin-top:24px" onclick="nouvellePassation()">Nouvelle passation →</button>
+  </div>
+</div>
+
+</div><!-- /main -->
+
+<!-- MODAL CONFIDENTIALITÉ -->
+<div class="modal-bg" id="privModal" onclick="if(event.target===this)closeModal()">
+  <div class="modal">
+    <div class="modal-title">Politique de confidentialité</div>
+    <div class="modal-body">
+      <h4>Responsable de traitement</h4>
+      Dr G. Brandibas — IPCRA / ACTIF Formation — <a href="mailto:institut.ipcra@gmail.com">institut.ipcra@gmail.com</a>
+
+      <h4>Données collectées</h4>
+      Données déclaratives anonymes : âge, profession, ancienneté, type d'institution, type de public accompagné, nature de la relation, réponses aux 28 items de l'échelle et aux questions ouvertes. Aucune donnée nominative concernant le professionnel ou la personne accompagnée n'est collectée.
+
+      <h4>Finalité</h4>
+      Recherche scientifique en psychologie clinique — validation psychométrique de l'échelle RECAP (Résonance Émotionnelle et Contre-Attitudes Professionnelles, V2.0).
+
+      <h4>Base légale</h4>
+      Consentement explicite du participant (art. 6.1.a RGPD) et intérêt légitime de recherche scientifique (art. 89 RGPD).
+
+      <h4>Durée de conservation</h4>
+      Cinq ans maximum à compter de la collecte, nécessaires à la conduite de la recherche.
+
+      <h4>Vos droits</h4>
+      Conformément au RGPD, vous pouvez exercer vos droits d'accès, de rectification et d'opposition en contactant <a href="mailto:institut.ipcra@gmail.com">institut.ipcra@gmail.com</a>. Dans la mesure où les données sont anonymes, l'exercice du droit à l'effacement ne peut être garanti après soumission.
+
+      <h4>Mention loi Jardé</h4>
+      Cette recherche ne constitue pas une recherche impliquant la personne humaine au sens de la loi Jardé (loi n° 2012-300 du 5 mars 2012 et ses décrets d'application). Elle ne comporte aucune intervention sur les personnes, aucune collecte de données de santé nominatives et aucune modification de prise en charge. Elle ne relève pas de l'avis d'un Comité de Protection des Personnes (CPP). Les données relatives aux personnes accompagnées sont limitées à des catégories descriptives anonymes (type de public, tranche d'âge) sans permettre aucune identification individuelle.
+    </div>
+    <button class="btn btn-p" style="margin-top:22px" onclick="closeModal()">Fermer</button>
+  </div>
+</div>
+
+<script>
+// ═══════════════════════════════════════════════
+// CONFIG — remplacer par l'URL Apps Script déployée
+// ═══════════════════════════════════════════════
+const SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbzEOrxirmFSPu07CjaQ4L3s8kyhW9ziBk8496zDRaSMpJEKJgQS7lkcKtxIcTkCe7y4cA/exec';
+
+// ═══════════════════════════════════════════════
+// ITEMS
+// ═══════════════════════════════════════════════
+const ITEMS = [
+  {n:1,  t:"Je me sens à l'aise en présence de cette personne accompagnée", d:1},
+  {n:2,  t:"Cette personne me touche émotionnellement", d:1},
+  {n:3,  t:"Je ressens de la tendresse ou de la bienveillance envers cette personne", d:1},
+  {n:4,  t:"Je ressens de l'anxiété ou un malaise quand je suis avec cette personne", d:1},
+  {n:5,  t:"Je me sens impuissant(e) face à la situation de cette personne", d:1},
+  {n:6,  t:"Je ressens de l'irritation ou de la frustration avec cette personne", d:1},
+  {n:7,  t:"Je me sens envahi(e) ou débordé(e) par les demandes de cette personne", d:1},
+  {n:8,  t:"La situation de cette personne m'affecte encore en dehors du travail", d:1},
+  {n:9,  t:"Je ressens de l'indifférence ou un détachement émotionnel envers cette personne", d:1},
+  {n:10, t:"Je ressens de la tristesse ou de la pitié pour cette personne", d:1},
+  {n:11, t:"Je me sens utile et efficace dans mon accompagnement de cette personne", d:2},
+  {n:12, t:"Je me sens exclu(e) ou tenu(e) à distance par cette personne", d:2},
+  {n:13, t:"J'ai l'impression que cette personne me manipule ou me teste", d:2},
+  {n:14, t:"Je me sens en miroir avec quelque chose de personnel dans cette relation", d:2},
+  {n:15, t:"Je me sens surinvesti(e) dans la relation avec cette personne", d:2},
+  {n:16, t:"Je me sens en retrait ou en position d'évitement dans cette relation", d:2},
+  {n:17, t:"J'ai du mal à maintenir une distance professionnelle avec cette personne", d:2},
+  {n:18, t:"Je me sens respecté(e) et reconnu(e) par cette personne", d:2},
+  {n:19, t:"Cette relation réactive en moi des expériences ou des émotions personnelles", d:2},
+  {n:20, t:"Je me sens capable de comprendre ce que vit cette personne", d:2},
+  {n:21, t:"Je modifie mon comportement professionnel en fonction de mes ressentis avec cette personne", d:3},
+  {n:22, t:"J'évite certaines interactions ou situations avec cette personne", d:3},
+  {n:23, t:"Je sur-adapte mon accompagnement pour éviter les conflits avec cette personne", d:3},
+  {n:24, t:"Mes réactions émotionnelles nuisent à la qualité de mon accompagnement", d:3},
+  {n:25, t:"Je parviens à utiliser mes ressentis comme un outil de compréhension", d:3},
+  {n:26, t:"Je me sens bloqué(e) dans mes initiatives avec cette personne", d:3},
+  {n:27, t:"La supervision m'aide à mieux comprendre mes réactions avec cette personne", d:3},
+  {n:28, t:"Je pense pouvoir faire évoluer positivement ma relation avec cette personne", d:3},
+];
+
+// ═══════════════════════════════════════════════
+// PROFILS
+// ═══════════════════════════════════════════════
+const PROFILES = {
+  1:{name:"Résonance élaborée",desc:"Vous êtes émotionnellement impliqué(e) dans cette relation et parvenez à utiliser cette résonance comme ressource clinique. Votre position relationnelle est stable, vos pratiques restent fluides et créatives. L'implication affective est au service de la compréhension de la personne accompagnée.",alert:"Pas de signal d'alerte — profil de référence pour la clinique intersubjective.",cls:"p1"},
+  2:{name:"Contre-transfert agi",desc:"La résonance émotionnelle ou la position relationnelle déborde sur les pratiques : vous modifiez vos comportements sous l'effet de vos ressentis, évitez certaines situations ou vous sentez bloqué(e) dans vos initiatives. L'implication affective entrave la relation plutôt qu'elle ne la soutient.",alert:"Signal d'alerte : supervision prioritaire recommandée.",cls:"p2"},
+  3:{name:"Désengagement clinique",desc:"Vous vous êtes progressivement retiré(e) de la relation — affectivement et pratiquement. Ce profil peut résulter d'un épuisement ou d'une stratégie défensive inconsciente. Il comporte un risque de rupture de l'alliance, d'autant qu'il passe souvent inaperçu car il réduit les tensions apparentes.",alert:"Signal d'alerte : risque de rupture de l'alliance — à explorer en supervision.",cls:"p3"},
+  4:{name:"Surinvestissement",desc:"Vous êtes fortement investi(e) dans la relation, au point de perdre la distance professionnelle nécessaire. Ce profil peut produire une sur-adaptation chronique qui vous épuise et maintient paradoxalement la personne dans une relation de dépendance.",alert:"Signal d'alerte : risque d'épuisement et d'obstacle à l'autonomisation.",cls:"p4"},
+};
+
+// ═══════════════════════════════════════════════
+// STATE
+// ═══════════════════════════════════════════════
+let cur = 0;
+const ANS = new Array(28).fill(null);
+
+// ═══════════════════════════════════════════════
+// INIT
+// ═══════════════════════════════════════════════
+document.addEventListener('DOMContentLoaded', ()=>{
+  buildItems('d1items', ITEMS.filter(i=>i.d===1));
+  buildItems('d2items', ITEMS.filter(i=>i.d===2));
+  buildItems('d3items', ITEMS.filter(i=>i.d===3));
+  updateProg();
+});
+
+function buildItems(cid, list){
+  document.getElementById(cid).innerHTML = list.map(item=>`
+    <div class="litem" id="row${item.n}">
+      <div class="itext"><span class="inum">${item.n}.</span>${item.t}</div>
+      ${[0,1,2,3].map(v=>`
+        <div class="lradio">
+          <input type="radio" name="i${item.n}" value="${v}" onchange="rec(${item.n-1},${v})">
+        </div>`).join('')}
+    </div>`).join('');
+}
+
+// ═══════════════════════════════════════════════
+// NAVIGATION
+// ═══════════════════════════════════════════════
+function updateProg(){
+  const pct = Math.round(cur/7*100);
+  document.getElementById('progFill').style.width=pct+'%';
+  document.getElementById('progLbl').textContent=`Étape ${cur+1} / 8`;
+}
+
+function showStep(n){
+  document.querySelectorAll('.step').forEach(s=>s.classList.remove('active'));
+  document.getElementById('s'+n).classList.add('active');
+  window.scrollTo({top:0,behavior:'smooth'});
+  cur=n; updateProg();
+}
+
+function go(n){
+  clearErrors();
+  if(!validate(cur)) return;
+  showStep(n);
+}
+
+// ═══════════════════════════════════════════════
+// VALIDATION
+// ═══════════════════════════════════════════════
+function clearErrors(){ document.querySelectorAll('.errmsg').forEach(e=>e.classList.remove('on')); }
+
+function validate(step){
+  switch(step){
+    case 0:
+      if(!document.getElementById('consentCb').checked){ err('e0'); return false; }
+      return true;
+    case 1:
+      if(!document.getElementById('age').value ||
+         !document.getElementById('profession').value.trim() ||
+         !document.getElementById('anciennete').value ||
+         !document.getElementById('institution').value){ err('e1'); return false; }
+      return true;
+    case 2:
+      const nats = document.querySelectorAll('#cbNature input:checked');
+      if(!nats.length || !document.getElementById('typePublic').value || !document.getElementById('trancheAge').value){ err('e2'); return false; }
+      return true;
+    case 3: return valDim([0,9],'e3');
+    case 4: return valDim([10,19],'e4');
+    case 5: return valDim([20,27],'e5');
+    default: return true;
+  }
+}
+
+function valDim(range, eid){
+  let ok=true;
+  for(let i=range[0];i<=range[1];i++){
+    if(ANS[i]===null){
+      const row=document.getElementById('row'+(i+1));
+      if(row){ row.classList.add('highlight'); setTimeout(()=>row.classList.remove('highlight'),2000); }
+      ok=false;
+    }
+  }
+  if(!ok) err(eid);
+  return ok;
+}
+
+function err(id){ document.getElementById(id).classList.add('on'); }
+
+// ═══════════════════════════════════════════════
+// RÉPONSES
+// ═══════════════════════════════════════════════
+function rec(idx,val){
+  ANS[idx]=val;
+  const row=document.getElementById('row'+(idx+1));
+  if(row) row.classList.add('done');
+}
+
+function toggleConsent(e){
+  const cb=document.getElementById('consentCb');
+  if(e && e.target===cb) return;
+  cb.checked=!cb.checked;
+  document.getElementById('ccheckEl').classList.toggle('on',cb.checked);
+}
+
+function chkAutreInstit(){
+  const v=document.getElementById('institution').value;
+  document.getElementById('institutionAutre').style.display=v==='autre'?'block':'none';
+}
+function chkAutrePublic(){
+  const v=document.getElementById('typePublic').value;
+  document.getElementById('typePublicAutre').style.display=v==='autre'?'block':'none';
+}
+function chkAutreNature(){
+  const cb=document.querySelector('#cbAutreNatureEl input');
+  document.getElementById('natureAutre').style.display=cb.checked?'block':'none';
+}
+
+// ═══════════════════════════════════════════════
+// CALCUL
+// ═══════════════════════════════════════════════
+function scores(){
+  return {
+    d1: ANS.slice(0,10).reduce((s,v)=>s+v,0),
+    d2: ANS.slice(10,20).reduce((s,v)=>s+v,0),
+    d3: ANS.slice(20,28).reduce((s,v)=>s+v,0),
+  };
+}
+
+function calcProfile(sc){
+  const {d1,d2}=sc;
+  const i9=ANS[8], i15=ANS[14], i17=ANS[16], i23=ANS[22], i25=ANS[24], i28=ANS[27];
+  const d3prob=ANS[20]+ANS[21]+ANS[22]+ANS[23]+ANS[25]; // items 21,22,23,24,26
+
+  // Profil 3 — Désengagement
+  if(d1<=9 && i9>=2 && i28<=1) return 3;
+  // Profil 4 — Surinvestissement
+  if(i15>=2 && i17>=2 && i23>=2) return 4;
+  // Profil 2 — Contre-transfert agi
+  if((d1>=16||d2>=16) && d3prob>=8 && i25<=1) return 2;
+  // Profil 1 — Résonance élaborée (défaut)
+  return 1;
+}
+
+// ═══════════════════════════════════════════════
+// SUBMIT
+// ═══════════════════════════════════════════════
+function submitAndShow(){
+  clearErrors();
+  const sc=scores();
+  const pid=calcProfile(sc);
+  const p=PROFILES[pid];
+
+  // Afficher scores
+  document.getElementById('sv1').textContent=sc.d1;
+  document.getElementById('sv2').textContent=sc.d2;
+  document.getElementById('sv3').textContent=sc.d3;
+
+  // Afficher profil
+  document.getElementById('profileOut').innerHTML=`
+    <div class="pcard ${p.cls}">
+      <div class="pname">Profil ${pid} — ${p.name}</div>
+      <div class="pdesc">${p.desc}</div>
+      <span class="palert">${p.alert}</span>
+    </div>`;
+
+  showStep(7);
+
+  // Chart (après rendu DOM)
+  requestAnimationFrame(()=>drawChart(sc));
+
+  // Collecte données
+  const natures=Array.from(document.querySelectorAll('#cbNature input:checked')).map(i=>i.value);
+  const instit=document.getElementById('institution').value;
+  const pub=document.getElementById('typePublic').value;
+
+  const payload={
+    timestamp: new Date().toISOString(),
+    age: document.getElementById('age').value,
+    profession: document.getElementById('profession').value,
+    anciennete: document.getElementById('anciennete').value,
+    institution: instit==='autre' ? document.getElementById('institutionAutre').value : instit,
+    natureRelation: natures.join(', ') + (document.getElementById('natureAutre').value?' ('+document.getElementById('natureAutre').value+')':''),
+    typePublic: pub==='autre' ? document.getElementById('typePublicAutre').value : pub,
+    trancheAge: document.getElementById('trancheAge').value,
+    ...ANS.reduce((a,v,i)=>({...a,['item'+(i+1)]:v}),{}),
+    d1:sc.d1, d2:sc.d2, d3:sc.d3,
+    profil:pid,
+    q1:document.getElementById('q1').value,
+    q2:document.getElementById('q2').value,
+    q3:document.getElementById('q3').value,
+    q4:document.getElementById('q4').value,
+  };
+
+  // Envoi Google Sheets
+  if(SCRIPT_URL !== 'VOTRE_URL_APPS_SCRIPT_ICI'){
+    fetch(SCRIPT_URL,{method:'POST',mode:'no-cors',headers:{'Content-Type':'application/json'},body:JSON.stringify(payload)})
+      .then(()=>{ document.getElementById('tyCard').style.display='block'; })
+      .catch(()=>{ document.getElementById('tyCard').style.display='block'; });
+  } else {
+    document.getElementById('tyCard').style.display='block';
+  }
+}
+
+// ═══════════════════════════════════════════════
+// CHART
+// ═══════════════════════════════════════════════
+function drawChart(sc){
+  const ctx=document.getElementById('rchart').getContext('2d');
+  new Chart(ctx,{
+    type:'bar',
+    data:{
+      labels:['D1 — Résonance affective','D2 — Position relationnelle','D3 — Impact pratiques'],
+      datasets:[{
+        data:[Math.round(sc.d1/30*100),Math.round(sc.d2/30*100),Math.round(sc.d3/24*100)],
+        backgroundColor:['rgba(42,100,150,.65)','rgba(122,74,16,.65)','rgba(61,122,90,.65)'],
+        borderColor:['rgb(42,100,150)','rgb(122,74,16)','rgb(61,122,90)'],
+        borderWidth:2,borderRadius:6,
+      }]
+    },
+    options:{
+      responsive:true,maintainAspectRatio:false,
+      plugins:{legend:{display:false},tooltip:{callbacks:{label:c=>c.raw+'% du maximum'}}},
+      scales:{
+        y:{beginAtZero:true,max:100,ticks:{callback:v=>v+'%',font:{size:11}},grid:{color:'rgba(0,0,0,.05)'}},
+        x:{ticks:{font:{size:11}},grid:{display:false}}
+      }
+    }
+  });
+}
+
+// ═══════════════════════════════════════════════
+// MODAL
+// ═══════════════════════════════════════════════
+function openModal(){ document.getElementById('privModal').classList.add('on'); }
+function closeModal(){ document.getElementById('privModal').classList.remove('on'); }
+
+function nouvellePassation(){
+  ANS.fill(null);
+  document.querySelectorAll("input[type=radio]").forEach(r=>r.checked=false);
+  document.querySelectorAll(".litem").forEach(r=>r.classList.remove("done","highlight"));
+  ["q1","q2","q3","q4"].forEach(id=>document.getElementById(id).value="");
+  ["profession","age"].forEach(id=>{const el=document.getElementById(id);if(el)el.value="";});
+  ["anciennete","institution","typePublic","trancheAge"].forEach(id=>{const el=document.getElementById(id);if(el)el.selectedIndex=0;});
+  ["institutionAutre","typePublicAutre","natureAutre"].forEach(id=>{const el=document.getElementById(id);if(el){el.value="";el.style.display="none";}});
+  document.querySelectorAll("#cbNature input").forEach(cb=>{cb.checked=false;cb.closest(".cbitem").classList.remove("on");});
+  document.getElementById("tyCard").style.display="none";
+  showStep(2);
+}
+</script>
+</body>
+</html>
