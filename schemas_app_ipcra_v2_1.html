@@ -1,0 +1,956 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Évaluation des Schémas — IPCRA</title>
+<style>
+  :root {
+    --bg: #f8f6f1;
+    --surface: #ffffff;
+    --border: #e2ddd5;
+    --text: #1a1714;
+    --muted: #7a736a;
+    --accent: #2d5a8e;
+    --accent-light: #eef3f9;
+    --accent2: #8e4a2d;
+    --green: #2d6e4a;
+    --green-light: #eef6f1;
+    --amber: #8e6c2d;
+    --amber-light: #f9f3e8;
+    --r1: #d4e8ff; --r2: #aed1ff; --r3: #7fb8ff; --r4: #4a9aff; --r5: #1a7aff; --r6: #0057d4;
+    --domain-a: #2d5a8e; --domain-b: #5a2d8e; --domain-c: #8e2d5a;
+    --domain-d: #2d8e5a; --domain-e: #8e6c2d;
+    --radius: 12px; --radius-sm: 8px;
+    --shadow: 0 2px 8px rgba(0,0,0,0.08);
+  }
+  @media (prefers-color-scheme: dark) {
+    :root {
+      --bg: #141210; --surface: #1e1c19; --border: #2e2b27;
+      --text: #f0ece6; --muted: #8a8278;
+      --accent: #5a9fd4; --accent-light: #1a2530;
+      --accent2: #d4825a; --green: #5ad48a; --green-light: #0d2018;
+      --amber: #d4b05a; --amber-light: #221a08;
+      --r1: #0d1f33; --r2: #1a3350; --r3: #2d5080; --r4: #3d6ea0; --r5: #5090c8; --r6: #70b4e8;
+    }
+  }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body { font-family: 'Georgia', 'Times New Roman', serif; background: var(--bg); color: var(--text); min-height: 100vh; }
+  
+  /* NAV */
+  nav { background: var(--surface); border-bottom: 1px solid var(--border); padding: 0 1rem; display: flex; align-items: center; justify-content: space-between; position: sticky; top: 0; z-index: 100; }
+  .nav-brand { display: flex; align-items: center; gap: 10px; padding: 12px 0; }
+  .nav-logo { width: 32px; height: 32px; background: var(--accent); border-radius: 6px; display: flex; align-items: center; justify-content: center; color: white; font-size: 14px; font-weight: bold; font-family: sans-serif; }
+  .nav-title { font-size: 15px; font-weight: normal; color: var(--text); letter-spacing: 0.02em; }
+  .nav-subtitle { font-size: 12px; color: var(--muted); font-family: sans-serif; }
+  .nav-tabs { display: flex; gap: 0; }
+  .tab-btn { padding: 14px 18px; font-size: 13px; font-family: sans-serif; background: none; border: none; color: var(--muted); cursor: pointer; border-bottom: 2px solid transparent; transition: all 0.15s; }
+  .tab-btn.active { color: var(--accent); border-bottom-color: var(--accent); }
+  .tab-btn:hover { color: var(--text); }
+  .nav-actions { display: flex; gap: 8px; align-items: center; }
+  
+  /* SCREENS */
+  .screen { display: none; }
+  .screen.active { display: block; }
+  
+  /* HOME */
+  .home { max-width: 700px; margin: 0 auto; padding: 3rem 1.5rem; }
+  .home-header { text-align: center; margin-bottom: 3rem; }
+  .home-header h1 { font-size: 2rem; font-weight: normal; color: var(--text); margin-bottom: 0.5rem; letter-spacing: -0.02em; }
+  .home-header p { color: var(--muted); font-family: sans-serif; font-size: 15px; }
+  .patient-card { background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius); padding: 1.5rem; margin-bottom: 1.5rem; }
+  .patient-card h2 { font-size: 14px; font-family: sans-serif; font-weight: 600; color: var(--muted); text-transform: uppercase; letter-spacing: 0.08em; margin-bottom: 1.25rem; }
+  .form-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; }
+  .form-group { display: flex; flex-direction: column; gap: 6px; }
+  .form-group label { font-size: 12px; font-family: sans-serif; color: var(--muted); font-weight: 500; }
+  .form-group input, .form-group select { padding: 10px 12px; border: 1px solid var(--border); border-radius: var(--radius-sm); background: var(--bg); color: var(--text); font-size: 14px; font-family: sans-serif; outline: none; transition: border-color 0.15s; }
+  .form-group input:focus, .form-group select:focus { border-color: var(--accent); }
+  .questionnaires { display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; margin-bottom: 1.5rem; }
+  .q-card { background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius); padding: 1.5rem; cursor: pointer; transition: all 0.15s; position: relative; overflow: hidden; }
+  .q-card:hover { border-color: var(--accent); box-shadow: var(--shadow); }
+  .q-card.completed { border-color: var(--green); }
+  .q-card.completed::after { content: '✓'; position: absolute; top: 12px; right: 12px; background: var(--green); color: white; width: 22px; height: 22px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 12px; font-family: sans-serif; }
+  .q-badge { display: inline-block; padding: 3px 10px; border-radius: 20px; font-size: 11px; font-family: sans-serif; font-weight: 600; margin-bottom: 10px; }
+  .q-card h3 { font-size: 16px; font-weight: normal; margin-bottom: 6px; }
+  .q-card p { font-size: 13px; color: var(--muted); font-family: sans-serif; line-height: 1.5; }
+  .q-card .q-meta { margin-top: 12px; font-size: 12px; color: var(--muted); font-family: sans-serif; display: flex; gap: 12px; }
+  .btn { padding: 11px 22px; border-radius: var(--radius-sm); font-size: 14px; font-family: sans-serif; font-weight: 500; cursor: pointer; border: none; transition: all 0.15s; }
+  .btn-primary { background: var(--accent); color: white; }
+  .btn-primary:hover { opacity: 0.9; }
+  .btn-secondary { background: var(--surface); border: 1px solid var(--border); color: var(--text); }
+  .btn-secondary:hover { border-color: var(--accent); }
+  .btn-sm { padding: 7px 14px; font-size: 13px; }
+  .btn-danger { background: #dc3545; color: white; }
+  .sessions-card { background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius); padding: 1.5rem; }
+  .sessions-card h2 { font-size: 14px; font-family: sans-serif; font-weight: 600; color: var(--muted); text-transform: uppercase; letter-spacing: 0.08em; margin-bottom: 1rem; }
+  .session-item { display: flex; align-items: center; justify-content: space-between; padding: 10px 0; border-bottom: 1px solid var(--border); }
+  .session-item:last-child { border-bottom: none; }
+  .session-name { font-family: sans-serif; font-size: 14px; }
+  .session-meta { font-size: 12px; color: var(--muted); font-family: sans-serif; margin-top: 2px; }
+  .session-actions { display: flex; gap: 6px; }
+
+  /* QUESTIONNAIRE */
+  .quest-container { max-width: 680px; margin: 0 auto; padding: 1.5rem; }
+  .quest-header { background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius); padding: 1.5rem; margin-bottom: 1rem; }
+  .quest-header h2 { font-size: 1.1rem; font-weight: normal; margin-bottom: 4px; }
+  .quest-header p { font-size: 13px; color: var(--muted); font-family: sans-serif; }
+  .progress-bar { height: 4px; background: var(--border); border-radius: 2px; margin-top: 1rem; overflow: hidden; }
+  .progress-fill { height: 100%; background: var(--accent); border-radius: 2px; transition: width 0.3s; }
+  .progress-text { font-size: 12px; color: var(--muted); font-family: sans-serif; margin-top: 6px; text-align: right; }
+  
+  .scale-legend { background: var(--accent-light); border: 1px solid var(--border); border-radius: var(--radius-sm); padding: 10px 14px; margin-bottom: 1rem; font-size: 12px; font-family: sans-serif; color: var(--muted); display: flex; gap: 16px; flex-wrap: wrap; }
+  .scale-legend span { white-space: nowrap; }
+  .scale-legend strong { color: var(--text); }
+  
+  .page-nav { display: flex; align-items: center; justify-content: space-between; margin-bottom: 1rem; }
+  .page-indicator { font-size: 13px; font-family: sans-serif; color: var(--muted); }
+  
+  .item-card { background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius); padding: 1.25rem 1.5rem; margin-bottom: 0.75rem; transition: border-color 0.15s; }
+  .item-card.answered { border-color: var(--border); }
+  .item-num { font-size: 11px; font-family: sans-serif; color: var(--muted); margin-bottom: 8px; }
+  .item-text { font-size: 15px; line-height: 1.6; margin-bottom: 14px; }
+  .scale-btns { display: flex; gap: 6px; }
+  .scale-btn { flex: 1; padding: 10px 4px; border: 1.5px solid var(--border); border-radius: var(--radius-sm); background: none; cursor: pointer; font-family: sans-serif; font-weight: 600; font-size: 14px; color: var(--muted); transition: all 0.12s; display: flex; flex-direction: column; align-items: center; gap: 3px; }
+  .scale-btn span.label { font-size: 9px; font-weight: normal; color: var(--muted); display: none; }
+  .scale-btn:hover { border-color: var(--accent); color: var(--accent); background: var(--accent-light); }
+  .scale-btn.selected-1 { background: var(--r1); border-color: var(--r1); color: #0040a0; }
+  .scale-btn.selected-2 { background: var(--r2); border-color: var(--r2); color: #003090; }
+  .scale-btn.selected-3 { background: var(--r3); border-color: var(--r3); color: #002080; }
+  .scale-btn.selected-4 { background: var(--r4); border-color: var(--r4); color: white; }
+  .scale-btn.selected-5 { background: var(--r5); border-color: var(--r5); color: white; }
+  .scale-btn.selected-6 { background: var(--r6); border-color: var(--r6); color: white; }
+  @media (prefers-color-scheme: dark) {
+    .scale-btn.selected-1 { color: #a0d0ff; }
+    .scale-btn.selected-2 { color: #c0e0ff; }
+    .scale-btn.selected-3 { color: white; }
+  }
+  
+  /* RAPPORT */
+  .rapport-container { max-width: 800px; margin: 0 auto; padding: 1.5rem; }
+  .rapport-header { background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius); padding: 1.5rem; margin-bottom: 1.5rem; display: flex; justify-content: space-between; align-items: flex-start; }
+  .rapport-patient h2 { font-size: 1.2rem; font-weight: normal; }
+  .rapport-patient p { font-size: 13px; color: var(--muted); font-family: sans-serif; margin-top: 4px; }
+  .rapport-date { font-size: 12px; color: var(--muted); font-family: sans-serif; text-align: right; }
+  
+  .section-card { background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius); padding: 1.5rem; margin-bottom: 1.25rem; }
+  .section-title { font-size: 13px; font-family: sans-serif; font-weight: 600; color: var(--muted); text-transform: uppercase; letter-spacing: 0.08em; margin-bottom: 1.25rem; display: flex; align-items: center; gap: 8px; }
+  .section-title::after { content: ''; flex: 1; height: 1px; background: var(--border); }
+  
+  /* BARS */
+  .schema-bar { display: flex; align-items: center; gap: 12px; margin-bottom: 10px; }
+  .schema-label { font-family: sans-serif; font-size: 13px; color: var(--text); width: 230px; flex-shrink: 0; }
+  .schema-label small { display: block; font-size: 11px; color: var(--muted); }
+  .bar-track { flex: 1; height: 24px; background: var(--bg); border-radius: 4px; overflow: hidden; position: relative; }
+  .bar-fill { height: 100%; border-radius: 4px; transition: width 0.6s ease; display: flex; align-items: center; padding-left: 8px; }
+  .bar-fill span { font-size: 12px; font-family: sans-serif; font-weight: 600; color: white; white-space: nowrap; }
+  .bar-score { font-family: sans-serif; font-size: 13px; font-weight: 600; color: var(--text); width: 50px; text-align: right; flex-shrink: 0; }
+  .bar-zero .bar-fill { background: var(--border) !important; }
+  .bar-zero .bar-fill span { color: var(--muted); }
+  .domain-header { font-size: 12px; font-family: sans-serif; font-weight: 600; color: var(--muted); text-transform: uppercase; letter-spacing: 0.06em; margin: 1.25rem 0 0.6rem; padding-left: 0; border-left: 3px solid; padding-left: 10px; }
+  
+  /* DIAGRAMME MODES */
+  .modes-diagram { display: flex; flex-wrap: wrap; gap: 10px; padding: 0.5rem 0; }
+  .mode-bubble { border-radius: 50px; padding: 10px 18px; font-family: sans-serif; font-size: 13px; font-weight: 500; text-align: center; transition: all 0.3s; position: relative; cursor: default; }
+  .mode-bubble .mode-score { display: block; font-size: 11px; font-weight: normal; margin-top: 2px; opacity: 0.8; }
+  .mode-bubble.inactive { background: var(--bg); border: 1px solid var(--border); color: var(--muted); }
+  .mode-cat-enfant { background: #deeeff; border: 2px solid #90c4f0; color: #1a5080; }
+  .mode-cat-strategique { background: #ffe8d4; border: 2px solid #f0b490; color: #803020; }
+  .mode-cat-parent { background: #ffd4d4; border: 2px solid #f09090; color: #801818; }
+  .mode-cat-sain { background: #d4f0de; border: 2px solid #80d4a0; color: #186030; }
+  @media (prefers-color-scheme: dark) {
+    .mode-cat-enfant { background: #0d2030; border-color: #2060a0; color: #80c4f0; }
+    .mode-cat-strategique { background: #2a1808; border-color: #a06030; color: #f0b080; }
+    .mode-cat-parent { background: #2a0808; border-color: #a03030; color: #f09090; }
+    .mode-cat-sain { background: #082010; border-color: #30a060; color: #80d4a0; }
+  }
+
+  /* DIAGRAMME ACTIVATION (Pascal) */
+  .activation-diagram { display: flex; flex-direction: column; gap: 0; align-items: center; padding: 1rem 0; }
+  .activ-box { background: var(--accent); color: white; border-radius: var(--radius-sm); padding: 10px 20px; font-family: sans-serif; font-size: 13px; font-weight: 500; text-align: center; min-width: 200px; }
+  .activ-box.secondary { background: var(--surface); border: 1px solid var(--border); color: var(--text); font-size: 12px; padding: 8px 16px; }
+  .activ-arrow { font-size: 18px; color: var(--muted); margin: 4px 0; }
+  .activ-row { display: flex; gap: 12px; align-items: stretch; justify-content: center; }
+  .activ-patient { background: var(--amber-light); border: 1px solid var(--amber); border-radius: var(--radius-sm); padding: 8px 14px; font-family: sans-serif; font-size: 12px; color: var(--text); min-width: 160px; text-align: center; }
+  .activ-patient strong { display: block; font-size: 11px; color: var(--amber); margin-bottom: 4px; text-transform: uppercase; letter-spacing: 0.06em; }
+
+  /* INTERPRÉTATION */
+  .interp-item { border-left: 3px solid var(--accent); padding: 10px 14px; margin-bottom: 10px; background: var(--accent-light); border-radius: 0 var(--radius-sm) var(--radius-sm) 0; }
+  .interp-item h4 { font-family: sans-serif; font-size: 13px; font-weight: 600; margin-bottom: 4px; }
+  .interp-item p { font-size: 13px; color: var(--muted); font-family: sans-serif; line-height: 1.5; }
+  .interp-modes { margin-top: 6px; font-size: 12px; font-family: sans-serif; }
+  .interp-modes span { display: inline-block; background: var(--surface); border: 1px solid var(--border); border-radius: 4px; padding: 2px 8px; margin: 2px 2px 0 0; color: var(--muted); }
+
+  .empty-state { text-align: center; padding: 3rem 1rem; color: var(--muted); font-family: sans-serif; }
+  .empty-state .icon { font-size: 2.5rem; margin-bottom: 1rem; }
+  .empty-state h3 { font-weight: 500; margin-bottom: 0.5rem; font-size: 1rem; }
+  .empty-state p { font-size: 14px; }
+
+  @media (max-width: 600px) {
+    .form-grid { grid-template-columns: 1fr; }
+    .questionnaires { grid-template-columns: 1fr; }
+    .nav-tabs { display: none; }
+    .schema-label { width: 160px; font-size: 12px; }
+    .scale-btns { gap: 4px; }
+    .scale-btn { padding: 10px 2px; font-size: 13px; }
+  }
+
+  .tag { display: inline-block; padding: 2px 8px; border-radius: 4px; font-size: 11px; font-family: sans-serif; font-weight: 500; }
+  .tag-inc { background: #fee; color: #a00; border: 1px solid #fcc; }
+  .tag-strat { background: #efe; color: #060; border: 1px solid #cfc; }
+  .tag-inc-strat { background: #fff3e0; color: #a04000; border: 1px solid #ffd08a; }
+
+  .alert { padding: 12px 16px; border-radius: var(--radius-sm); font-family: sans-serif; font-size: 13px; margin-bottom: 1rem; }
+  .alert-info { background: var(--accent-light); border: 1px solid #90b8e0; color: var(--text); }
+  .alert-warning { background: var(--amber-light); border: 1px solid #d4b05a; color: var(--text); }
+
+  @media print {
+    nav, .nav-actions, .btn { display: none !important; }
+    .rapport-container { padding: 0; }
+    .section-card { break-inside: avoid; }
+  }
+</style>
+</head>
+<body>
+
+<nav>
+  <div class="nav-brand">
+    <div class="nav-logo">YSQ</div>
+    <div>
+      <div class="nav-title">Thérapie des schémas</div>
+      <div class="nav-subtitle">IPCRA · G. Brandibas</div>
+    </div>
+  </div>
+  <div class="nav-tabs">
+    <button class="tab-btn active" onclick="showScreen('home')">Accueil</button>
+    <button class="tab-btn" id="tab-ysq" onclick="showScreen('ysq')" disabled>YSQ</button>
+    <button class="tab-btn" id="tab-smi" onclick="showScreen('smi')" disabled>SMI</button>
+    <button class="tab-btn" id="tab-rapport" onclick="showScreen('rapport')" disabled>Rapport</button>
+  </div>
+  <div class="nav-actions">
+    <button class="btn btn-secondary btn-sm" onclick="saveSession()">Sauvegarder</button>
+  </div>
+</nav>
+
+<!-- HOME -->
+<div id="screen-home" class="screen active">
+  <div class="home">
+    <div class="home-header">
+      <h1>Évaluation des schémas précoces</h1>
+      <p>YSQ · SMI · Rapport clinicien · Brandibas / Pascal</p>
+    </div>
+
+    <div class="patient-card">
+      <h2>Identification du patient</h2>
+      <div class="form-grid">
+        <div class="form-group">
+          <label>Nom et prénom</label>
+          <input type="text" id="p-nom" placeholder="Ex. Martin Sophie" oninput="updatePatient()">
+        </div>
+        <div class="form-group">
+          <label>Âge</label>
+          <input type="number" id="p-age" placeholder="Âge" min="16" max="99" oninput="updatePatient()">
+        </div>
+        <div class="form-group">
+          <label>Profession</label>
+          <input type="text" id="p-prof" placeholder="Profession" oninput="updatePatient()">
+        </div>
+        <div class="form-group">
+          <label>Lieu / Contexte</label>
+          <input type="text" id="p-lieu" placeholder="Cabinet, établissement..." oninput="updatePatient()">
+        </div>
+        <div class="form-group">
+          <label>Date</label>
+          <input type="date" id="p-date" oninput="updatePatient()">
+        </div>
+      </div>
+    </div>
+
+    <div class="questionnaires">
+      <div class="q-card" id="qcard-ysq" onclick="startYSQ()">
+        <div class="q-badge" style="background:#deeeff;color:#1a5080;border:1px solid #90c4f0;">YSQ</div>
+        <h3>Schémas précoces inadaptés</h3>
+        <p>Questionnaire de Young sur les croyances fondamentales construites durant l'enfance.</p>
+        <div class="q-meta">
+          <span>232 items</span>
+          <span>Cotation 1–6</span>
+          <span>~35 min</span>
+        </div>
+        <div id="ysq-progress-home" style="margin-top:10px;display:none;">
+          <div class="progress-bar"><div class="progress-fill" id="ysq-prog-fill" style="width:0%"></div></div>
+          <div class="progress-text" id="ysq-prog-text"></div>
+        </div>
+      </div>
+      <div class="q-card" id="qcard-smi" onclick="startSMI()">
+        <div class="q-badge" style="background:#ffe8d4;color:#803020;border:1px solid #f0b490;">SMI</div>
+        <h3>Inventaire des modes</h3>
+        <p>Schema Mode Inventory : états émotionnels et comportementaux actifs.</p>
+        <div class="q-meta">
+          <span>124 items</span>
+          <span>Cotation 1–6</span>
+          <span>~18 min</span>
+        </div>
+        <div id="smi-progress-home" style="margin-top:10px;display:none;">
+          <div class="progress-bar"><div class="progress-fill" id="smi-prog-fill" style="width:0%"></div></div>
+          <div class="progress-text" id="smi-prog-text"></div>
+        </div>
+      </div>
+    </div>
+
+    <div style="text-align:center;margin-bottom:1.5rem;">
+      <button class="btn btn-primary" onclick="showRapport()">Voir le rapport clinicien →</button>
+    </div>
+
+    <div class="sessions-card">
+      <h2>Sessions sauvegardées</h2>
+      <div id="sessions-list"><p style="font-size:13px;color:var(--muted);font-family:sans-serif;">Aucune session sauvegardée.</p></div>
+    </div>
+  </div>
+</div>
+
+<!-- YSQ -->
+<div id="screen-ysq" class="screen">
+  <div class="quest-container">
+    <div class="quest-header">
+      <h2>Questionnaire des schémas précoces (YSQ)</h2>
+      <p>Pour chaque affirmation, indiquez à quel point elle vous correspond : <strong>1</strong> = pas du tout, <strong>6</strong> = me correspond tout à fait.</p>
+      <div class="progress-bar"><div class="progress-fill" id="ysq-prog-fill2" style="width:0%"></div></div>
+      <div class="progress-text" id="ysq-prog-text2"></div>
+    </div>
+    <div class="scale-legend">
+      <span><strong>1</strong> Pas du tout</span>
+      <span><strong>2</strong> Très peu</span>
+      <span><strong>3</strong> Un peu</span>
+      <span><strong>4</strong> Assez</span>
+      <span><strong>5</strong> Beaucoup</span>
+      <span><strong>6</strong> Tout à fait</span>
+    </div>
+    <div class="page-nav">
+      <button class="btn btn-secondary btn-sm" id="ysq-prev" onclick="ysqPage(-1)">← Précédent</button>
+      <span class="page-indicator" id="ysq-page-info"></span>
+      <button class="btn btn-secondary btn-sm" id="ysq-next" onclick="ysqPage(1)">Suivant →</button>
+    </div>
+    <div id="ysq-items"></div>
+    <div class="page-nav" style="margin-top:1rem;">
+      <button class="btn btn-secondary btn-sm" onclick="ysqPage(-1)">← Précédent</button>
+      <button class="btn btn-primary btn-sm" id="ysq-finish" onclick="finishYSQ()" style="display:none;">Terminer →</button>
+      <button class="btn btn-secondary btn-sm" onclick="ysqPage(1)">Suivant →</button>
+    </div>
+  </div>
+</div>
+
+<!-- SMI -->
+<div id="screen-smi" class="screen">
+  <div class="quest-container">
+    <div class="quest-header">
+      <h2>Inventaire des modes (SMI)</h2>
+      <p>Pour chaque affirmation, indiquez à quel point elle vous correspond en ce moment : <strong>1</strong> = pas du tout, <strong>6</strong> = tout à fait.</p>
+      <div class="progress-bar"><div class="progress-fill" id="smi-prog-fill2" style="width:0%"></div></div>
+      <div class="progress-text" id="smi-prog-text2"></div>
+    </div>
+    <div class="scale-legend">
+      <span><strong>1</strong> Pas du tout</span>
+      <span><strong>2</strong> Très peu</span>
+      <span><strong>3</strong> Un peu</span>
+      <span><strong>4</strong> Assez</span>
+      <span><strong>5</strong> Beaucoup</span>
+      <span><strong>6</strong> Tout à fait</span>
+    </div>
+    <div class="page-nav">
+      <button class="btn btn-secondary btn-sm" id="smi-prev" onclick="smiPage(-1)">← Précédent</button>
+      <span class="page-indicator" id="smi-page-info"></span>
+      <button class="btn btn-secondary btn-sm" id="smi-next" onclick="smiPage(1)">Suivant →</button>
+    </div>
+    <div id="smi-items"></div>
+    <div class="page-nav" style="margin-top:1rem;">
+      <button class="btn btn-secondary btn-sm" onclick="smiPage(-1)">← Précédent</button>
+      <button class="btn btn-primary btn-sm" id="smi-finish" onclick="finishSMI()" style="display:none;">Terminer →</button>
+      <button class="btn btn-secondary btn-sm" onclick="smiPage(1)">Suivant →</button>
+    </div>
+  </div>
+</div>
+
+<!-- RAPPORT -->
+<div id="screen-rapport" class="screen">
+  <div class="rapport-container">
+    <div class="rapport-header">
+      <div class="rapport-patient">
+        <h2 id="r-nom">—</h2>
+        <p id="r-meta">—</p>
+      </div>
+      <div class="rapport-date">
+        <div id="r-date">—</div>
+        <div style="margin-top:8px;display:flex;gap:6px;align-items:center;">
+          <button class="btn btn-secondary btn-sm" onclick="window.print()">Imprimer</button>
+          <button class="btn btn-secondary btn-sm" onclick="saveSession()">Sauvegarder</button>
+          <button class="btn btn-primary btn-sm" id="btn-submit-sheet" onclick="submitResults()">Envoyer au dossier</button>
+        </div>
+        <div id="submit-status" style="font-size:12px;font-family:sans-serif;color:var(--muted);margin-top:6px;text-align:right;"></div>
+      </div>
+    </div>
+
+    <div id="rapport-content"></div>
+  </div>
+</div>
+
+<script>
+// ============================================================
+// DONNÉES
+// ============================================================
+const YSQ_ITEMS = [{"num":1,"text":"Les autres n'ont pas satisfait mes besoins affectifs"},{"num":2,"text":"Je n'ai pas reçu suffisamment d'amour et d'attention"},{"num":3,"text":"Dans l'ensemble, je n'ai eu personne sur qui compter pour recevoir des conseils et du soutien affectif"},{"num":4,"text":"La plupart du temps, je n'ai eu personne pour m'aider à grandir, pour partager son univers intérieur avec moi, ou qui se soucie profondément de tout ce qui m'arrive"},{"num":5,"text":"Pour la plus grande partie de ma vie, je n'ai eu personne qui veuille être près de moi et passer beaucoup de temps avec moi"},{"num":6,"text":"En général, les autres n'ont pas été présents pour me prendre dans leur bras, pour me donner de la chaleur et de l'affection"},{"num":7,"text":"Pour la plus grande partie de ma vie, je n'ai jamais eu le sentiment que je représentais quelqu'un d'important pour quelqu'un d'autre"},{"num":8,"text":"En grande partie, je n'ai eu personne qui m'écoute réellement, me comprenne et soit sensible à mes besoins et mes sentiments véritables"},{"num":9,"text":"Je n'ai pas eu une personne forte pour me donner de bons conseils ou pour me guider lorsque je ne savais pas quoi faire"},{"num":10,"text":"Je suis préoccupé(e) par le fait que les gens que j'aime vont mourir bientôt même s'il y a eu peu de raisons médicales à ma préoccupation"},{"num":11,"text":"Je m'accroche aux gens dont je suis proche par peur qu'ils ne me quittent"},{"num":12,"text":"Je crains que les gens dont je me sens proche ne me quittent ou ne m'abandonnent"},{"num":13,"text":"J'ai le sentiment de manquer d'une base stable qui me soutienne affectivement"},{"num":14,"text":"Je n'ai pas l'impression que les relations importantes dureront : je m'attends à ce qu'elles finissent"},{"num":15,"text":"Je me sens \"accro\" aux partenaires qui ne peuvent pas s'engager avec moi de façon stable"},{"num":16,"text":"Je finirai seul(e)"},{"num":17,"text":"Quand je sens que quelqu'un à qui je tiens s'éloigne de moi, je deviens désespéré(e)"},{"num":18,"text":"Quelquefois j'ai tellement peur que les gens m'abandonnent que je les repousse"},{"num":19,"text":"Je deviens bouleversé(e) quand quelqu'un me laisse seul(e) même pour une courte période"},{"num":20,"text":"Je ne peux pas compter sur la présence régulière de ceux qui me soutiennent"},{"num":21,"text":"Je ne peux me permettre d'être vraiment proche des autres car je ne peux être sûr(e) qu'ils seront toujours là"},{"num":22,"text":"Il me semble que les personnes importantes dans ma vie sont toujours en train de venir et de repartir"},{"num":23,"text":"J'ai très peur que les personnes que j'aime ne trouvent quelqu'un d'autre qu'elles préfèrent et qu'elles m'abandonnent"},{"num":24,"text":"Les gens qui me sont proches ont toujours été très imprévisibles : un moment ils sont disponibles et gentils, puis ils sont fâchés, contrariés, querelleurs, préoccupés par eux-mêmes"},{"num":25,"text":"J'ai tellement besoin des autres que j'ai peur de les perdre"},{"num":26,"text":"Je ne peux être moi-même ou exprimer ce que je ressens véritablement, sinon les autres vont me quitter"},{"num":27,"text":"J'ai l'impression que les autres vont profiter de moi"},{"num":28,"text":"J'ai souvent l'impression que je dois me protéger des autres"},{"num":29,"text":"J'ai l'impression que je dois être sur mes gardes en présence des autres sinon ils me blesseront intentionnellement"},{"num":30,"text":"Si une personne est aimable avec moi, je suppose qu'elle cherche à obtenir quelque chose"},{"num":31,"text":"Ce n'est qu'une question de temps avant que quelqu'un me trahisse"},{"num":32,"text":"La plupart des gens pensent uniquement à eux"},{"num":33,"text":"J'ai la plus grande difficulté à faire confiance aux autres"},{"num":34,"text":"Je suis très méfiant(e) quant aux motivations des autres"},{"num":35,"text":"Les autres sont rarement honnêtes, ils ne sont pas en général ce qu'ils paraissent"},{"num":36,"text":"Je m'interroge habituellement sur les véritables intentions des autres"},{"num":37,"text":"Si je pense que quelqu'un cherche à me blesser, je cherche à le blesser en premier"},{"num":38,"text":"Les autres habituellement doivent faire leurs preuves avant que je leur accorde ma confiance"},{"num":39,"text":"Je teste les autres pour voir s'ils me disent la vérité ou s'ils sont bien intentionnés"},{"num":40,"text":"Je souscris à la croyance : \"Contrôle ou tu seras contrôlé(e)\""},{"num":41,"text":"Je me mets en colère quand je pense aux façons dont j'ai été maltraité(e) par les autres tout au long de la vie"},{"num":42,"text":"Tout au long de ma vie, mes proches ont profité de moi et m'ont utilisé(e) à leurs propres desseins"},{"num":43,"text":"J'ai été physiquement, émotionnellement, ou sexuellement abusé(e) par des personnes importantes de ma vie"},{"num":44,"text":"Je ne suis pas adapté(e)"},{"num":45,"text":"Je suis fondamentalement différent(e) des autres"},{"num":46,"text":"Je suis à part ; je suis un(e) solitaire"},{"num":47,"text":"Je me sens étranger(ère) aux autres"},{"num":48,"text":"Je me sens isolé(e) et seul(e)"},{"num":49,"text":"Je me sens toujours à l'extérieur des groupes"},{"num":50,"text":"Personne ne me comprend vraiment"},{"num":51,"text":"Ma famille a toujours été différente des autres familles"},{"num":52,"text":"J'ai parfois le sentiment d'être un(e) étranger(ère)"},{"num":53,"text":"Si je disparaissais demain, personne ne le remarquerait"},{"num":54,"text":"Aucun homme ou femme que je désire ne pourrait m'aimer une fois qu'il(elle) aurait vu mes défauts"},{"num":55,"text":"Aucune personne que je désire ne pourrait rester proche de moi si elle savait qui je suis réellement"},{"num":56,"text":"Je suis fondamentalement imparfait(e) et marqué par un défaut"},{"num":57,"text":"Même si je me donne le plus grand mal, je sens qu'il ne me sera pas possible d'obtenir le respect d'un homme ou d'une femme important(e) et de sentir que j'ai de la valeur"},{"num":58,"text":"Je ne mérite pas l'amour, l'attention et le respect des autres"},{"num":59,"text":"J'ai le sentiment d'être quelqu'un que l'on ne peut pas aimer"},{"num":60,"text":"Je suis trop fondamentalement inacceptable pour me révéler aux autres"},{"num":61,"text":"Je ne pourrais pas affronter les gens s'ils découvraient mes défauts fondamentaux"},{"num":62,"text":"Lorsque les gens m'apprécient, j'ai l'impression de les duper"},{"num":63,"text":"Je suis souvent attiré(e) par les gens qui sont très critiques contre moi ou qui me rejettent"},{"num":64,"text":"J'ai des secrets que je ne veux pas que mes proches découvrent"},{"num":65,"text":"C'est de ma faute si mes parents n'ont pas pu m'aimer suffisamment"},{"num":66,"text":"Je ne laisse pas les gens connaître ce que je suis réellement"},{"num":67,"text":"Une de mes plus grandes peurs est que mes défauts deviennent publics"},{"num":68,"text":"Je ne puis comprendre comment qui que ce soit pourrait m'aimer"},{"num":69,"text":"Presque rien de ce que je fais au travail (ou à l'école) n'est aussi bon que ce que font les autres"},{"num":70,"text":"Je suis incompétent(e) quand il s'agit de réussir"},{"num":71,"text":"La plupart des gens sont plus doués que moi en ce qui concerne le travail (ou l'école) et la réussite"},{"num":72,"text":"Je suis un(e) raté(e)"},{"num":73,"text":"Je n'ai pas autant de talent que les autres au travail (ou à l'école)"},{"num":74,"text":"Je ne suis pas aussi intelligent(e) que la plupart des gens quand il s'agit du travail (ou de l'école)"},{"num":75,"text":"Je suis humilié(e) par mes échecs ou mes insuffisances dans le monde du travail (ou de l'école)"},{"num":76,"text":"Je suis souvent mal à l'aise avec les autres, car je ne les vaux pas en termes de réussites"},{"num":77,"text":"Je compare souvent mes réalisations à celles des autres et je trouve qu'ils réussissent beaucoup mieux"},{"num":78,"text":"Je ne me sens pas capable de me débrouiller par moi-même dans la vie de tous les jours"},{"num":79,"text":"J'ai besoin des autres pour m'aider à m'en sortir"},{"num":80,"text":"Je n'ai pas le sentiment que je puisse bien m'adapter par moi-même"},{"num":81,"text":"Je crois que les autres peuvent prendre soin de moi mieux que je ne le peux moi-même"},{"num":82,"text":"J'ai des difficultés à prendre en charge de nouvelles tâches en dehors du travail à moins que quelqu'un ne me guide"},{"num":83,"text":"Je me considère comme une personne dépendante en ce qui concerne la vie de tous les jours"},{"num":84,"text":"Je bousille tout ce que j'entreprends, même à l'extérieur du travail (ou de l'école)"},{"num":85,"text":"Je suis stupide dans la plupart des domaines de la vie"},{"num":86,"text":"Si je me fie à mon jugement dans la vie de tous les jours, je vais prendre la mauvaise décision"},{"num":87,"text":"Je manque de bon sens"},{"num":88,"text":"On ne peut se fier à mon jugement dans les situations quotidiennes"},{"num":89,"text":"Je n'ai pas confiance dans ma capacité à résoudre les problèmes qui se posent tous les jours"},{"num":90,"text":"Je pense avoir besoin de quelqu'un sur qui je puisse compter pour me donner des conseils sur les questions pratiques"},{"num":91,"text":"Je me sens plus un(e) enfant qu'un(e) adulte quand il s'agit de prendre en main les responsabilités quotidiennes"},{"num":92,"text":"Je me sens dépassé(e) par les responsabilités de tous les jours"},{"num":93,"text":"Il ne me semble pas possible d'échapper au sentiment que quelque chose de mauvais va bientôt se passer"},{"num":94,"text":"J'ai l'impression qu'un désastre naturel, criminel, financier ou médical pourrait frapper à tout moment"},{"num":95,"text":"J'ai peur de devenir un(e) sans domicile fixe ou un(e) mendiant(e)"},{"num":96,"text":"J'ai peur d'être attaqué(e)"},{"num":97,"text":"Je prends de grandes précautions pour éviter de tomber malade ou d'être blessé(e)"},{"num":98,"text":"J'ai peur d'avoir une maladie grave, même si rien de sérieux n'a été diagnostiqué par un médecin"},{"num":99,"text":"Je suis quelqu'un de peureux(se)"},{"num":100,"text":"Je me soucie beaucoup de ce qui va mal dans le monde : le crime, la pollution, etc."},{"num":101,"text":"J'ai souvent le sentiment que je pourrais devenir fou (folle)"},{"num":102,"text":"J'ai souvent l'impression que je vais avoir une crise d'angoisse"},{"num":103,"text":"J'ai souvent peur d'avoir une crise cardiaque ou un cancer, même s'il y a peu de raisons médicales de s'en soucier"},{"num":104,"text":"Je pense que le monde est un endroit dangereux"},{"num":105,"text":"Je n'ai pas pu me séparer de ma mère ou de mon père comme semblent le faire les gens de mon âge"},{"num":106,"text":"Mes parents et moi avons tendance à être sur-impliqués dans nos vies et nos problèmes réciproques"},{"num":107,"text":"Il est très difficile, pour mes parents et moi-même, de garder secrets, chacun pour soi, certains détails intimes, sans nous sentir trahis ou coupables"},{"num":108,"text":"Mes parents et moi devons nous parler presque tous les jours, sinon l'un de nous se sent coupable, blessé(e), déçu(e), ou seul(e)"},{"num":109,"text":"J'ai souvent l'impression de ne pas avoir une identité distincte de celle de mes parents ou de mon partenaire"},{"num":110,"text":"J'ai souvent l'impression que mes parents vivent à travers moi — je n'ai pas une vie qui me soit propre"},{"num":111,"text":"Il m'est vraiment ardu de maintenir une distance vis-à-vis des gens dont je suis intime ; il m'est difficile de me sentir une personne séparée"},{"num":112,"text":"Je suis tellement lié(e) à mon partenaire ou à mes parents que je ne sais pas vraiment qui je suis ou ce que je veux"},{"num":113,"text":"J'éprouve des difficultés à distinguer mon point de vue ou mon opinion de ceux de mes parents ou de mon partenaire"},{"num":114,"text":"J'ai souvent l'impression de ne pas avoir d'intimité par rapport à mes parents ou mon partenaire"},{"num":115,"text":"Je sens que mes parents seraient vraiment peinés si je vivais seul(e), loin d'eux"},{"num":116,"text":"Je laisse les autres faire ce qu'ils veulent, car j'ai peur des conséquences"},{"num":117,"text":"Je pense que si je fais ce que je veux, je cours après les problèmes"},{"num":118,"text":"Je sens que je n'ai pas d'autre choix que de me soumettre aux souhaits des autres, sinon ils exercent des représailles ou me rejetteront d'une façon ou d'une autre"},{"num":119,"text":"Dans mes relations, je laisse l'autre avoir le dessus sur moi"},{"num":120,"text":"Je laisse toujours les autres choisir à ma place, si bien que je ne sais pas vraiment ce que je veux moi-même"},{"num":121,"text":"J'ai le sentiment que les décisions importantes de ma vie n'étaient pas vraiment les miennes"},{"num":122,"text":"Je me soucie beaucoup de plaire aux autres, pour qu'ils ne me rejettent pas"},{"num":123,"text":"J'ai beaucoup de difficultés à exiger que mes droits soient respectés et que mes sentiments soient pris en compte"},{"num":124,"text":"Plutôt que manifester ouvertement ma colère, je me venge dans les petites choses"},{"num":125,"text":"Je vais tolérer beaucoup plus de choses que la plupart des gens afin d'éviter une confrontation"},{"num":126,"text":"Je fais passer les besoins des autres avant les miens, sinon je me sens coupable"},{"num":127,"text":"Je me sens coupable si je laisse tomber les autres ou si je les déçois"},{"num":128,"text":"Je donne davantage aux autres que je ne reçois en retour"},{"num":129,"text":"Je suis celui (celle) qui finit généralement par prendre soin des gens dont je suis proche"},{"num":130,"text":"Il n'y a presque rien que je ne puisse supporter lorsque j'aime quelqu'un"},{"num":131,"text":"Je suis quelqu'un de bon car je pense aux autres plus qu'à moi-même"},{"num":132,"text":"Au travail, je suis habituellement celui(celle) qui est volontaire pour faire des heures ou des tâches supplémentaires"},{"num":133,"text":"Même si je suis très occupé(e), je trouve toujours du temps pour les autres"},{"num":134,"text":"Je peux m'en sortir avec vraiment très peu car mes besoins sont minimes"},{"num":135,"text":"Je ne suis heureux(se) que si les gens qui m'entourent le sont aussi"},{"num":136,"text":"Je suis tellement occupé(e) à me dévouer pour les gens qui m'importent que j'ai très peu de temps pour moi"},{"num":137,"text":"J'ai toujours été celui(celle) qui écoute les problèmes des autres"},{"num":138,"text":"Je me sens plus à l'aise pour donner un cadeau que pour en recevoir un"},{"num":139,"text":"On me voit comme quelqu'un qui en fait trop pour les autres et pas assez pour lui(elle)-même"},{"num":140,"text":"Peu importe combien je donne, ce n'est jamais assez"},{"num":141,"text":"Si je fais ce que je veux, je me sens vraiment mal à l'aise"},{"num":142,"text":"Il m'est vraiment difficile de demander aux autres de se soucier de mes besoins"},{"num":143,"text":"J'ai peur de perdre le contrôle de mes actes"},{"num":144,"text":"J'ai peur de faire du mal à quelqu'un, physiquement ou affectivement, si je perds tout contrôle sur ma colère"},{"num":145,"text":"Je sens que je dois contrôler mes émotions et mes impulsions, sinon quelque chose de déplorable risque de se produire"},{"num":146,"text":"J'en arrive à accumuler en moi beaucoup de colère et de ressentiment que je n'exprime pas"},{"num":147,"text":"Je suis trop gêné(e) pour exprimer des sentiments positifs aux autres (par exemple de l'affection, de l'intérêt)"},{"num":148,"text":"Je trouve embarrassant d'exprimer mes sentiments aux autres"},{"num":149,"text":"Il m'est difficile d'être chaleureux(se) et spontané(e)"},{"num":150,"text":"Je me contrôle tellement bien que les autres croient que je n'ai pas d'émotions"},{"num":151,"text":"Les gens me trouvent coincé(e) sur le plan émotionnel"},{"num":152,"text":"Je dois être le(la) meilleur(e) dans presque tout ce que je fais, je ne peux pas accepter d'être le(la) deuxième"},{"num":153,"text":"Je m'efforce de tout maintenir parfaitement en ordre"},{"num":154,"text":"Je dois apparaître sous mon meilleur aspect la plupart du temps"},{"num":155,"text":"Je m'efforce de faire de mon mieux ; je ne peux pas me contenter d'être \"assez bien\""},{"num":156,"text":"J'ai tant de choses à faire qu'il ne me reste presque pas de temps pour me détendre vraiment"},{"num":157,"text":"Presque rien de ce que je fais n'est assez bien, je pourrais toujours faire mieux"},{"num":158,"text":"Je dois faire face à toutes mes responsabilités"},{"num":159,"text":"Je ressens une pression constante qui me force à faire les choses et à les réussir"},{"num":160,"text":"Mes relations souffrent de ce que je m'impose trop de choses"},{"num":161,"text":"Je m'impose une telle pression pour bien faire que ma santé en souffre"},{"num":162,"text":"Souvent je sacrifie plaisir et bonheur pour atteindre mes idéaux"},{"num":163,"text":"Lorsque je fais une erreur, je mérite une critique sévère"},{"num":164,"text":"Je ne peux pas accepter de me dégager aisément d'une situation difficile ou de présenter des excuses pour mes erreurs"},{"num":165,"text":"Je suis quelqu'un de très compétitif"},{"num":166,"text":"J'attache beaucoup d'importance à l'argent ou au statut social"},{"num":167,"text":"Je tiens toujours à être le(la) meilleur(e) dans ce que j'accomplis"},{"num":168,"text":"Lorsque j'attends quelque chose des autres, j'ai beaucoup de difficulté à accepter un refus"},{"num":169,"text":"Je me mets souvent en colère ou je m'irrite quand je ne peux pas avoir ce que je veux"},{"num":170,"text":"Je suis quelqu'un de spécial et je ne devrais pas avoir à accepter les restrictions auxquelles les autres doivent se soumettre"},{"num":171,"text":"Je déteste être contraint(e) ou qu'on m'empêche de faire ce que je veux"},{"num":172,"text":"Je crois que je n'ai pas à suivre les règles et les conventions comme les autres"},{"num":173,"text":"J'ai le sentiment que j'ai beaucoup plus à offrir que les autres"},{"num":174,"text":"Habituellement, je fais passer mes besoins avant ceux des autres"},{"num":175,"text":"Je remarque souvent que l'importance accordée à mes priorités personnelles ne me laisse plus de temps pour les amis ou la famille"},{"num":176,"text":"Les autres me disent souvent que je contrôle trop la façon dont les choses sont faites"},{"num":177,"text":"Je suis très irrité(e) lorsque les autres ne font pas ce que je leur demande"},{"num":178,"text":"Je ne supporte pas que les autres me disent ce que je dois faire"},{"num":179,"text":"J'ai beaucoup de difficultés à m'arrêter de boire, de fumer, de trop manger ou à cesser d'autres comportements problématiques"},{"num":180,"text":"Il ne me semble pas possible de me discipliner pour terminer des tâches routinières ou ennuyeuses"},{"num":181,"text":"Souvent, je me laisse aller à mes impulsions ou à exprimer des émotions qui me créent des difficultés ou blessent les autres"},{"num":182,"text":"Si je ne peux pas atteindre un but, je suis facilement frustré(e) et j'abandonne"},{"num":183,"text":"Il m'est très difficile de sacrifier une gratification immédiate pour mener à bien un projet à long terme"},{"num":184,"text":"Quand je me mets en colère, il est fréquent que je ne puisse pas du tout me contrôler"},{"num":185,"text":"J'ai tendance à abuser de certaines choses, même si je sais que c'est mauvais pour moi"},{"num":186,"text":"Je m'ennuie très facilement"},{"num":187,"text":"Quand les tâches deviennent difficiles, je ne peux souvent pas persévérer pour les terminer"},{"num":188,"text":"Je ne peux pas me concentrer longtemps sur quoi que ce soit"},{"num":189,"text":"Je ne peux pas me forcer à faire des choses qui ne me plaisent pas même quand je sais que c'est pour mon bien"},{"num":190,"text":"Je me mets en colère à la moindre offense"},{"num":191,"text":"J'ai rarement été capable de tenir mes engagements"},{"num":192,"text":"Je ne peux presque jamais m'empêcher de montrer aux gens mes véritables sentiments, même si cela doit me coûter cher"},{"num":193,"text":"J'agis souvent impulsivement et je le regrette plus tard"},{"num":194,"text":"Il m'est important d'être aimé(e) par presque tous ceux que je connais"},{"num":195,"text":"Je modifie mon comportement en fonction des gens avec qui je me trouve, afin qu'ils puissent m'aimer davantage"},{"num":196,"text":"Je fais tout mon possible pour m'adapter"},{"num":197,"text":"Mon estime personnelle est principalement fondée sur la façon dont les autres me voient"},{"num":198,"text":"Posséder de l'argent et connaître des gens importants sont des choses qui me donnent de la valeur"},{"num":199,"text":"Je consacre beaucoup de temps à soigner mon apparence afin de gagner l'estime des autres"},{"num":200,"text":"Mes réussites ont plus de valeur à mes yeux si les autres les remarquent"},{"num":201,"text":"Je suis à ce point soucieux(se) de m'adapter aux autres qu'il m'arrive de ne plus savoir qui je suis"},{"num":202,"text":"Je trouve difficile de me fixer des objectifs propres, sans prendre en compte ce que les autres vont penser de mes choix"},{"num":203,"text":"Lorsque je considère les décisions que j'ai prises dans ma vie, je réalise que la plupart d'entre elles reposaient sur le désir d'obtenir l'approbation des autres"},{"num":204,"text":"Même si je n'aime pas une personne, je tiens malgré tout à ce qu'elle m'aime"},{"num":205,"text":"À moins d'obtenir beaucoup d'attention des autres, je me sens peu important(e)"},{"num":206,"text":"Si j'interviens lors d'une réunion ou si on me présente dans un groupe, je cherche à être reconnu(e) et admiré(e)"},{"num":207,"text":"Lorsqu'on me fait beaucoup de compliments et d'éloges, je me sens une personne de valeur"},{"num":208,"text":"Même lorsque tout va bien, j'ai peur qu'il n'arrive ensuite quelque chose de mauvais"},{"num":209,"text":"S'il se produit quelque chose de bien, j'ai peur qu'il n'arrive ensuite quelque chose de mauvais"},{"num":210,"text":"On n'est jamais assez prudent ; il peut toujours se produire quelque chose de mauvais"},{"num":211,"text":"Même si je travaille beaucoup, j'ai peur de me retrouver un jour sans le sou"},{"num":212,"text":"J'ai peur qu'une mauvaise décision ne puisse conduire à un désastre"},{"num":213,"text":"Je me tourmente souvent pour des décisions mineures, car les conséquences d'une erreur m'apparaissent tellement graves"},{"num":214,"text":"Je préfère considérer que les choses ne vont pas aller comme je le veux, car ainsi je ne serai pas déçu(e) si ça se passe mal"},{"num":215,"text":"Je pense plutôt aux aspects négatifs de la vie et des événements qu'aux côtés positifs"},{"num":216,"text":"J'ai tendance à être pessimiste"},{"num":217,"text":"Mes proches considèrent que je me fais trop de soucis"},{"num":218,"text":"Si les gens s'enthousiasment trop, je me sens mal et j'éprouve le besoin de les prévenir de ce qui pourrait mal se passer"},{"num":219,"text":"Si je fais une erreur, je mérite d'être puni(e)"},{"num":220,"text":"Si je ne donne pas le meilleur de moi-même, je dois m'attendre à échouer"},{"num":221,"text":"Je n'ai aucune excuse si je fais une erreur"},{"num":222,"text":"Les gens qui ne font pas leur part de travail à fond devraient être punis d'une manière ou d'une autre"},{"num":223,"text":"La plupart du temps, je n'accepte pas les excuses des autres : ils n'ont pas pris leurs responsabilités et ils en paient les conséquences"},{"num":224,"text":"Si je ne fais pas mon travail, je devrai en subir les conséquences"},{"num":225,"text":"Je pense souvent à mes erreurs passées et je me mets en colère contre moi-même"},{"num":226,"text":"Lorsque les gens font quelque chose de mal, j'ai du mal à appliquer la phrase : \"Pardonnez et oubliez\""},{"num":227,"text":"Je garde de la rancune envers les gens, même s'ils se sont excusés"},{"num":228,"text":"Je me sens énervé(e) à l'idée que quelqu'un s'est tiré trop facilement d'un mauvais pas"},{"num":229,"text":"Je me mets en colère lorsque les gens se trouvent des excuses, ou lorsqu'ils accusent les autres pour des problèmes dont ils sont eux-mêmes responsables"},{"num":230,"text":"Peu importe les raisons, quand je fais une erreur, je devrais en payer le prix"},{"num":231,"text":"Je m'en veux énormément lorsque je bousille quelque chose"},{"num":232,"text":"Je suis quelqu'un de mauvais qui mérite d'être puni"}];
+
+const SMI_ITEMS = [{"num":1,"text":"J'exige qu'on me respecte, en ne me laissant pas bousculer"},{"num":2,"text":"Je me sens aimé(e) et accepté(e)"},{"num":3,"text":"Je me refuse tout plaisir parce que je ne le mérite pas"},{"num":4,"text":"Je me sens fondamentalement inadapté(e), déficient(e), imparfait(e)"},{"num":5,"text":"J'ai le besoin impulsif de me punir en me faisant du mal (par exemple en me coupant)"},{"num":6,"text":"Je me sens perdu(e)"},{"num":7,"text":"Je suis dur(e) avec moi-même"},{"num":8,"text":"Je fais tout mon possible pour être agréable aux autres, afin d'éviter un conflit, une confrontation ou un rejet"},{"num":9,"text":"Je ne peux pas me pardonner"},{"num":10,"text":"J'agis dans le but de devenir le centre de l'attention"},{"num":11,"text":"Je suis irrité(e) lorsque les gens ne font pas ce que je leur demande"},{"num":12,"text":"Il m'est difficile de contrôler mes impulsions"},{"num":13,"text":"Si je ne peux pas atteindre un but, je suis facilement frustré(e) et j'abandonne"},{"num":14,"text":"J'ai des accès de fureur"},{"num":15,"text":"J'agis de façon impulsive ou j'exprime des émotions qui me créent des difficultés ou qui blessent les autres"},{"num":16,"text":"S'il se produit quelque chose de mal, c'est de ma faute"},{"num":17,"text":"Je me sens satisfait(e) et serein(e)"},{"num":18,"text":"Je suis différent(e) selon les personnes avec qui je me trouve, afin qu'elles m'aiment ou qu'elles m'approuvent"},{"num":19,"text":"Je me sens en lien avec les autres"},{"num":20,"text":"Lorsque des problèmes se présentent, je m'efforce de les résoudre moi-même"},{"num":21,"text":"Je ne sais pas me discipliner pour terminer des tâches routinières ou ennuyeuses"},{"num":22,"text":"Si je ne me bats pas, on va abuser de moi ou me négliger"},{"num":23,"text":"Je dois m'occuper des gens de mon entourage"},{"num":24,"text":"Si on laisse les autres se moquer de soi ou nous brutaliser, on est un perdant"},{"num":25,"text":"Je m'en prends physiquement aux autres lorsque je suis en colère contre eux"},{"num":26,"text":"Lorsque je me mets en colère, il m'arrive de ne pas me contrôler et de perdre mon sang-froid"},{"num":27,"text":"Il m'est important d'être le numéro un (par exemple en ce qui concerne la popularité, la réussite, la valeur, le pouvoir)"},{"num":28,"text":"Je me sens indifférent(e)"},{"num":29,"text":"Je suis capable de résoudre les problèmes de façon rationnelle sans me laisser dépasser par mes émotions"},{"num":30,"text":"Il est stupide de planifier ce que l'on doit faire"},{"num":31,"text":"Je ne peux pas me contenter d'être le(la) deuxième, et non le(la) meilleur(e)"},{"num":32,"text":"Le meilleur moyen pour se défendre, c'est d'attaquer"},{"num":33,"text":"Je me sens froid(e) et indifférent(e) envers les autres"},{"num":34,"text":"Je me sens détaché(e) — aucun contact avec moi-même, avec mes émotions ou avec les autres"},{"num":35,"text":"Je me laisse aveuglément aller à mes émotions"},{"num":36,"text":"Je me sens désespéré(e)"},{"num":37,"text":"Je laisse les autres me critiquer ou m'humilier"},{"num":38,"text":"Dans les relations, je laisse les autres avoir le dessus"},{"num":39,"text":"Je me sens distant(e) des autres"},{"num":40,"text":"Je ne réfléchis pas à ce que je dis et cela me crée des difficultés ou bien cela blesse les autres"},{"num":41,"text":"Je travaille ou je fais du sport de manière intensive, afin de ne pas penser à des choses désagréables"},{"num":42,"text":"Je me mets en colère si on essaie de m'enlever ma liberté ou mon indépendance"},{"num":43,"text":"Je ne ressens rien"},{"num":44,"text":"Je fais ce que je veux, sans tenir compte des besoins et des sentiments des autres"},{"num":45,"text":"Je ne m'autorise ni détente ni amusement tant que je n'ai pas terminé tout ce que je dois faire"},{"num":46,"text":"Quand je suis en colère, je lance tout ce qui me tombe sous la main"},{"num":47,"text":"Je me sens furieux(se) contre les autres"},{"num":48,"text":"Je sens que je m'adapte bien aux autres"},{"num":49,"text":"J'ai accumulé beaucoup de colère en moi et j'ai besoin de la faire sortir"},{"num":50,"text":"Je me sens seul(e)"},{"num":51,"text":"Je m'efforce de faire le mieux dans tout ce que j'entreprends"},{"num":52,"text":"J'ai besoin d'avoir des activités excitantes ou calmantes pour éviter mes émotions (par exemple travailler, jouer à des jeux de hasard, manger, faire des achats, avoir des activités sexuelles, regarder la TV)"},{"num":53,"text":"L'égalité n'existe pas : il vaut donc mieux dominer les autres"},{"num":54,"text":"Quand je suis en colère, je perds régulièrement le contrôle de moi-même et je deviens menaçant(e) pour les autres"},{"num":55,"text":"Je laisse les autres faire ce qu'ils veulent, au lieu d'exprimer mes besoins personnels"},{"num":56,"text":"Si quelqu'un n'est pas de mon côté, c'est qu'il (ou elle) est contre moi"},{"num":57,"text":"Afin d'être ennuyé(e) le moins possible par mes pensées ou mes émotions désagréables, je veille à être toujours occupé(e)"},{"num":58,"text":"Si je me mets en colère contre les autres, je suis quelqu'un de mauvais"},{"num":59,"text":"Je ne veux pas m'impliquer auprès des autres"},{"num":60,"text":"Il m'est arrivé d'être en colère jusqu'au point d'agresser physiquement ou de tuer quelqu'un"},{"num":61,"text":"Je ressens beaucoup de stabilité et de sécurité dans ma vie"},{"num":62,"text":"Je sais reconnaître quand il est opportun d'exprimer mes émotions"},{"num":63,"text":"Je suis en colère contre quelqu'un parce qu'il (elle) m'a laissé ou abandonné"},{"num":64,"text":"Je ne ressens aucun lien avec les autres"},{"num":65,"text":"Je ne suis pas capable de me forcer à faire les choses que je trouve ennuyeuses, même si je sais que c'est pour mon bien"},{"num":66,"text":"J'enfreins les règles et je le regrette ensuite"},{"num":67,"text":"Je me sens humilié(e)"},{"num":68,"text":"J'ai confiance en la plupart des gens"},{"num":69,"text":"J'agis d'abord, je réfléchis ensuite"},{"num":70,"text":"Je m'ennuie facilement et je me désintéresse des choses"},{"num":71,"text":"Je me sens seul(e), même quand je suis avec des gens"},{"num":72,"text":"Je ne m'autorise pas à avoir les activités agréables qu'ont les autres, parce que je suis quelqu'un de mauvais"},{"num":73,"text":"Je peux affirmer ce que je veux sans être excessif(ve)"},{"num":74,"text":"Je pense que je suis spécial(e) et meilleur(e) que bien des gens"},{"num":75,"text":"Je ne m'intéresse à rien ; rien n'est important"},{"num":76,"text":"Lorsqu'on me dicte mes sentiments ou mon comportement, ça me met en colère"},{"num":77,"text":"Si vous ne dominez pas les autres, ce sont eux qui vont vous diriger"},{"num":78,"text":"J'exprime ce que je ressens, ou bien j'agis de façon impulsive, sans réfléchir aux conséquences"},{"num":79,"text":"J'ai envie de faire de sévères reproches aux gens pour la façon dont ils m'ont traité(e)"},{"num":80,"text":"Je suis capable de prendre soin de moi"},{"num":81,"text":"Je suis très critique à l'égard des autres"},{"num":82,"text":"Je ressens une pression constante qui me force à faire les choses et à les réussir"},{"num":83,"text":"J'essaie de ne pas faire d'erreurs ; sinon, je vais m'en vouloir"},{"num":84,"text":"Je mérite d'être puni(e)"},{"num":85,"text":"Je suis capable d'apprendre, de mûrir et de changer"},{"num":86,"text":"J'ai besoin de me distraire de mes pensées et de mes sentiments bouleversants"},{"num":87,"text":"Je suis en colère contre moi-même"},{"num":88,"text":"Je me sens à plat"},{"num":89,"text":"Je dois être le(la) meilleur(e) dans tout ce que je fais"},{"num":90,"text":"Je sacrifie le plaisir, la santé ou le bonheur pour répondre à mes exigences"},{"num":91,"text":"Je suis exigeant(e) vis-à-vis des autres"},{"num":92,"text":"Quand je suis en colère, je peux être tellement incontrôlable que j'en viens à frapper les gens"},{"num":93,"text":"Je suis invulnérable"},{"num":94,"text":"Je suis quelqu'un de mauvais"},{"num":95,"text":"Je me sens en sécurité"},{"num":96,"text":"Je me sens écouté(e), compris(e) et reconnu(e)"},{"num":97,"text":"Il m'est impossible de contrôler mes impulsions"},{"num":98,"text":"Quand je suis en colère, je casse ce que j'ai sous la main"},{"num":99,"text":"Si vous dominez les autres, il ne peut rien vous arriver"},{"num":100,"text":"J'ai un comportement passif, même lorsque je n'apprécie pas la façon dont les choses se déroulent"},{"num":101,"text":"Quand je suis en colère, il m'est impossible de me contrôler"},{"num":102,"text":"Je me moque des autres, ou je les persécute"},{"num":103,"text":"J'ai envie d'engueuler quelqu'un ou de lui faire du mal à cause d'une chose qu'il m'a faite"},{"num":104,"text":"Je sais qu'il y a une bonne et une mauvaise façon de faire les choses ; je m'efforce de bien les faire, sinon je me critique moi-même"},{"num":105,"text":"Je me sens souvent seul(e) au monde"},{"num":106,"text":"Je me sens faible et impuissant(e)"},{"num":107,"text":"Je suis paresseux(se)"},{"num":108,"text":"Je peux tolérer n'importe quoi de la part des gens qui sont importants pour moi"},{"num":109,"text":"J'ai été trahi(e) ou traité(e) de façon incorrecte"},{"num":110,"text":"Si je ressens l'envie de faire quelque chose, j'y vais carrément"},{"num":111,"text":"Je me sens rejeté(e) ou mis(e) à l'écart"},{"num":112,"text":"Je dénigre les autres"},{"num":113,"text":"Je me sens optimiste"},{"num":114,"text":"Je ressens que je n'ai pas à suivre les mêmes règles que les autres"},{"num":115,"text":"Actuellement, ma vie consiste essentiellement à faire les choses et à les faire \"bien\""},{"num":116,"text":"Je me force à être plus responsable que la plupart des autres gens"},{"num":117,"text":"Je sais me défendre lorsque je sens qu'on me critique injustement, qu'on me maltraite ou qu'on profite de moi"},{"num":118,"text":"Lorsqu'il m'arrive quelque chose de désagréable, je ne mérite pas la sympathie des autres"},{"num":119,"text":"Je ressens que personne ne m'aime"},{"num":120,"text":"Je ressens que je suis fondamentalement quelqu'un de bon"},{"num":121,"text":"Lorsqu'il le faut, je suis capable d'achever des tâches ennuyeuses et routinières afin de mener à bien ce qui me paraît important"},{"num":122,"text":"Je me sens spontané(e) et enjoué(e)"},{"num":123,"text":"Il peut m'arriver d'être tellement en colère que je suis capable de tuer quelqu'un"},{"num":124,"text":"Je me connais bien et je sais ce qu'il me faut pour être heureux(se)"}];
+
+// SCHÉMAS — items extraits des formules Excel
+const SCHEMAS = [
+  {id:1, name:'Abandon / Instabilité', domain:'A', domainName:'Séparation et rejet', type:'Inconditionnel', items:[10,11,12,13,14,15,16,17,18,19,20,21,22,23,24,26], description:'Impression que les personnes importantes ne sont pas fiables et peuvent quitter ou abandonner.', modeAssoc:'Enfant vulnérable', origine:'Attachement insécure désorganisé'},
+  {id:2, name:'Méfiance / Abus', domain:'A', domainName:'Séparation et rejet', type:'Inconditionnel', items:[27,28,29,30,31,32,33,34,35,36,37,38,39,40,41,42,43], description:"S'attend à ce que les autres le fassent souffrir, sentiment d'être agressé ou trahi.", modeAssoc:'Enfant vulnérable', origine:'Expériences de maltraitance ou négligence'},
+  {id:3, name:'Manque affectif', domain:'A', domainName:'Séparation et rejet', type:'Inconditionnel', items:[1,2,3,4,5,6,7,8,9], description:"Difficulté à se lier aux autres, les autres ne pourront pas satisfaire les besoins affectifs.", modeAssoc:'Enfant vulnérable', origine:'Carence affective parentale'},
+  {id:4, name:'Imperfection / Honte', domain:'A', domainName:'Séparation et rejet', type:'Inconditionnel', items:[54,55,56,57,58,59,60,61,62,63,64,65,66,67,68], description:"Sentiment d'avoir peu de valeur, d'être une mauvaise personne, sensible à la critique.", modeAssoc:'Enfant vulnérable', origine:'Critique excessive, rejet parental'},
+  {id:5, name:'Isolement social', domain:'A', domainName:'Séparation et rejet', type:'Inconditionnel', items:[44,45,46,47,48,49,50,51,52,53], description:"Se sent différent des autres, comme isolé, n'appartient à aucun groupe.", modeAssoc:'Enfant vulnérable', origine:'Exclusion, différence perçue dans l\'enfance'},
+  {id:6, name:'Dépendance / Incompétence', domain:'B', domainName:"Manque d'autonomie", type:'Inconditionnel', items:[78,79,80,81,82,83,84,85,86,87,88,89,90,91,92], description:"Se pense incapable de se débrouiller seul.", modeAssoc:'Enfant vulnérable', origine:'Surprotection, aide excessive'},
+  {id:7, name:'Peur du danger ou de la maladie', domain:'B', domainName:"Manque d'autonomie", type:'Inconditionnel', items:[93,94,95,96,97,98,99,100,101,102,103,104], description:"Besoin d'être rassuré, peur de l'imminence d'une catastrophe.", modeAssoc:'Enfant vulnérable', origine:'Anxiété parentale excessive'},
+  {id:8, name:'Fusionnement / Personnalité atrophiée', domain:'B', domainName:"Manque d'autonomie", type:'Inconditionnel', items:[105,106,107,108,109,110,111,112,113,114,115], description:"Attachement émotionnel et proximité excessifs avec une personne proche.", modeAssoc:'Enfant vulnérable', origine:'Enchevêtrement familial'},
+  {id:9, name:'Échec', domain:'B', domainName:"Manque d'autonomie", type:'Inconditionnel', items:[69,70,71,72,73,74,75,76,77], description:"Sentiment que leur vie n'est faite que d'échecs, se voient inférieurs.", modeAssoc:'Enfant vulnérable', origine:'Dévalorisation, comparaisons négatives'},
+  {id:10, name:'Droits personnels exagérés', domain:'C', domainName:'Manque de limites', type:'Inc. ou Stratégie', items:[168,169,170,171,172,173,174,175,176,177,178], description:"Sentiment de supériorité, tout leur est dû, manque d'empathie.", modeAssoc:'Enfant impulsif', origine:'Survalorisation, absence de limites'},
+  {id:11, name:'Contrôle de soi / Autodiscipline insuffisant', domain:'C', domainName:'Manque de limites', type:'Inconditionnel', items:[179,180,181,182,183,184,185,186,187,188,189,190,191,192,193], description:"Manque de contrôle dans l'expression des émotions et impulsions.", modeAssoc:'Enfant indiscipliné', origine:'Absence de cadre, laxisme parental'},
+  {id:12, name:'Assujettissement', domain:'D', domainName:"Orientation vers les autres", type:'Stratégie', items:[116,117,118,119,120,121,122,123,124,125], description:"Se positionne par rapport à un maître, répond à toutes les demandes.", modeAssoc:'Soumis obéissant', origine:'Réponse à la carence affective'},
+  {id:13, name:'Abnégation', domain:'D', domainName:"Orientation vers les autres", type:'Stratégie', items:[126,127,128,129,130,131,132,133,134,135,136,137,138,139,140,141,142], description:"Sacrifice de soi, peut se lier à idéaux exigeants.", modeAssoc:'Soumis obéissant', origine:'Parentification, responsabilisation précoce'},
+  {id:14, name:"Recherche d'approbation / Reconnaissance", domain:'D', domainName:"Orientation vers les autres", type:'Stratégie', items:[194,195,196,197,198,199,200,201,202,203,204,205,206,207], description:"Accorde plus d'importance à la réaction de l'autre qu'à son ressenti.", modeAssoc:'Chercheur approbation', origine:'Validation conditionnelle'},
+  {id:15, name:'Négativité / Pessimisme', domain:'E', domainName:'Survigilance et inhibition', type:'Inconditionnel', items:[208,209,210,211,212,213,214,215,216,217,218], description:"Voit tout en négatif, minimise le positif, attend des situations négatives.", modeAssoc:'Enfant vulnérable', origine:'Environnement négatif, catastrophisme parental'},
+  {id:16, name:'Surcontrôle émotionnel', domain:'E', domainName:'Survigilance et inhibition', type:'Stratégie', items:[143,144,145,146,147,148,149,150,151], description:"Rigoureux, strict, froid, distant. Peut entraîner alexithymie.", modeAssoc:'Protecteur détaché', origine:"Interdiction des émotions"},
+  {id:17, name:'Idéaux exigeants / Critique excessive', domain:'E', domainName:'Survigilance et inhibition', type:'Inc. ou Stratégie', items:[152,153,154,155,156,157,158,159,160,161,162,164,165,166,167], description:"Perfectionnisme, pas de droit à l'erreur, lecture binaire.", modeAssoc:'Parent critique / exigeant', origine:'Exigences parentales excessives'},
+  {id:18, name:'Punition', domain:'E', domainName:'Survigilance et inhibition', type:'Inconditionnel', items:[219,220,221,222,223,224,225,226,227,228,229,230,231,232], description:"Jugement critique négatif, intolérance, besoin de punir les autres et soi-même.", modeAssoc:'Parent punitif', origine:'Punitions sévères dans l\'enfance'},
+];
+
+const MODES = [
+  {id:1, name:'Enfant vulnérable', cat:'enfant', n:10, items:[4,6,36,50,67,71,105,106,111,119], schemas:[1,2,3,4,5,7,8,15]},
+  {id:2, name:'Enfant en colère', cat:'enfant', n:10, items:[22,42,47,49,56,63,76,79,103,109], schemas:[1,2,3,12]},
+  {id:3, name:'Enfant furieux', cat:'enfant', n:10, items:[14,25,26,46,54,60,92,98,101,123], schemas:[]},
+  {id:4, name:'Enfant impulsif', cat:'enfant', n:9, items:[12,15,35,40,66,69,78,97,110], schemas:[10,11]},
+  {id:5, name:'Enfant indiscipliné', cat:'enfant', n:6, items:[13,21,30,65,70,107], schemas:[11]},
+  {id:6, name:'Enfant heureux', cat:'enfant', n:10, items:[2,17,19,48,61,68,95,96,113,122], schemas:[]},
+  {id:7, name:'Soumis obéissant', cat:'strategique', n:7, items:[8,18,37,38,55,100,108], schemas:[12,13]},
+  {id:8, name:'Protecteur détaché', cat:'strategique', n:9, items:[28,33,34,39,43,59,64,75,88], schemas:[16,3]},
+  {id:9, name:'Auto-tranquilliseur détaché', cat:'strategique', n:4, items:[41,52,57,86], schemas:[3]},
+  {id:10, name:'Auto-magnificateur', cat:'strategique', n:10, items:[10,11,27,31,44,74,81,89,91,114], schemas:[10]},
+  {id:11, name:'Agresseur brutal', cat:'strategique', n:9, items:[1,24,32,53,77,93,99,102,112], schemas:[10,11]},
+  {id:12, name:'Parent punitif', cat:'parent', n:10, items:[3,5,9,16,58,72,84,87,94,118], schemas:[18]},
+  {id:13, name:'Parent exigeant', cat:'parent', n:10, items:[7,23,45,51,82,83,90,104,115,116], schemas:[17]},
+  {id:14, name:'Adulte sain', cat:'sain', n:10, items:[20,29,62,73,80,85,117,120,121,124], schemas:[]},
+];
+
+const DOMAIN_COLORS = {A:'#2d5a8e', B:'#5a2d8e', C:'#8e2d5a', D:'#2d8e5a', E:'#8e6c2d'};
+const DOMAIN_NAMES = {A:'A — Séparation et rejet', B:'B — Manque d\'autonomie', C:'C — Manque de limites', D:'D — Orientation vers les autres', E:'E — Survigilance et inhibition'};
+
+// ============================================================
+// ENVOI VERS GOOGLE SHEETS (Apps Script Web App)
+// ============================================================
+// À REMPLACER par l'URL de déploiement de votre Apps Script (se termine par /exec).
+// Voir le fichier "IPCRA_schemas_apps_script_modele.gs" fourni séparément pour le
+// modèle de script à coller côté Google Sheets, et les instructions de déploiement.
+const APPS_SCRIPT_URL = 'REMPLACER_PAR_URL_APPS_SCRIPT';
+
+// ============================================================
+// STATE
+// ============================================================
+let state = {
+  patient: {nom:'', age:'', prof:'', lieu:'', date: new Date().toISOString().split('T')[0]},
+  ysq: {},   // {itemNum: value}
+  smi: {},   // {itemNum: value}
+  ysqDone: false,
+  smiDone: false,
+};
+
+let ysqCurrentPage = 0;
+let smiCurrentPage = 0;
+const ITEMS_PER_PAGE = 10;
+
+// ============================================================
+// NAVIGATION
+// ============================================================
+function showScreen(id) {
+  document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
+  document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+  document.getElementById('screen-' + id).classList.add('active');
+  const tab = document.querySelector(`[onclick="showScreen('${id}')"]`);
+  if (tab) tab.classList.add('active');
+  if (id === 'rapport') renderRapport();
+}
+
+function startYSQ() {
+  document.getElementById('tab-ysq').disabled = false;
+  showScreen('ysq');
+  renderYSQPage();
+}
+
+function startSMI() {
+  document.getElementById('tab-smi').disabled = false;
+  showScreen('smi');
+  renderSMIPage();
+}
+
+function showRapport() {
+  document.getElementById('tab-rapport').disabled = false;
+  showScreen('rapport');
+}
+
+// ============================================================
+// YSQ
+// ============================================================
+function renderYSQPage() {
+  const total = YSQ_ITEMS.length;
+  const pages = Math.ceil(total / ITEMS_PER_PAGE);
+  const start = ysqCurrentPage * ITEMS_PER_PAGE;
+  const items = YSQ_ITEMS.slice(start, start + ITEMS_PER_PAGE);
+  const answered = Object.keys(state.ysq).length;
+  const pct = Math.round(answered / total * 100);
+
+  document.getElementById('ysq-prog-fill2').style.width = pct + '%';
+  document.getElementById('ysq-prog-text2').textContent = `${answered} / ${total} items répondus (${pct}%)`;
+  document.getElementById('ysq-page-info').textContent = `Page ${ysqCurrentPage + 1} / ${pages}`;
+  document.getElementById('ysq-prev').disabled = ysqCurrentPage === 0;
+  document.getElementById('ysq-next').style.display = ysqCurrentPage < pages - 1 ? '' : 'none';
+  document.getElementById('ysq-finish').style.display = ysqCurrentPage === pages - 1 ? '' : 'none';
+
+  const container = document.getElementById('ysq-items');
+  container.innerHTML = items.map(item => {
+    const v = state.ysq[item.num] || 0;
+    return `<div class="item-card ${v ? 'answered' : ''}" id="ysq-card-${item.num}">
+      <div class="item-num">Item ${item.num}</div>
+      <div class="item-text">${item.text}</div>
+      <div class="scale-btns">
+        ${[1,2,3,4,5,6].map(n => `<button class="scale-btn ${v===n?'selected-'+n:''}" onclick="setYSQ(${item.num},${n},this)" type="button">${n}</button>`).join('')}
+      </div>
+    </div>`;
+  }).join('');
+  updateHomeProgress();
+}
+
+function setYSQ(num, val, btn) {
+  state.ysq[num] = val;
+  const card = document.getElementById('ysq-card-' + num);
+  if (card) {
+    card.classList.add('answered');
+    card.querySelectorAll('.scale-btn').forEach((b,i) => {
+      b.className = 'scale-btn' + (i+1 === val ? ' selected-'+val : '');
+    });
+  }
+  updateHomeProgress();
+}
+
+function ysqPage(dir) {
+  const pages = Math.ceil(YSQ_ITEMS.length / ITEMS_PER_PAGE);
+  ysqCurrentPage = Math.max(0, Math.min(pages - 1, ysqCurrentPage + dir));
+  renderYSQPage();
+  window.scrollTo(0, 0);
+}
+
+function finishYSQ() {
+  state.ysqDone = true;
+  document.getElementById('qcard-ysq').classList.add('completed');
+  showScreen('home');
+  updateHomeProgress();
+}
+
+// ============================================================
+// SMI
+// ============================================================
+function renderSMIPage() {
+  const total = SMI_ITEMS.length;
+  const pages = Math.ceil(total / ITEMS_PER_PAGE);
+  const start = smiCurrentPage * ITEMS_PER_PAGE;
+  const items = SMI_ITEMS.slice(start, start + ITEMS_PER_PAGE);
+  const answered = Object.keys(state.smi).length;
+  const pct = Math.round(answered / total * 100);
+
+  document.getElementById('smi-prog-fill2').style.width = pct + '%';
+  document.getElementById('smi-prog-text2').textContent = `${answered} / ${total} items répondus (${pct}%)`;
+  document.getElementById('smi-page-info').textContent = `Page ${smiCurrentPage + 1} / ${pages}`;
+  document.getElementById('smi-prev').disabled = smiCurrentPage === 0;
+  document.getElementById('smi-next').style.display = smiCurrentPage < pages - 1 ? '' : 'none';
+  document.getElementById('smi-finish').style.display = smiCurrentPage === pages - 1 ? '' : 'none';
+
+  const container = document.getElementById('smi-items');
+  container.innerHTML = items.map(item => {
+    const v = state.smi[item.num] || 0;
+    return `<div class="item-card ${v ? 'answered' : ''}" id="smi-card-${item.num}">
+      <div class="item-num">Item ${item.num}</div>
+      <div class="item-text">${item.text}</div>
+      <div class="scale-btns">
+        ${[1,2,3,4,5,6].map(n => `<button class="scale-btn ${v===n?'selected-'+n:''}" onclick="setSMI(${item.num},${n},this)" type="button">${n}</button>`).join('')}
+      </div>
+    </div>`;
+  }).join('');
+  updateHomeProgress();
+}
+
+function setSMI(num, val, btn) {
+  state.smi[num] = val;
+  const card = document.getElementById('smi-card-' + num);
+  if (card) {
+    card.classList.add('answered');
+    card.querySelectorAll('.scale-btn').forEach((b,i) => {
+      b.className = 'scale-btn' + (i+1 === val ? ' selected-'+val : '');
+    });
+  }
+  updateHomeProgress();
+}
+
+function smiPage(dir) {
+  const pages = Math.ceil(SMI_ITEMS.length / ITEMS_PER_PAGE);
+  smiCurrentPage = Math.max(0, Math.min(pages - 1, smiCurrentPage + dir));
+  renderSMIPage();
+  window.scrollTo(0, 0);
+}
+
+function finishSMI() {
+  state.smiDone = true;
+  document.getElementById('qcard-smi').classList.add('completed');
+  showScreen('home');
+  updateHomeProgress();
+}
+
+// ============================================================
+// CALCUL DES SCORES
+// ============================================================
+function computeSchemaScores() {
+  return SCHEMAS.map(s => {
+    const activeItems = s.items.filter(n => (state.ysq[n] || 0) >= 5);
+    return { ...s, score: activeItems.length, activeItems };
+  });
+}
+
+function computeModeScores() {
+  return MODES.map(m => {
+    const activeItems = m.items.filter(n => (state.smi[n] || 0) >= 5);
+    return { ...m, score: activeItems.length, activeItems };
+  });
+}
+
+// ============================================================
+// ENVOI DES RÉSULTATS (Google Sheets via Apps Script)
+// ============================================================
+function submitResults() {
+  const statusEl = document.getElementById('submit-status');
+  const btn = document.getElementById('btn-submit-sheet');
+
+  if (APPS_SCRIPT_URL === 'REMPLACER_PAR_URL_APPS_SCRIPT') {
+    statusEl.textContent = "Connexion Google Sheets non configurée (voir instructions).";
+    statusEl.style.color = '#a00';
+    return;
+  }
+  if (!state.ysqDone && !state.smiDone) {
+    statusEl.textContent = "Aucun questionnaire terminé à envoyer.";
+    statusEl.style.color = '#a00';
+    return;
+  }
+
+  const schemaScores = computeSchemaScores().map(s => ({id: s.id, name: s.name, domain: s.domain, score: s.score}));
+  const modeScores = computeModeScores().map(m => ({id: m.id, name: m.name, cat: m.cat, score: m.score}));
+
+  const payload = {
+    session_id: 'schemas_' + Date.now(),
+    envoye_le: new Date().toISOString(),
+    patient: state.patient,
+    ysq_termine: state.ysqDone,
+    smi_termine: state.smiDone,
+    ysq_reponses: state.ysq,
+    smi_reponses: state.smi,
+    ysq_scores: schemaScores,
+    smi_scores: modeScores,
+  };
+  window._payload = payload;
+
+  btn.disabled = true;
+  statusEl.style.color = 'var(--muted)';
+  statusEl.textContent = "Envoi en cours…";
+
+  fetch(APPS_SCRIPT_URL, {
+    method: 'POST',
+    headers: { 'Content-Type': 'text/plain' },
+    body: JSON.stringify(payload)
+  })
+    .then(r => r.json())
+    .then(data => {
+      btn.disabled = false;
+      if (data.status === 'ok') {
+        statusEl.style.color = 'var(--green)';
+        statusEl.textContent = "Enregistré dans le dossier (" + payload.session_id + ").";
+      } else {
+        throw new Error('status != ok');
+      }
+    })
+    .catch(() => {
+      btn.disabled = false;
+      statusEl.style.color = '#a00';
+      statusEl.textContent = "Échec de l'envoi. Vérifiez la connexion et réessayez.";
+    });
+}
+
+// ============================================================
+// RAPPORT
+// ============================================================
+function renderRapport() {
+  const p = state.patient;
+  document.getElementById('r-nom').textContent = p.nom || 'Patient non identifié';
+  document.getElementById('r-meta').textContent = [p.age ? p.age + ' ans' : '', p.prof, p.lieu].filter(Boolean).join(' · ') || '—';
+  document.getElementById('r-date').textContent = p.date ? new Date(p.date).toLocaleDateString('fr-FR', {day:'numeric',month:'long',year:'numeric'}) : '—';
+
+  const schemaScores = computeSchemaScores();
+  const modeScores = computeModeScores();
+  const hasYSQ = Object.keys(state.ysq).length > 0;
+  const hasSMI = Object.keys(state.smi).length > 0;
+
+  let html = '';
+
+  // ---- DIAGRAMME ACTIVATION (Pascal) ----
+  html += `<div class="section-card">
+    <div class="section-title">Modèle d'activation — Young / Pascal</div>
+    <div class="activation-diagram">
+      <div class="activ-box">Expériences du passé</div>
+      <div class="activ-arrow">↓</div>
+      <div class="activ-box">Schémas précoces inadaptés</div>
+      <div class="activ-arrow">↓</div>
+      <div class="activ-box secondary">Événement déclencheur actuel</div>
+      <div class="activ-arrow">↓</div>
+      <div class="activ-row">
+        <div class="activ-patient"><strong>Émotions</strong>Mode enfant activé</div>
+        <div class="activ-patient"><strong>Pensées auto.</strong>Croyances du schéma</div>
+      </div>
+      <div class="activ-arrow">↓</div>
+      <div class="activ-row">
+        <div class="activ-patient"><strong>Stratégies</strong>Soumission / Évitement / Compensation</div>
+        <div class="activ-patient"><strong>Comportements</strong>Actions observables</div>
+      </div>
+      <div class="activ-arrow">↓</div>
+      <div class="activ-row">
+        <div class="activ-patient"><strong>Conséquences sur soi</strong></div>
+        <div class="activ-patient"><strong>Conséquences sur les autres</strong></div>
+      </div>
+    </div>
+  </div>`;
+
+  // ---- PROFIL MODES (cercles Pascal) ----
+  html += `<div class="section-card">
+    <div class="section-title">Profil des modes (SMI)</div>`;
+
+  if (!hasSMI) {
+    html += `<div class="empty-state"><div class="icon">○</div><h3>SMI non complété</h3><p>Commencez l'inventaire des modes pour voir ce profil.</p></div>`;
+  } else {
+    const catLabels = {enfant:'Modes enfant', strategique:'Modes stratégiques', parent:'Modes parentaux', sain:'Adulte sain'};
+    ['enfant','strategique','parent','sain'].forEach(cat => {
+      const modesInCat = modeScores.filter(m => m.cat === cat);
+      html += `<div style="margin-bottom:12px;">
+        <div style="font-size:11px;font-family:sans-serif;color:var(--muted);text-transform:uppercase;letter-spacing:0.06em;margin-bottom:8px;">${catLabels[cat]}</div>
+        <div class="modes-diagram">`;
+      modesInCat.forEach(m => {
+        const active = m.score > 0;
+        const cls = active ? `mode-cat-${m.cat}` : 'inactive';
+        html += `<div class="mode-bubble ${cls}" title="Items actifs (≥5) : ${m.score}/${m.n}">
+          ${m.name}
+          <span class="mode-score">${m.score}/${m.n}</span>
+        </div>`;
+      });
+      html += `</div></div>`;
+    });
+  }
+  html += `</div>`;
+
+  // ---- SCORES SCHÉMAS ----
+  html += `<div class="section-card">
+    <div class="section-title">Scores des schémas précoces (YSQ)</div>`;
+
+  if (!hasYSQ) {
+    html += `<div class="empty-state"><div class="icon">○</div><h3>YSQ non complété</h3><p>Commencez le questionnaire des schémas pour voir les résultats.</p></div>`;
+  } else {
+    const maxScore = Math.max(...schemaScores.map(s => s.n), 1);
+    let currentDomain = '';
+    schemaScores.forEach(s => {
+      if (s.domain !== currentDomain) {
+        currentDomain = s.domain;
+        html += `<div class="domain-header" style="border-color:${DOMAIN_COLORS[s.domain]};color:${DOMAIN_COLORS[s.domain]}">${DOMAIN_NAMES[s.domain]}</div>`;
+      }
+      const pct = Math.round(s.score / s.n * 100);
+      const color = s.score === 0 ? 'var(--border)' : s.score >= s.n * 0.6 ? '#c0392b' : s.score >= s.n * 0.3 ? '#e67e22' : DOMAIN_COLORS[s.domain];
+      const typeTag = s.type === 'Inconditionnel' ? '<span class="tag tag-inc">Inco.</span>' : s.type === 'Stratégie' ? '<span class="tag tag-strat">Strat.</span>' : '<span class="tag tag-inc-strat">Inc./Strat.</span>';
+      html += `<div class="schema-bar">
+        <div class="schema-label">${s.name} ${typeTag}</div>
+        <div class="bar-track">
+          <div class="bar-fill ${s.score===0?'bar-zero':''}" style="width:${Math.max(pct,2)}%;background:${color};">
+            ${s.score > 0 ? `<span>${s.score}/${s.n}</span>` : ''}
+          </div>
+        </div>
+        <div class="bar-score">${s.score > 0 ? pct+'%' : '—'}</div>
+      </div>`;
+    });
+    const activeSchemas = schemaScores.filter(s => s.score > 0);
+    html += `<div style="margin-top:1rem;padding:10px 14px;background:var(--bg);border-radius:var(--radius-sm);font-family:sans-serif;font-size:13px;color:var(--muted);">
+      <strong style="color:var(--text);">${activeSchemas.length}</strong> schéma(s) actif(s) sur 18 — seuil : ≥ 1 item coté 5 ou 6
+    </div>`;
+  }
+  html += `</div>`;
+
+  // ---- INTERPRÉTATION ----
+  if (hasYSQ) {
+    const activeSchemas = schemaScores.filter(s => s.score > 0).sort((a,b) => b.score/b.n - a.score/a.n);
+    if (activeSchemas.length > 0) {
+      html += `<div class="section-card">
+        <div class="section-title">Interprétation clinique — Schémas actifs</div>
+        <div class="alert alert-info">Les schémas suivants présentent au moins un item coté ≥ 5. Classement par intensité relative (score / total items).</div>`;
+      activeSchemas.forEach(s => {
+        const relatedModes = MODES.filter(m => m.schemas.includes(s.id)).map(m => m.name);
+        html += `<div class="interp-item">
+          <h4>${s.name} — ${s.score}/${s.n} items actifs</h4>
+          <p><strong>Origine :</strong> ${s.origine}</p>
+          <p style="margin-top:4px;">${s.description}</p>
+          ${relatedModes.length ? `<div class="interp-modes"><strong>Modes associés :</strong> ${relatedModes.map(m=>`<span>${m}</span>`).join('')}</div>` : ''}
+        </div>`;
+      });
+      html += `</div>`;
+    }
+  }
+
+  // ---- INTERVENTIONS PAR MODE ----
+  if (hasSMI) {
+    const activeModes = modeScores.filter(m => m.score > 0 && m.cat !== 'sain').sort((a,b) => b.score - a.score);
+    if (activeModes.length > 0) {
+      const interventions = {
+        'enfant': 'Reparentage en imagerie · Lieu sécurisant · Méditation d\'ancrage · Voix douce et calme · Confrontation empathique',
+        'strategique': 'Travail de chaises · Imagerie diagnostique · Arguments pour/contre · Authenticité · Parler fermement au mode',
+        'parent': 'Reparentage en imagerie · Travail 3 chaises · Restructuration cognitive · Auto-compassion · Identifier les pensées automatiques',
+      };
+      html += `<div class="section-card">
+        <div class="section-title">Pistes d'intervention — Modes actifs</div>
+        <div class="alert alert-info">D'après Pascal (2023) et le référentiel IPCRA.</div>`;
+      activeModes.forEach(m => {
+        const iv = interventions[m.cat] || '';
+        html += `<div class="interp-item" style="border-left-color:${m.cat==='enfant'?'#2d5a8e':m.cat==='parent'?'#8e2d2d':'#8e6c2d'}">
+          <h4>${m.name} — ${m.score}/${m.n} items actifs</h4>
+          ${iv ? `<p><strong>Techniques :</strong> ${iv}</p>` : ''}
+        </div>`;
+      });
+      html += `</div>`;
+    }
+  }
+
+  document.getElementById('rapport-content').innerHTML = html;
+}
+
+// ============================================================
+// PATIENT & PROGRESS
+// ============================================================
+function updatePatient() {
+  state.patient.nom = document.getElementById('p-nom').value;
+  state.patient.age = document.getElementById('p-age').value;
+  state.patient.prof = document.getElementById('p-prof').value;
+  state.patient.lieu = document.getElementById('p-lieu').value;
+  state.patient.date = document.getElementById('p-date').value;
+}
+
+function updateHomeProgress() {
+  const ysqTotal = YSQ_ITEMS.length;
+  const smiTotal = SMI_ITEMS.length;
+  const ysqAns = Object.keys(state.ysq).length;
+  const smiAns = Object.keys(state.smi).length;
+
+  const ysqPct = Math.round(ysqAns / ysqTotal * 100);
+  const smiPct = Math.round(smiAns / smiTotal * 100);
+
+  if (ysqAns > 0) {
+    document.getElementById('ysq-progress-home').style.display = '';
+    document.getElementById('ysq-prog-fill').style.width = ysqPct + '%';
+    document.getElementById('ysq-prog-text').textContent = `${ysqAns}/${ysqTotal} répondus (${ysqPct}%)`;
+  }
+  if (smiAns > 0) {
+    document.getElementById('smi-progress-home').style.display = '';
+    document.getElementById('smi-prog-fill').style.width = smiPct + '%';
+    document.getElementById('smi-prog-text').textContent = `${smiAns}/${smiTotal} répondus (${smiPct}%)`;
+  }
+}
+
+// ============================================================
+// SESSIONS
+// ============================================================
+function saveSession() {
+  const key = 'schemas_session_' + Date.now();
+  const session = { ...state, savedAt: new Date().toISOString(), key };
+  try {
+    localStorage.setItem(key, JSON.stringify(session));
+    loadSessions();
+    alert('Session sauvegardée : ' + (state.patient.nom || 'Patient non nommé'));
+  } catch(e) {
+    alert('Erreur de sauvegarde : ' + e.message);
+  }
+}
+
+function loadSessions() {
+  const list = document.getElementById('sessions-list');
+  const sessions = [];
+  for (let i = 0; i < localStorage.length; i++) {
+    const k = localStorage.key(i);
+    if (k && k.startsWith('schemas_session_')) {
+      try {
+        const s = JSON.parse(localStorage.getItem(k));
+        sessions.push(s);
+      } catch(e) {}
+    }
+  }
+  sessions.sort((a,b) => new Date(b.savedAt) - new Date(a.savedAt));
+  if (sessions.length === 0) {
+    list.innerHTML = '<p style="font-size:13px;color:var(--muted);font-family:sans-serif;">Aucune session sauvegardée.</p>';
+    return;
+  }
+  list.innerHTML = sessions.slice(0,10).map(s => {
+    const d = new Date(s.savedAt).toLocaleDateString('fr-FR', {day:'numeric',month:'short',year:'numeric',hour:'2-digit',minute:'2-digit'});
+    const ysqCount = Object.keys(s.ysq||{}).length;
+    const smiCount = Object.keys(s.smi||{}).length;
+    return `<div class="session-item">
+      <div>
+        <div class="session-name">${s.patient?.nom || 'Patient non nommé'}</div>
+        <div class="session-meta">${d} · YSQ: ${ysqCount}/232 · SMI: ${smiCount}/124</div>
+      </div>
+      <div class="session-actions">
+        <button class="btn btn-secondary btn-sm" onclick="loadSession('${s.key}')">Charger</button>
+        <button class="btn btn-sm" style="background:#fee;border:1px solid #fcc;color:#c00;" onclick="deleteSession('${s.key}')">✕</button>
+      </div>
+    </div>`;
+  }).join('');
+}
+
+function loadSession(key) {
+  try {
+    const s = JSON.parse(localStorage.getItem(key));
+    if (!s) return;
+    state = { ...s };
+    document.getElementById('p-nom').value = state.patient?.nom || '';
+    document.getElementById('p-age').value = state.patient?.age || '';
+    document.getElementById('p-prof').value = state.patient?.prof || '';
+    document.getElementById('p-lieu').value = state.patient?.lieu || '';
+    document.getElementById('p-date').value = state.patient?.date || '';
+    if (state.ysqDone) document.getElementById('qcard-ysq').classList.add('completed');
+    if (state.smiDone) document.getElementById('qcard-smi').classList.add('completed');
+    document.getElementById('tab-ysq').disabled = false;
+    document.getElementById('tab-smi').disabled = false;
+    document.getElementById('tab-rapport').disabled = false;
+    updateHomeProgress();
+    alert('Session chargée : ' + (state.patient?.nom || 'Patient'));
+  } catch(e) {
+    alert('Erreur : ' + e.message);
+  }
+}
+
+function deleteSession(key) {
+  if (confirm('Supprimer cette session ?')) {
+    localStorage.removeItem(key);
+    loadSessions();
+  }
+}
+
+// ============================================================
+// INIT
+// ============================================================
+document.getElementById('p-date').value = new Date().toISOString().split('T')[0];
+loadSessions();
+</script>
+</body>
+</html>
